@@ -8,9 +8,9 @@
    "homes": 2
   },
   "bt_proxy": {
-   "likes": 0,
+   "likes": 1,
    "rating": 4.6,
-   "ratings": 10,
+   "ratings": 11,
    "homes": 13
   },
   "buienradar": {
@@ -28,14 +28,14 @@
   "custom_card": {
    "likes": 20,
    "rating": 4.7,
-   "ratings": 38,
+   "ratings": 39,
    "homes": 46
   },
   "dwd_rain": {
    "likes": 1,
-   "rating": 3.4,
-   "ratings": 7,
-   "homes": 9
+   "rating": 3.6,
+   "ratings": 8,
+   "homes": 10
   },
   "electricity_price": {
    "likes": 3,
@@ -58,20 +58,20 @@
   "flip_clock": {
    "likes": 17,
    "rating": 4.4,
-   "ratings": 52,
-   "homes": 49
+   "ratings": 54,
+   "homes": 50
   },
   "guition_relays": {
    "likes": 3,
-   "rating": 5,
-   "ratings": 17,
+   "rating": 4.9,
+   "ratings": 18,
    "homes": 15
   },
   "new_music": {
    "likes": 4,
    "rating": 4.7,
    "ratings": 3,
-   "homes": 14
+   "homes": 15
   },
   "ov_departures": {
    "likes": 3,
@@ -83,12 +83,12 @@
    "likes": 2,
    "rating": 4.5,
    "ratings": 4,
-   "homes": 13
+   "homes": 14
   },
   "photo_slideshow": {
    "likes": 3,
-   "rating": null,
-   "ratings": 2,
+   "rating": 4.7,
+   "ratings": 3,
    "homes": 8
   },
   "picture_frame": {
@@ -101,7 +101,7 @@
    "likes": 1,
    "rating": null,
    "ratings": 2,
-   "homes": 3
+   "homes": 4
   },
   "scmt": {
    "likes": 2,
@@ -113,13 +113,13 @@
    "likes": 4,
    "rating": 4.6,
    "ratings": 11,
-   "homes": 21
+   "homes": 22
   },
   "status_tile": {
    "likes": 3,
    "rating": 4.4,
-   "ratings": 17,
-   "homes": 22
+   "ratings": 18,
+   "homes": 23
   },
   "sweden_public_transport": {
    "likes": 0,
@@ -143,13 +143,13 @@
    "likes": 2,
    "rating": 4.5,
    "ratings": 13,
-   "homes": 18
+   "homes": 19
   },
   "timers": {
    "likes": 2,
-   "rating": 5,
-   "ratings": 12,
-   "homes": 19
+   "rating": 4.6,
+   "ratings": 14,
+   "homes": 20
   },
   "toothbrush": {
    "likes": 2,
@@ -161,19 +161,19 @@
    "likes": 1,
    "rating": 4.7,
    "ratings": 3,
-   "homes": 7
+   "homes": 8
   },
   "voice_assist": {
    "likes": 12,
    "rating": 4.7,
-   "ratings": 18,
-   "homes": 25
+   "ratings": 19,
+   "homes": 26
   },
   "waste_collection": {
    "likes": 11,
    "rating": 4.5,
-   "ratings": 21,
-   "homes": 24
+   "ratings": 22,
+   "homes": 26
   },
   "waste_overview": {
    "likes": 5,
@@ -195,9 +195,9 @@
   },
   "wifi_qr": {
    "likes": 4,
-   "rating": 4.5,
-   "ratings": 8,
-   "homes": 7
+   "rating": 4.4,
+   "ratings": 9,
+   "homes": 9
   },
   "world_clock": {
    "likes": 3,
