@@ -744,6 +744,13 @@ class Bench(run.Run):
             # The step's own picture under a face of `backdrop: true` (plugin API 0.14): as the app makes it.
             asyncio.get_running_loop().create_task(self.answer_backdrop(dict(call.data)))
             self.last_ask = time.monotonic()
+        elif call.service == 'esphome.screen_camera' and 'q' in call.data:
+            # A question of the one picture system (picture_question): a plugin's tile, card, popup or screensaver.
+            job = asyncio.get_running_loop().create_task(self.answer_question(dict(call.data)))
+            self.picture_jobs = getattr(self, 'picture_jobs', set())
+            self.picture_jobs.add(job)
+            job.add_done_callback(self.picture_jobs.discard)
+            self.last_ask = time.monotonic()
         elif call.service == 'esphome.screen_camera' and core.plugin_tile(str(call.data.get('tiles') or '')):
             job = asyncio.get_running_loop().create_task(self.answer_pictures(dict(call.data)))
             self.picture_jobs = getattr(self, 'picture_jobs', set())
@@ -788,6 +795,72 @@ class Bench(run.Run):
             view = 0
         url = self.pictures.url(f'{self.screen.key}-backdrop-{view}.bmp', body)
         await self.send({'v': 1, 'op': 'camera', 't': 'saver', 'e': data.get('entity', ''), 'u': url, 'view': view})
+
+    async def answer_question(self, data):
+        """A plugin's question for its pictures in the one picture system (picture_question, as a screen with the plugin
+        API 0.17 and later asks): read and answered as the app does (Manager.answer_camera, plugin_place,
+        plugin_picture_refused, picture_service), with the files preview.yaml's `pictures` names for each address, a
+        drawn stand-in for an address it names none for, and the step's own picture for a screensaver's `step:`."""
+        import dataclasses
+        import media_art
+        import picture_paint
+        import picture_question as pq
+        import picture_service
+        import picture_sources
+        import plugin_pictures
+        try:
+            number = int(data.get('n'))
+        except (TypeError, ValueError):
+            return
+        question = pq.parse(data['q'], number, (self.screen.width, self.screen.height))
+        if not question or not str(question.owner.kind).startswith('plugin_'):
+            return
+        owner = question.owner
+        part = str(owner.key).split('.', 1)[1] if '.' in str(owner.key) else ''
+        if owner.kind == 'plugin_card':
+            # A card's, or a popup's (plugin API 0.27): a popup has only the hosts of permissions.network.
+            kind = self.entry.card(part) if hasattr(self.entry, 'card') else None
+            of = False if (kind or {}).get('popup') else bool(owner.of)
+        elif owner.kind == 'plugin_saver':
+            kind = self.entry.saver(part) if hasattr(self.entry, 'saver') else None
+            of = bool(owner.of)
+        else:
+            kind, of = self.entry.tile(part), None
+        named = self.spec.get('pictures') or {}
+        raws = []
+        for n, source in enumerate(question.sources):
+            url = getattr(source, 'text', '') or ''
+            problem = plugin_pictures.refused_source(source, len(question.sources), self.entry.manifest, kind, of)
+            if problem:
+                self.find('warning', 'pictures', f'{owner.key} asked for {url[:80]}, which the app refuses: {problem}')
+                raws.append(None)
+                continue
+            file = named.get(url) if isinstance(named, dict) else None
+            if url.startswith(SAVER_PICTURE):
+                shown = self.saver_shown or {}
+                raws.append((self.args.plugin.resolve() / str(shown['picture'])).read_bytes() if shown.get('picture')
+                            else sample_photo(self.screen.width, self.screen.height) if shown.get('step') == 'photos'
+                            else media_art.png(7, 640))
+            elif file:
+                raws.append((self.args.plugin.resolve() / str(file)).read_bytes())
+            else:
+                self.find('info', 'pictures', f'preview.yaml names no picture for {url[:80]}: a drawn one stands in')
+                raws.append(media_art.png(sum(map(ord, url)) + n, 320))
+        # As the app paints them: within the screen's cap, each place as its source says.
+        scaled = question.scaled(pq.scale_for(question.box, question.cap))
+        scaled = dataclasses.replace(scaled, places=tuple(
+            picture_service.Service._painted(None, scaled, place, picture_sources.Resolved()) for place in scaled.places))
+        body = picture_paint.paint(scaled, raws)
+        url = self.pictures.url(f'{self.screen.key}-question-{number}.bmp', body)
+        message = pq.answer(scaled, url, 'q', '', None)
+        for attempt in range(8):
+            try:
+                await self.send({**message, 'view': 0})
+                return
+            except Exception as error:
+                if attempt == 7:
+                    self.find('warning', 'pictures', f'the pictures of {owner.key} did not reach the screen: {error}')
+                await asyncio.sleep(0.5)
 
     async def answer_pictures(self, data):
         """The pictures of a plugin tile's, card's or screensaver's places (a card: plugin API 0.13, a screensaver: 0.14),

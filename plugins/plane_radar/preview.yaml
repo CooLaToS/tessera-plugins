@@ -1,14 +1,19 @@
 # What tools/preview.py shows (docs/PREVIEW.md): the aircraft in the air around a place in west London one evening,
 # as adsb.lol gave them (trimmed to the fields the fetch maps), and the route, type and photo answers of the
 # nearest ones as adsbdb and planespotters gave them. The photos are drawn by the bench: none is stored here.
+# "Office" stands next to an aircraft that has a photo, to show the photo and its credit.
 tiles:
   - tile: radar
     name: Overhead
     options: { place: zone.home, range: "13" }
     sizes: [1x1, 2x1, 1x2, 2x2, 3x2, 4x3]
   - tile: radar
+    name: Photo
+    options: { place: zone.office, range: "13" }
+    sizes: [2x2, 3x2]
+  - tile: radar
     name: Tap through
-    options: { place: zone.home, range: "13" }
+    options: { place: zone.office, range: "13" }
     sizes: [2x2]
     then: [[0.5, 0.69]]
   - tile: radar
@@ -18,6 +23,7 @@ tiles:
 
 states:
   zone.home: { state: "0", attributes: { latitude: 51.47, longitude: -0.32, radius: 100, friendly_name: Home } }
+  zone.office: { state: "0", attributes: { latitude: 51.597, longitude: -0.167, radius: 100, friendly_name: Office } }
 
 answers:
   sky: {"ac":[{"hex":"8940a0","flight":"GFA006  ","r":"A9C-FI","t":"B789","lat":51.452001,"lon":-0.388489,"alt_baro":2400,"gs":164.2,"track":124.08,"baro_rate":2176,"dst":2.538},{"hex":"400a7d","flight":"BAW36LU ","r":"G-DBCB","t":"A319","lat":51.33989,"lon":-0.340576,"alt_baro":8025,"gs":275.4,"track":267.09,"baro_rate":-192,"dst":8.825},{"hex":"06a12e","flight":"QTR78R  ","r":"A7-ANR","t":"A35K","lat":51.616789,"lon":-0.197306,"alt_baro":8475,"gs":263.0,"track":262.0,"baro_rate":-512,"dst":12.903},{"hex":"710110","flight":"SVA022  ","r":"HZ-AK38","t":"B77W","lat":51.484773,"lon":-0.027008,"alt_baro":35000,"gs":480.0,"track":117.69,"baro_rate":0,"dst":15.807},{"hex":"400f2a","flight":"GMPSC   ","r":"G-MPSC","t":"EC45","lat":51.59012,"lon":-0.030967,"alt_baro":1950,"gs":52.0,"track":149.0,"baro_rate":0,"dst":17.205},{"hex":"3c5421","flight":"BCS6778 ","r":"D-AEAA","t":"A306","lat":51.32617,"lon":-0.050049,"alt_baro":9025,"gs":283.3,"track":267.57,"baro_rate":-1472,"dst":17.268},{"hex":"39bb28","flight":"AFR38TY ","lat":51.331741,"lon":-0.600611,"alt_baro":8000,"gs":277.7,"track":281.63,"baro_rate":0,"dst":10.037},{"hex":"aabf87","flight":"AVA121  ","r":"N792AV","t":"B788","lat":51.274916,"lon":-0.498123,"alt_baro":6850,"gs":263.1,"track":224.38,"baro_rate":2688,"dst":11.834}]}

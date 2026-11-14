@@ -397,7 +397,12 @@ struct About {
     std::string head;
     if (!sky.placed) head = "";
     else if (sky.waiting) head = "";
-    else head = tessera::format(plugin->text("nearby"), sky.n);
+    else {
+      int within = 0;   // what the radar shows: the aircraft within its range of the place
+      for (int i = 0; i < sky.n; ++i)
+        if (sky.p[i].dist <= range_nm * 1.02f) ++within;
+      head = tessera::format(plugin->text("nearby"), within);
+    }
     ui::set_text(count, head);
     if (!any) {
       ui::set_text(name, plugin->text(!sky.placed ? "no_place" : sky.waiting ? "waiting" : "clear"));
