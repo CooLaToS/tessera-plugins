@@ -5,7 +5,7 @@
    "likes": 0,
    "rating": null,
    "ratings": 1,
-   "homes": 2
+   "homes": 3
   },
   "bt_proxy": {
    "likes": 1,
@@ -26,10 +26,10 @@
    "homes": 2
   },
   "custom_card": {
-   "likes": 20,
+   "likes": 21,
    "rating": 4.7,
    "ratings": 39,
-   "homes": 46
+   "homes": 47
   },
   "dwd_rain": {
    "likes": 1,
@@ -56,10 +56,10 @@
    "homes": 9
   },
   "flip_clock": {
-   "likes": 17,
+   "likes": 18,
    "rating": 4.4,
-   "ratings": 54,
-   "homes": 50
+   "ratings": 56,
+   "homes": 51
   },
   "guition_relays": {
    "likes": 3,
@@ -147,8 +147,8 @@
   },
   "timers": {
    "likes": 2,
-   "rating": 4.6,
-   "ratings": 14,
+   "rating": 4.7,
+   "ratings": 15,
    "homes": 20
   },
   "toothbrush": {
@@ -172,14 +172,14 @@
   "waste_collection": {
    "likes": 11,
    "rating": 4.5,
-   "ratings": 22,
+   "ratings": 23,
    "homes": 26
   },
   "waste_overview": {
    "likes": 5,
-   "rating": 3.8,
-   "ratings": 9,
-   "homes": 9
+   "rating": 3.9,
+   "ratings": 10,
+   "homes": 10
   },
   "waze_traveltime": {
    "likes": 4,
