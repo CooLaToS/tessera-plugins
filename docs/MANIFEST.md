@@ -87,7 +87,7 @@ fetch:
       label: [LinePublicNumber, DestinationName50]
 ```
 
-It names `api: "0.7"` and builds on today's core, which offers plugin API 0.26: no minor after 0.7 changed a name
+It names `api: "0.7"` and builds on today's core, which offers plugin API 0.27: no minor after 0.7 changed a name
 ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). The fetch is plain `http` because OVapi offers nothing else and the
 fetch carries no secret.
 
@@ -109,7 +109,7 @@ fetch carries no secret.
 |---|---|---|
 | `id` | yes | The plugin's id. Unique in the index, the same as its folder and its component, and never changed. |
 | `version` | yes | Three numbers, `1.0.0`. Raise it for every change that reaches screens, and give it a `## 1.0.0` heading with its lines at the top of `CHANGELOG.md` ([MAKING_A_PLUGIN.md](MAKING_A_PLUGIN.md#the-changelog)). |
-| `api` | yes | The plugin API it was written for, as major and minor in quotes: `"0.8"`; the plugin API 0.26 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). Without quotes YAML reads a number, which the check refuses. It builds on a core with the same major and at least that minor, unless a minor after its own up to the core's is listed as a break (0.4, where a name changed its meaning; a form a minor takes away, as 0.24 did four, fails in the compiler at its call instead); `tools/check.py` refuses an `api` newer than the core it checks against, and one from before such a minor ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
+| `api` | yes | The plugin API it was written for, as major and minor in quotes: `"0.8"`; the plugin API 0.27 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). Without quotes YAML reads a number, which the check refuses. It builds on a core with the same major and at least that minor, unless a minor after its own up to the core's is listed as a break (0.4, where a name changed its meaning; a form a minor takes away, as 0.24 did four, fails in the compiler at its call instead); `tools/check.py` refuses an `api` newer than the core it checks against, and one from before such a minor ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
 | `icon` | yes | <a id="icon"></a>A Material Design Icons name from Tessera's icon set (`screen_manager/app/tile_icons.py` in the Tessera repository, such as `bus`, `train`, `calendar`, `thermometer`, `lightbulb`). The screen's icon font holds only that set. Tiles and top bar items take it when they name no icon of their own. |
 | `maintainer` | yes | The GitHub name of whoever looks after the plugin, 1 to 39 characters. `tools/check.py` refuses the template's `your-github-name` in any folder but `template/`. |
 | `license` | yes | An SPDX name that goes with AGPL-3.0: `MIT`, `Apache-2.0`, `BSD-2-Clause`, `BSD-3-Clause`, `ISC`, `MPL-2.0`, `LGPL-2.1-or-later`, `LGPL-3.0-or-later`, `GPL-3.0-or-later`, `GPL-3.0-only`, `AGPL-3.0-or-later`, `AGPL-3.0-only`, `Unlicense`, `0BSD`, `CC0-1.0`. |
@@ -199,7 +199,8 @@ which then fits no screen, and leaves out one a plugin brings.
 
 A plugin's C++ is built into the screen's firmware and runs with every right the firmware has, so a plugin names what
 it does. The app shows it before anyone adds the plugin, and asks again when an update asks for more (a change of
-`permissions` or `attributes`).
+`permissions` or `attributes`, or, from 0.27, of what its fetches send of Home Assistant: an attribute of a chosen entity
+in a fetch's URL, "Fetches", below).
 
 | Field | What |
 |---|---|
@@ -277,7 +278,7 @@ At most 8.
 | `memory` | yes | What one tile costs of the screen's layout memory, a whole number of bytes from 64 to 16384. The screen and the app add it to the layout's budget, and the build refuses a value outside that range too. About 400 for a few labels, 1200 for a list. |
 | `domains` | no | Up to 8 domains of the entity the tile belongs to (0.2), `[calendar]`, as a tap action and an input of kind `entity` name theirs. The inspector offers the entities of those domains, also of a domain Tessera draws no tile for; the tile gets the entity's state, name and `attributes`, again at every change. Its entity id in `TileContext::entity`, for such a domain, needs the firmware after 0.56.0 ([FIRMWARE_API.md](FIRMWARE_API.md), "A tile of an entity"). |
 | `attributes` | no | With `domains`: the attributes the tile gets, at most 16, each a name of `a-z`, `0-9` and `_` of up to 48 characters, not starting with a digit. One named `..._at`, `..._time` or `...date` that holds a moment comes as seconds since 1970. A list comes whole when it fits: texts and numbers, not objects. |
-| `fields` | no | With `domains` (0.5): values taken out of the entity's attributes with the paths and kinds of a fetch's map ([FETCH.md](FETCH.md)), 1 to 8, each named apart from `attributes`, `state` and `name`. `{ prices: { path: "raw_today[*].value", as: numbers } }` turns a list of 96 objects into one list of 96 numbers, which fits where the objects would not. |
+| `fields` | no | With `domains` (0.5): values taken out of the entity's attributes with the paths and kinds of a fetch's map ([FETCH.md](FETCH.md)), 1 to 12 (8 before 0.27), each named apart from `attributes`, `state` and `name`. `{ prices: { path: "raw_today[*].value", as: numbers } }` turns a list of 96 objects into one list of 96 numbers, which fits where the objects would not. |
 | `has_attributes` | no | With `domains` (0.5): attributes an entity must have to be offered in the inspector, at most 8, named as `attributes`. `[raw_today]` lists the price sensor instead of every sensor in the house. It names attributes only: there is no way
 yet to offer the sensors of one `device_class` (every CO2 sensor), so a common attribute such as `unit_of_measurement`
 still offers every sensor that has one. Only the list: the tile keeps its entity when an attribute is gone for a while (an entity that is unavailable has none). |
@@ -294,13 +295,13 @@ An option:
 |---|---|
 | `id`, `kind`, `label` | Required. `kind` is `text`, `choice`, `number`, `toggle` or (0.15) `entity`; `label` is a text key. |
 | `hint` | Text key under the option. |
-| `default` | The value when nothing is chosen. It must fit the option: `true` or `false` for a toggle, a number from `min` to `max` for a number, a text of at most 64 characters for a text or a choice, and for a choice with `choices` one of their values (or `""`). |
+| `default` | The value when nothing is chosen. It must fit the option: `true` or `false` for a toggle, a number from `min` to `max` for a number, a text of at most 64 characters for a text or a choice, and for a choice with `choices` one of their values (or `""`). For `entity` (0.27): an entity id `domain.object_id` whose domain is one of the option's `domains` (`zone.home`), so the tile works before anyone opens its settings; the inspector shows it as chosen, and a person who takes it off leaves the option empty. |
 | `choices` | For `choice`: `[{ value: "a", label: key }]`, at most 48, each with both: `value` a text of 1 to 64 characters, `label` a text key. |
 | `options_from` | For `choice`: the id of a fetch of this plugin that fills the list (its `map` has `value` and `label`). A choice has either `choices` or `options_from`, never both or neither. |
 | `multiple` | For `text` and `choice` (0.12): the option keeps a list of up to this many values, 2 to 16, in the order the person put them (they drag them into another). A text list keeps texts; a choice keeps picks (below). Its default is `[]`; a text list may name a list of texts. A fetch uses a list through `each` or `{name\|,}` ([FETCH.md](FETCH.md)). |
 | `search` | For `choice` with `options_from` (0.12): `true` finds the choices by what the person types. The editor sends it, from two characters on, as `{search}` of that fetch: `url: https://api.deezer.com/search/artist?q={search}`. Without `multiple` the option keeps one pick. No option of the tile may be called `search`. |
 | `min`, `max`, `step`, `unit` | For `number`: the range (both required, `min` less than `max`), the step (more than 0, default 1), and a unit of up to 8 characters. |
-| `domains`, `attributes` | For `entity` (0.15): the domains whose entities the person may choose, 1 to 8 (`[sensor]`), and the attributes the tile reads of the chosen one, as a tile's own `attributes`. Only in a tile's options, and only with `api: "0.15"` or later. |
+| `domains`, `attributes` | For `entity` (0.15): the domains whose entities the person may choose, 1 to 8 (`[sensor]`), and the attributes the tile reads of the chosen one, as a tile's own `attributes`. Only in a tile's options, and only with `api: "0.15"` or later. The tile's fetch may put one of those attributes in its URL (0.27, `{place.latitude}`, [FETCH.md](FETCH.md), "An attribute of an entity a person chooses"). |
 | `device_class`, `matches` | For `entity` (0.26): which entities of its domains the option is for. `device_class` is 1 to 8 of Home Assistant's device classes (`[carbon_dioxide]`, `[power]`, `[temperature]`); `matches` is 1 to 8 words for entities that have no device class (`[voc_index]`): the entity's translation key, or the end of its id after an underscore (`sensor.hall_voc_index`). Each a word of `a-z`, `0-9` and `_`, at most 64 characters. An entity fits when either says so; the list offers the ones that fit, with a key under it to show every entity of the domains. Only the list: an entity that does not fit is still kept when a person chooses it. |
 | `group` | For any option (0.26): a text key. Options with the same group stand together in a section of that name, folded until one of them has a value, after the options without a group. For what most people leave alone: limits, fine tuning. |
 | `optional` | For `number` (0.26): `true` lets the field stay empty. An empty one is not in the tile's options at all (never 0), so read it with a default that says "not set": `c.options["limit"] \| NAN`. It has no `default`. |
@@ -385,10 +386,11 @@ At most 8. [FETCH.md](FETCH.md) explains them in full.
 | Field | Required | What |
 |---|---|---|
 | `id` | yes | The fetch's id; a tile names it in `data`, an option in `options_from`. Every fetch named there must be described here. |
-| `url` | yes | At most 512 characters. `https://`, or `http://` for a fetch that carries no secret. The host is fixed (no placeholder in it), one of `permissions.network`, with no user, no password and no port other than 80 or 443. Placeholders such as `{stop}` name an option of a tile that uses the fetch (through `data` or `options_from`) or an input; `{name\|,}` joins the values of a list option (0.12), and `{search}` is what the person types for a choice with `search`. A secret may stand in the query, never in the path. |
+| `url` | yes | At most 512 characters. `https://`, or `http://` for a fetch that carries no secret. The host is fixed (no placeholder of any form before the path), one of `permissions.network`, with no user, no password and no port other than 80 or 443. Placeholders such as `{stop}` name an option of a tile that uses the fetch (through `data` or `options_from`) or an input; `{name\|,}` joins the values of a list option (0.12), and `{search}` is what the person types for a choice with `search`. `{place.latitude}` and `{place.latitude:2}` (0.27) are an attribute of the entity chosen for the entity option `place` of every tile whose `data` the fetch is (`state` for its state), the second rounded to 0 to 6 decimals; a name of `asked` (0.27) is a value the screen gives. A secret may stand in the query, never in the path. |
 | `headers` | no | Up to 8, each a text of at most 512 characters, with placeholders: `{ Authorization: "Bearer {api_key}" }`. |
 | `every` | yes | How old an answer may get: a whole number with `s`, `m`, `h` or `d` (`30s`, `5m`, `1h`, `1d`). At least 30 seconds. |
 | `each` | no | An option with `multiple` of every tile that uses the fetch (0.12): one ask per value, `{<option>}` in the URL being that value, and the answers come together as one list ([FETCH.md](FETCH.md), "Once per value"). Not for a fetch that fills a list of choices. |
+| `asked` | no | (0.27) 1 to 4 names (ids) of values the screen gives when it asks for this fetch itself (`tessera::send` with `"ask": "fetch:<id>"`), each used as a placeholder in the URL or a header and none the id of an input. Such a fetch is no tile's or screensaver's `data` and no option's `options_from`, uses no tile's options, and has no `each` ([FETCH.md](FETCH.md), "A fetch the screen asks for"). |
 | `map` | yes | What of the answer reaches the screen. |
 
 The map's fields, in short ([FETCH.md](FETCH.md), "The map", has them in full):
@@ -396,14 +398,20 @@ The map's fields, in short ([FETCH.md](FETCH.md), "The map", has them in full):
 | Field | What |
 |---|---|
 | `items` | Where the list is, a path that starts with `$`. Required for a fetch that fills a list of choices. |
-| `fields` | 1 to 8 fields, each a path or `{ path, as, tz }`. `as` is `text` (default), `number`, `epoch` or `numbers` (0.5); `tz` only with `as: epoch`. In a fetch with `each`, `{ each: value }` or `{ each: label }` (0.12) is the value whose ask brought the item. Required for a fetch a tile shows. |
+| `fields` | 1 to 12 fields (8 before 0.27), each a path or `{ path, as, tz }`. `as` is `text` (default), `number`, `epoch` or `numbers` (0.5); `tz` only with `as: epoch`. In a fetch with `each`, `{ each: value }` or `{ each: label }` (0.12) is the value whose ask brought the item. Required for a fetch a tile shows. |
 | `where`, `skip` | Keep, or drop, the items whose field (named by its key) is one of the values: a value or a list of values, texts or numbers, which may hold placeholders. Only with `items`. |
 | `sort` | A field, with `-` in front for the other way round. Only with `items`. |
 | `limit` | How many items at most, a whole number from 1 to 48. Default 48. Only with `items`. |
 | `value`, `label` | For a fetch that fills a list of choices, instead of `fields`: the path, or a list of paths, of what the option stores and of what the list shows. `label` is `value` when left out. |
 
 A fetch that fills a list of choices (an option's `options_from` names it) maps `value` and `label`; every other fetch
-maps `fields`.
+maps `fields`, a fetch the screen asks for (`asked`) too.
+
+**What a fetch sends** (0.27). A fetch whose URL or headers hold an attribute of a chosen entity sends something of the
+person's Home Assistant to its host. The app works it out from the manifest (per fetch, its host and the
+`option.attribute` pairs), shows it under **What it may do** ("Sends to api.example.org: latitude and longitude of the
+entity you choose for Place"), and counts it in what a person agrees to: an update that sends a new attribute, or to
+another host, asks again (below, "What it may do").
 
 ### Answers: `answers`
 
@@ -421,7 +429,7 @@ answers:
 ```
 
 `command` and `fields` are required. The command is one of `permissions.ha_commands`, mapped once; `fields` holds 1 to
-8 fields. `on_message` then gets `{"re": 1, "ok": true, "result": {"prices": [83.1, 81.4, ...], "start": 1791410400}}`:
+12 fields (8 before 0.27). `on_message` then gets `{"re": 1, "ok": true, "result": {"prices": [83.1, 81.4, ...], "start": 1791410400}}`:
 about 700 bytes instead of 8 KB of objects, of which a quarter would have fitted. At most 8 entries.
 
 ### Cards: `cards`
@@ -440,6 +448,25 @@ cards:
 | `name` | Required. Text key: what the editor calls it. On the screen the card's title is the tile's name, or what `open_card` passes. |
 | `wide` | `true`: as wide as the glass (a picture, a timeline); `false` (default): the width of Tessera's own cards. |
 | `pictures` | Places for pictures on the card (0.13), 1 to 8: how many the card makes at most with `ui::picture` ([FIRMWARE_API.md](FIRMWARE_API.md), "Pictures on a card"). The app paints only for a card that has this, from a host of `permissions.network`, or Home Assistant's own pictures when the card was opened for an entity of the screen's layout. Default: 0, no pictures. |
+
+### Popups: `popups`
+
+The places for pictures in a popup (0.27, [FIRMWARE_API.md](FIRMWARE_API.md), "A popup"): a popup that shows a picture
+(the photo of what a row is about) names its id and how many places it has. At most 8.
+
+```yaml
+popups:
+  - { id: details, pictures: 1 }       # tessera::show_popup(plugin, "details", ...) makes one ui::picture
+```
+
+| Field | What |
+|---|---|
+| `id` | Required. The id the C++ passes to `tessera::show_popup`. A popup shares its ids with `cards`: no id is both. |
+| `pictures` | Required. 1 to 8: how many places the popup makes at most with `ui::picture`. |
+
+A popup's question for its pictures travels as a card's does, and the app answers it the same way, from a host of
+`permissions.network` only: a popup is shown for no entity, so it never gets Home Assistant's own pictures. A popup
+without pictures needs no entry here.
 
 ### Tap actions: `tap_actions`
 
@@ -672,6 +699,7 @@ These are the fields whose minor the core records:
 | 0.15 | An option of kind `entity` in a tile's `options`, with `domains` and `attributes` |
 | 0.25 | A tile's `sizes` with `full: true` and no `min` and `max` |
 | 0.26 | An entity option's `device_class` and `matches`, a tile's `from_device`, an option's `group`, a number's `optional` and `placeholder_from`, and more than 12 options on a tile |
+| 0.27 | `{option.attribute}` and `{option.attribute:decimals}` in a fetch's URL and headers, a fetch's `asked` (and `fetch:<id>` asks of the screen), more than 8 fields in a map, a tile's `fields` or an answer's `fields`, an entity option's `default`, and `popups` |
 
 What each minor brought to the C++ is in [FIRMWARE_API.md](FIRMWARE_API.md), "Versions".
 
@@ -696,7 +724,7 @@ What each minor brought to the C++ is in [FIRMWARE_API.md](FIRMWARE_API.md), "Ve
 | A tile's `memory` | 64 to 16384 bytes |
 | A tile's `domains` | 8 |
 | A tile's `pictures`, a card's | 8, each from an address of at most 512 characters, at most 2 MB |
-| Attributes of a tile's entity | 16, and 8 `fields`, 8 `has_attributes` |
+| Attributes of a tile's entity | 16, and 12 `fields` (8 before 0.27), 8 `has_attributes` |
 | A text of a `preview` | 64 characters |
 | Options per tile | 24 (12 before 0.26, and for a screensaver) |
 | Device classes of an entity option, and its `matches` | 8 each |
@@ -711,10 +739,14 @@ What each minor brought to the C++ is in [FIRMWARE_API.md](FIRMWARE_API.md), "Ve
 | A fetch's URL | 512 characters |
 | A fetch's headers | 8, each 512 characters |
 | How often a fetch asks | every 30 seconds |
-| Fields per mapped item | 8 |
+| Fields per mapped item | 12 (8 before 0.27), in a map, a tile's `fields` and an answer's |
+| Decimals of `{option.attribute:decimals}` | 0 to 6 |
+| Names of a fetch's `asked` | 4, each value the screen gives 1 to 64 characters of `A-Z a-z 0-9 _ . : + -` and the space |
+| Fetches the screen asks for (`fetch:<id>`) | 20 a minute, per plugin and screen |
 | Items in a mapped list (`limit`) | 48 |
 | Answers mapped | 8 |
 | Cards, tap actions | 8 each; a tap action's `domains` 16 |
+| Popups with pictures (`popups`) | 8, each 1 to 8 `pictures` |
 | Top bar items | 4 |
 | Screensavers | 4; each 64 to 16384 bytes of `memory`, 8 `pictures`, 12 options, 8 `domains`, 16 `attributes`, 16 states in `when` |
 | Settings | 8; a key or `status` 64 characters; a select's options 48 |

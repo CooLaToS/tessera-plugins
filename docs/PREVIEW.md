@@ -178,6 +178,9 @@ answers:                       # the answer of each fetch, by its id, as the web
     "30005002":
       Passes:
         a: { LinePublicNumber: "2", DestinationName50: "Nieuwegein-Zuid", ExpectedDepartureTime: "{now+4m}" }
+  details:                     # a fetch the screen asks for (plugin API 0.27): one answer per value it is asked with
+    "row=A1": { title: First row, when: "{now+1h}" }
+    "row=B2": { title: Second row, when: "{now+2h}" }
 
 states:                        # entities, as Home Assistant has them
   sensor.energy_price:
@@ -214,6 +217,23 @@ time_zone: Europe/Amsterdam    # the zone of the moments below (default Europe/A
   five minutes as text (`2026-10-11T15:20:00`), `"{now-1d}"` a day ago, `"{epoch+2h}"` in two hours as seconds since
   1970 (a number when it is the whole value). Units: `s`, `m`, `h`, `d`.
 - A tile's `data:` gives what the screen gets as it is, past the map: `data: { wait: failed }` shows its failed state.
+- **A fetch that reads an entity's attribute** (plugin API 0.27, `{place.latitude}` in its URL, [FETCH.md](FETCH.md),
+  "An attribute of an entity a person chooses"): the bench fills it in from `states`, for the entity the tile example's
+  `options` choose for that option, or the option's `default` when they choose none (`zone.home`). An entity or an
+  attribute that `states` lacks makes the tile wait as `not_filled`, as in the app. The answer itself still comes from
+  `answers`, by the fetch's id, whatever the attribute says.
+- **A fetch the screen asks for** (plugin API 0.27, `asked`, [FETCH.md](FETCH.md), "A fetch the screen asks for"): the
+  bench answers the screen's `{"ask": "fetch:<id>", "data": {...}}` with the app's own code, so the values are checked,
+  the fetch's `map` applies and the answer is bounded as in the app, and it reaches the plugin's `on_message` as a
+  command's answer does. The web service's JSON is `answers.<id>`. When that is a mapping whose keys are all
+  `"<asked name>=<value>"` (`"row=A1"`), the bench takes the one whose value is the one the screen asked with, so each
+  row a finger taps can have details of its own; a value without a key gets `"failed"`, with a note. Any other answer is
+  the answer for every value. An ask the app would refuse (a fetch without `asked`, a name missing, a value that is no
+  text of 1 to 64 of the allowed characters) is a warning. The limit of 20 asks a minute is the app's and not the
+  bench's. With `--live` the bench asks the service.
+- **Pictures in a popup** (plugin API 0.27): a popup's places ask as a card's do, and the bench answers them the same
+  way, from `pictures` or a drawn picture. As in the app, a popup only shows pictures from a host of
+  `permissions.network`, never Home Assistant's own.
 - **Pictures** (plugin API 0.10, [FIRMWARE_API.md](FIRMWARE_API.md), "Pictures on a tile"): the bench answers a tile's
   question for its places as the app would, with the file `pictures` names for each address, relative to the plugin's
   folder (a small JPEG or PNG; nothing is fetched from the internet). An address without a file gets a drawn picture,

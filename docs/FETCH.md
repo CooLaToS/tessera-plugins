@@ -34,7 +34,10 @@ A URL and the headers can hold `{name}`:
 
 - an option of a tile that uses the fetch (`{stop}` is the tile's option `stop`), through `data` or `options_from`;
 - an input of kind `secret` (`{api_key}`). A secret with `scope: all` is the same for every screen; one with
-  `scope: screen` is the one filled in for the tile's screen.
+  `scope: screen` is the one filled in for the tile's screen;
+- an attribute of the entity a person chose for an entity option (0.27): `{place.latitude}`, or `{place.latitude:2}`
+  rounded to two decimals ("An attribute of an entity a person chooses", below);
+- a name of `asked`, in a fetch the screen asks for (0.27, "A fetch the screen asks for", below).
 
 The check accepts the id of any input here, but the app fills in only options and secrets: a value a fetch needs that
 is not a secret is an option of the tile.
@@ -93,6 +96,99 @@ fetch:
 - A value whose ask failed is left out and the list comes with `"stale": true`; one still on its way is left out until
   its answer is there. The tile gets `"wait"` only when no value has an answer, and `not_filled` while the list is empty.
 - At most as many asks as the list holds (16 at most), each at most every `every`, in turn.
+
+## An attribute of an entity a person chooses (0.27)
+
+A service that answers for a place, a device or a value Home Assistant knows (the weather where someone is, the air
+near a zone): the URL takes an attribute of the entity a person chose for one of the tile's options of kind `entity`.
+
+```yaml
+tiles:
+  - id: now
+    data: forecast
+    options:
+      - { id: place, kind: entity, domains: [zone, person, device_tracker], attributes: [latitude, longitude],
+          default: zone.home, label: place }
+fetch:
+  - id: forecast
+    url: https://api.example.org/forecast?lat={place.latitude:2}&lon={place.longitude:2}
+    every: 10m
+    map: { fields: { temp: { path: current.temperature, as: number } } }
+```
+
+- `{<option>.<attribute>}` is the attribute of the entity chosen for `<option>`, as Home Assistant has it now;
+  `{<option>.state}` is its state. `<option>` is an option of kind `entity` of every tile whose `data` is the fetch,
+  and the attribute is `state` or one of that option's `attributes`. The check refuses anything else, and refuses such
+  a placeholder in a fetch that fills a list of choices (the editor asks those, without a tile's entity).
+- `{<option>.<attribute>:<decimals>}`, 0 to 6, rounds a number to that many decimals and writes exactly that many:
+  `52.3676` with `:2` is `52.37`, `4.9` is `4.90`. Rounding keeps a question the same while a place moves a little,
+  so it is shared and cached, and it sends the service no more than it needs: two decimals is about a kilometre.
+  A value that is no number (a text such as `"north"`) makes no ask.
+- No entity chosen, an entity Home Assistant does not have or calls `unavailable`, an attribute it lacks, or a state
+  that is `unknown`: no ask, and the tile gets `{"wait": "not_filled"}`, as for an empty option.
+- The value is percent-encoded in the URL like every other, and goes as it is into a header. It never stands in the
+  host, a user or a port: nothing filled in may stand before the path of the URL. A secret keeps its rules.
+- An entity option may have a `default` (0.27), an entity id of one of its `domains` such as `zone.home`, so the tile
+  works before anyone opens its settings ([MANIFEST.md](MANIFEST.md), "Tiles").
+- **When the attribute changes**, the URL changes, so it is another question. The app asks it within one turn of its
+  loop (every 15 seconds), but never more often than the fetch's `every`: each tile has one line of questions for its
+  fetch, and a new question of that line replaces the old one instead of being added to it. While `every` has not
+  passed since the line last asked the service, the tile keeps the answer it has. A question another tile has already
+  asked is taken from the cache at once, as always. A person who chooses another entity, or changes another option,
+  starts a new line, which is asked at once. So someone who moves all day is asked about at most once per `every`.
+
+**What it sends.** Such a fetch sends something of the person's Home Assistant to a web service: a place, a state.
+The app works out from the manifest, for each fetch, its host and the attributes it sends, and shows them in the
+plugin's details under **What it may do**: "Sends to api.example.org: latitude and longitude of the entity you choose
+for Place" (the option's label). It is part of what a person agrees to: an update that sends an attribute it did not
+send before, or sends to another host, asks for their yes again. Another name of the fetch, or other decimals, do not.
+Round as much as the service allows, and say in the plugin's privacy statement what goes where.
+
+## A fetch the screen asks for (0.27)
+
+A plugin's C++ can ask the app for one of its own fetches, with values of its own: the details of a row a finger
+tapped, the route of the flight it shows. The fetch names those values in `asked`, and its URL and headers use them as
+placeholders, besides secrets and inputs.
+
+```yaml
+fetch:
+  - id: details
+    asked: [row, day]                  # 1 to 4 names, each used in the URL or a header
+    url: https://api.example.org/rows/{row}?day={day}
+    every: 5m
+    map:
+      fields:
+        title: title
+        at: { path: when, as: epoch }
+```
+
+```cpp
+JsonDocument request;
+request["ask"] = "fetch:details";
+request["data"]["row"] = "A1";
+request["data"]["day"] = 3;                                      // a number goes as its text, "3"
+asked_ = tessera::send(this, request.as<JsonObjectConst>());
+// on_message: {"re": asked_, "ok": true, "result": {"title": "...", "at": 1792389600}}
+//          or {"re": asked_, "ok": false, "error": "refused" | "not_filled" | "failed" | "too_often"}
+```
+
+[FIRMWARE_API.md](FIRMWARE_API.md), "Questions to the app", has the rest of `tessera::send` and `on_message`.
+
+- A fetch with `asked` is no tile's `data`, no screensaver's and no option's `options_from`, and uses no tile's
+  options: there is no tile. A name of `asked` is not also the id of an input. Otherwise it keeps every rule of a fetch:
+  a fixed host of `permissions.network`, `every`, a `map` with `fields` (and `items` for a list), 64 KB, 10 seconds, no
+  redirects. It needs no entry in `permissions.ha_commands`: its host is already in `permissions.network`.
+- The screen gives every name of `asked`, and no other. Each value is a text of 1 to 64 characters of `A-Z`, `a-z`,
+  `0-9`, `_`, `.`, `:`, `+`, `-` and the space; a number is taken as its text (`3`, not `3.0`). Anything else is refused.
+- The answer's `result` is what a tile of that fetch would get, through the same `map`, bounded like the answer of a
+  command (long texts cut, lists shortened to fit a message), with `"stale": true` when the service failed since.
+- It is a question like every other: the same filled-in URL and headers is one ask, shared with every screen; an
+  answer younger than `every` comes from the cache without asking the service; a failure waits 1, 2, 5 and 15 minutes.
+- At most 20 such asks per plugin per screen in a minute; the 21st gets `too_often`. Each one is logged with the
+  screen, the plugin and the fetch, never its values or a secret.
+- When it does not work, `ok` is `false` and `error` one of: `refused` (no such fetch, a fetch without `asked`, a name
+  missing or unknown, a value that is not allowed), `not_filled` (a secret it needs is not filled in), `failed` (the
+  service failed, or its answer did not fit the map) or `too_often`.
 
 ## The map
 
@@ -157,7 +253,8 @@ A field is a path, or `{ path, as, tz }`:
 | `epoch` | Seconds since 1970, from a number (seconds or milliseconds) or an ISO 8601 time. A time without a zone is read in `tz` (`Europe/Amsterdam`), or in Home Assistant's time zone without one. |
 | `numbers` | Every value the path reaches, in order, as one list of numbers: `prices[*].price` of 96 objects is 96 numbers. A value that is not a number is `null`, so a slot keeps its place. |
 
-At most 8 fields. A field that is missing in an item is `null`.
+At most 12 fields (8 before 0.27; a manifest with more names `api: "0.27"`). The bytes still decide what travels: more
+fields leave room for fewer items. A field that is missing in an item is `null`.
 
 ### A list of choices: `value` and `label`
 

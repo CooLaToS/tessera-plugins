@@ -1,0 +1,41 @@
+{
+  "_meta": { "name": "English" },
+  "screen": {
+    "nearby": "1 aircraft | {n} aircraft",
+    "nearest": "Nearest",
+    "clear": "Clear sky",
+    "clear_hint": "Nothing within {range}",
+    "waiting": "Looking up",
+    "no_place": "Choose a place",
+    "stale": "Not updated",
+    "ground": "On the ground",
+    "altitude": "Altitude",
+    "speed": "Speed",
+    "distance": "Distance",
+    "climb": "Climb",
+    "type": "Type",
+    "registration": "Registration",
+    "heading": "Heading",
+    "level": "Level",
+    "from_to": "{from} to {to}",
+    "photo_by": "Photo {name} · planespotters.net",
+    "no_photo": "No photo of this aircraft",
+    "tap_plane": "Tap an aircraft for its details"
+  },
+  "app": {
+    "name": "Plane radar",
+    "summary": "The aircraft in the sky around your home right now, on a radar, with the nearest one's photo and route.",
+    "tile_name": "Plane radar",
+    "tile_example": "KLM919 · 6 km · 5800 m",
+    "card_name": "Plane radar",
+    "opt_place": "Place",
+    "opt_place_hint": "Where the radar stands: your home, or a person or tracker that moves.",
+    "opt_range": "Range",
+    "range_10": "10 km",
+    "range_25": "25 km",
+    "range_50": "50 km",
+    "opt_units": "Units",
+    "units_metric": "Metric (km, m, km/h)",
+    "units_aviation": "Aviation (nm, ft, kt)"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "_meta": { "name": "Nederlands" },
+  "screen": {
+    "nearby": "1 toestel | {n} toestellen",
+    "nearest": "Dichtstbij",
+    "clear": "Lege lucht",
+    "clear_hint": "Niets binnen {range}",
+    "waiting": "Zoeken",
+    "no_place": "Kies een plek",
+    "stale": "Niet bijgewerkt",
+    "ground": "Op de grond",
+    "altitude": "Hoogte",
+    "speed": "Snelheid",
+    "distance": "Afstand",
+    "climb": "Stijgen",
+    "type": "Type",
+    "registration": "Registratie",
+    "heading": "Koers",
+    "level": "Vlak",
+    "from_to": "{from} naar {to}",
+    "photo_by": "Foto {name} · planespotters.net",
+    "no_photo": "Geen foto van dit toestel",
+    "tap_plane": "Tik op een toestel voor details"
+  },
+  "app": {
+    "name": "Vliegtuigradar",
+    "summary": "De vliegtuigen nu in de lucht rond je huis, op een radar, met foto en route van het dichtstbijzijnde.",
+    "tile_name": "Vliegtuigradar",
+    "tile_example": "KLM919 · 6 km · 5800 m",
+    "card_name": "Vliegtuigradar",
+    "opt_place": "Plek",
+    "opt_place_hint": "Waar de radar staat: je huis, of een persoon of tracker die beweegt.",
+    "opt_range": "Bereik",
+    "range_10": "10 km",
+    "range_25": "25 km",
+    "range_50": "50 km",
+    "opt_units": "Eenheden",
+    "units_metric": "Metrisch (km, m, km/h)",
+    "units_aviation": "Luchtvaart (nm, ft, kt)"
+  }
+}

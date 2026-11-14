@@ -1,4 +1,4 @@
-# The firmware API (plugin API 0.26)
+# The firmware API (plugin API 0.27)
 
 A plugin's code runs on the screen as an ESPHome component. It talks to Tessera's core through one header:
 
@@ -9,8 +9,8 @@ A plugin's code runs on the screen as an ESPHome component. It talks to Tessera'
 The header lives in the Tessera repository at `components/smart_display/plugin_api.h`; it is the reference, and this
 page explains it. Everything is in namespace `tessera`.
 
-A manifest names the plugin API it was written for: `api: "0.8"`, or `"0.9"` up to `"0.26"` for the parts those
-brought; the plugin API 0.26 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). Which cores a plugin builds on is under "Versions" at the end of this page.
+A manifest names the plugin API it was written for: `api: "0.8"`, or `"0.9"` up to `"0.27"` for the parts those
+brought; the plugin API 0.27 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). Which cores a plugin builds on is under "Versions" at the end of this page.
 
 A plugin adds to the screen in a few kinds of parts: tiles on a page, cards over the page, tap actions for Tessera's own
 tiles, items in the top bar, rows on the settings page, (0.14) screensavers, which the screen shows over the whole
@@ -349,6 +349,19 @@ void on_message(JsonObjectConst m) override {             // {"re": asked_, "ok"
 }
 ```
 
+A plugin may also ask for one of its own fetches (0.27), with values of its own: the details of a row a finger tapped,
+the photo of the aircraft shown. The fetch says which names the screen fills in (`asked`, [FETCH.md](FETCH.md), "A fetch
+the screen asks for"); its host is in `permissions.network` already, so it needs no `ha_commands`.
+
+```cpp
+JsonDocument request;
+request["ask"] = "fetch:photo";
+request["data"]["hex"] = "484b90";
+asked_ = tessera::send(this, request.as<JsonObjectConst>());
+// on_message: {"re": asked_, "ok": true, "result": {"photo": "https://...", "by": "..."}}
+//          or {"re": asked_, "ok": false, "error": "not_filled" | "refused" | "failed" | "too_often"}
+```
+
 `call_service:<domain>.<service>` sends the action with `return_response` and hands back its response; `entity_id`,
 `device_id` and `area_id` go as the target, the rest as the action's data. A request is at most 512 bytes; an answer at
 most about 3 KB: longer texts are cut to 48 bytes, and lists shortened from the end only when it does not fit. An answer the manifest maps under `answers` comes as its fields: a day of prices as one
@@ -667,6 +680,33 @@ The voice assistant (`plugins/voice_assist`, `voice_popup.h`) is the example: a 
 is, rings that ripple while it listens, an arc that turns and dots that pulse while Assist thinks, and under them what
 was heard and the answer as it is spoken, its last lines when it is long.
 
+### Pictures in a popup (0.27)
+
+A popup shown with its id from the manifest's `popups` may show pictures, the way a card does: `ui::picture` and
+`ui::set_picture` in its `open()` (and later calls), `on_picture` when one came.
+
+```yaml
+popups:
+  - { id: plane, pictures: 1 }
+```
+
+```cpp
+tessera::show_popup(this, "plane", [] { return new PlanePopup(); }, tessera::PopupWidth::WIDE);
+
+void PlanePopup::open(const tessera::PopupContext &c) {
+  if (ui::pictures()) {
+    photo_ = ui::picture(c.parent);
+    lv_obj_set_size(photo_, c.width, c.width * 2 / 3);
+    ui::set_picture(photo_, url_);   // a host of permissions.network
+  }
+}
+```
+
+- The app fetches the pictures from the hosts of `permissions.network` only: a popup has no entity, so Home
+  Assistant's own pictures are not offered there.
+- A popup shown without an id (`show_popup(plugin, make)`) shows no pictures; its places stay blocks.
+- The popup's picture goes when it goes, and does not push a card under it out of the screen's picture memory.
+
 ## Memory
 
 A screen has two kinds of memory. Inside the chip there are a few tens of kilobytes, shared with Wi-Fi and the network
@@ -720,6 +760,7 @@ The screen's look is the same on every tile, so a plugin draws with the core's s
 | `tessera::offer_own_frames()`, `own_tile_wants()`, `own_frame(OwnFrame)` (0.22) | The screen's own camera on a live tile of its own: a plugin with the camera offers its frames once in its setup (the hello then says `own_camera`, and the app answers such a tile `own:` instead of a link); while a tile of it is on the glass, `own_tile_wants()` is true and the plugin hands each frame, RGB565 or the P4's YUV420 as the camera gave it, to `own_frame()` on its camera's task. The core copies what it shows into the tile's card at its pace and returns at once; a frame it cannot take goes by. |
 | `tessera::camera_turn()` (0.19) | How far the screen's own camera turns its picture to stand upright, 0 or 180 ("The screen's own camera", below). |
 | `ui::takes_taps(part)` (0.14) | A part of a screensaver a finger may tap without waking the screen ("A screensaver", above). |
+| `ui::rotate(part, degrees)` (0.27) | A part turned clockwise around its middle: an icon along a course, a needle, a wind arrow ("A part turned along a course", below). |
 | `ui::animate(part, Motion, period_ms, delay_ms)`, `ui::still(part)` (0.18) | A part of a popup that pulses, spins or ripples while something goes on, and stops ("A popup", above). Only in a popup. |
 | `ui::color(Role)` | A colour by its role. |
 | `ui::icon(codepoint)` | An icon of Tessera's set as text, for a label in `Font::ICON` or `ICON_SMALL`. |
@@ -747,6 +788,7 @@ screen's look. The ones a tile needs most:
 | `theme::ON_ACCENT` | Text on the accent. |
 | `theme::CARD`, `theme::RAISED`, `theme::LINE`, `theme::TRACK` | Surfaces and lines inside a card. |
 | `theme::MARK_GREEN`, `MARK_AMBER`, `MARK_BLUE`, `MARK_PURPLE` | The four colours of the Tessera mark, the same in light and dark: for a dot or a block that names a kind (a bin, a line). |
+| `theme::INSTRUMENT`, `INSTRUMENT_LINE`, `INSTRUMENT_INK`, `INSTRUMENT_MUTED`, `INSTRUMENT_GLOW` (0.27) | An instrument's face that stays dark in both looks: a radar, a night sky, a dial. Its ground, the lines on it (rings, a grid), its words, its quieter words and the one thing it lights. Draw everything on the ground with these, never with `INK` or `CARD`, which follow the look. |
 
 A part can take a colour by what it means, in both looks: a tone (`tessera::Tone`). `GOOD` (0.9) is Home Assistant's
 green, `BUSY` its amber, `ALERT` its red, `ACCENT` the look's accent, each made readable on the card. A label takes it
@@ -788,6 +830,22 @@ void on_state(JsonObjectConst data) override {
   card's colour is another in the other look.
 - **Use it for meaning, sparingly.** A page of cards that are all coloured says nothing. One colour per meaning, the
   same on every size of the tile, and a word or an icon that says it too: a colour alone does not reach everyone.
+
+### A part turned along a course
+
+`ui::rotate(part, degrees)` (0.27) turns a part clockwise around its middle: an airplane's icon along its course, a
+compass needle, a wind arrow. 0 is the part as it is drawn, so for an icon that points somewhere else already, take
+that off first (`mdi:airplane` points north-east: a course of 90 degrees is `ui::rotate(icon, 90 - 45)`).
+
+```cpp
+ui::rotate(plane_, track - 45);   // in on_tick: the same angle again costs nothing
+```
+
+- **Small parts.** LVGL draws a turned part on a layer of its own whenever it or what lies under it changes. An icon
+  or a short line costs little; a whole card, a picture or a long text costs a frame's worth each time.
+- **Its middle stays put.** The part's box does not grow: a wide part turned a quarter reaches over its box, so give it
+  room, or lay it out square.
+- **Any angle.** A full turn is 360; -90 is the same as 270.
 
 ## The rest of the core
 
@@ -846,6 +904,10 @@ void on_state(JsonObjectConst data) override {
   page, by the room it gets; the card's own colour (0.26) with every part on it mixed from that colour; a card and a
   popup opened from it by `tap_point()`; and a day of a sensor asked from Home Assistant, heard in `on_message` and
   painted in the tile's next tick.
+- [`plugins/plane_radar/components/plane_radar/plane_radar.cpp`](../plugins/plane_radar/components/plane_radar/plane_radar.cpp):
+  a fetch of the place of an entity the person chose (`{place.latitude:2}`), the details of one aircraft asked by the
+  screen (`fetch:photo`, `fetch:route`), an instrument's face (`theme::INSTRUMENT...`) with parts turned along a course
+  (`ui::rotate`) and moved every second between answers, and a popup with a photo (`popups`).
 - [`plugins/voice_assist/components/voice_assist/voice_assist.cpp`](../plugins/voice_assist/components/voice_assist/voice_assist.cpp):
   ESPHome's own components (`micro_wake_word`, `voice_assistant`) from `plugin.yaml` on the features it needs, a tile
   and a top bar item whose icon changes tone, settings rows and sounds of its own.
@@ -909,7 +971,7 @@ readout by it, so the pictures, a video and whatever reads the frames all stand 
 
 ## Versions
 
-A manifest names the plugin API it was written for: `api: "0.8"` up to `"0.26"`; the plugin API 0.26 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). When a
+A manifest names the plugin API it was written for: `api: "0.8"` up to `"0.27"`; the plugin API 0.27 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). When a
 screen is built, `smart_display.register_plugin()` compares it with the core's and stops the build with one sentence
 when it does not fit. A plugin fits a core when all three hold:
 
@@ -924,14 +986,14 @@ plugin that still uses it fails its build with the compiler's error at that call
 plugin would still build but work wrongly is listed in `PLUGIN_API_BREAKS`, in `screen_manager/app/plugin_manifest.py`
 and in `components/smart_display/__init__.py` (a test keeps the two equal), and such a plugin is refused in one
 sentence. Today the list holds one: 0.4, where `Plugin::on_tick` changed its meaning and the old one became
-`on_interval`. So with a core of 0.26:
+`on_interval`. So with a core of 0.27:
 
 | The manifest says | Builds? | Why |
 |---|---|---|
-| `api: "0.26"` | Yes | The core's own. |
-| `api: "0.5"` up to `"0.25"` | Yes | Same major, an older minor, and no break after it (unless it uses a form 0.24 took away). |
+| `api: "0.27"` | Yes | The core's own. |
+| `api: "0.5"` up to `"0.26"` | Yes | Same major, an older minor, and no break after it (unless it uses a form 0.24 took away). |
 | `api: "0.3"` | No | 0.4 changed a name it may use; the build says so in one sentence and asks to update the plugin. |
-| `api: "0.27"` | No | Newer than the core; the build asks to update the plugin or the screen's firmware. |
+| `api: "0.28"` | No | Newer than the core; the build asks to update the plugin or the screen's firmware. |
 | `api: "1.0"` | No | Another major. |
 
 `tools/check.py` applies the same rules against the core it checks with (`api_fits` of `plugin_manifest.py`), so a
@@ -969,6 +1031,7 @@ brought:
 | 0.24 | One form for each thing; taken away, each beside a newer form: `on_touch` (use `on_press`), `tessera::action(service, entity, key, value)` (use `tessera::action(service, entity, fields)`, or no fields; `tools/check.py` refuses the old form and `on_touch`), the address `saver:picture` (use `step:`) and a tile's `memory: { bytes: n }` (write the number). `ui::picture` and `ui::set_picture` are one signature each, with defaults. |
 | 0.25 | How large a tile is: `sizes: { full: true }` for a tile that only takes the whole page, `full: true` beside `min` and `max` now offers it, a `max` that reaches the grid offers it there too; `TileContext::full` says the tile is the whole page. |
 | 0.26 | A card's own colour: `ui::set_card_color(CardColor)`, `ui::card_color()` and `ui::card_color(CardColor)`, the tile's card in one of the screen's nine card colours. The manifest's side: an entity option that says which entities it is for (`device_class`, `matches`), a tile whose entity options one device fills (`from_device`), up to 24 options, options in a `group`, and a number that may stay empty (`optional`, `placeholder_from`). `tools/check.py` refuses these in a plugin of an older `api`. |
+| 0.27 | Pictures in a popup (`show_popup(plugin, id, make, width)`, the manifest's `popups`, `Popup::on_picture`); `ui::rotate`, a part turned along a course; the roles of an instrument that stays dark in both looks (`theme::INSTRUMENT`, `INSTRUMENT_LINE`, `INSTRUMENT_INK`, `INSTRUMENT_MUTED`, `INSTRUMENT_GLOW`). The app's side: a fetch that uses an attribute of an entity a person chose (`{place.latitude:2}`), a fetch the screen asks for (`asked`, `tessera::send` with `fetch:<id>`), an entity option's `default`, and 12 fields of a mapped item. `tools/check.py` refuses the C++ parts in a plugin of an older `api`. |
 
 A minor of the app's or the manifest's side only still counts: a plugin that uses what it brought needs an app that
 knows it ([MANIFEST.md](MANIFEST.md), "Which minor brought a field").

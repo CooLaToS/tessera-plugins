@@ -463,18 +463,44 @@ def adds(entry, folder):
 # ---- the app's side, with one plugin and no Home Assistant
 
 class SampleFetcher:
-    """Stands in for plugin_fetch.Fetcher: the answer of a fetch is the one preview.yaml gives for its id."""
+    """Stands in for plugin_fetch.Fetcher: the answer of a fetch is the one preview.yaml gives for its id. For a fetch
+    the screen asks for (plugin API 0.27, `asked`), `answers.<id>` may hold one answer per value: a mapping whose keys
+    are all "<asked name>=<value>" (`row=KL1234`), of which the one for the value the screen gave is the answer. A fetch
+    that reads an attribute of a chosen entity (`{place.latitude}`, 0.27) waits as not filled in, as in the app, while
+    preview.yaml's `states` lack it."""
 
     def __init__(self):
         self.answers = {}
 
-    async def get(self, plugin, manifest, fetch, values, secrets):
+    async def get(self, plugin, manifest, fetch, values, secrets, **asked):
         return None, self.peek(plugin, fetch, values, secrets)
 
-    def peek(self, plugin, fetch, values, secrets):
+    def current(self, plugin, fetch, values, secrets, **asked):
+        return None, self.peek(plugin, fetch, values, secrets)
+
+    def peek(self, plugin, fetch, values, secrets, **asked):
+        word = getattr(plugin_fetch, 'attribute_word', None)
+        for read in fetch.get('reads') or ():
+            name = f'{read["option"]}.{read["attribute"]}'
+            if word and word(values.get(name), read['decimals']) is None:
+                raise plugin_fetch.FetchRefused(f'not filled in: {name}')
         if fetch['id'] not in self.answers:
             return None
-        return {'data': self.answers[fetch['id']], 'error': None, 'stale': False}
+        data = self.answers[fetch['id']]
+        names = fetch.get('asked') or ()
+        if names and per_value(data, names):
+            data = next((answer for key, answer in data.items()
+                         if str(values.get(key.split('=', 1)[0], '')) == key.split('=', 1)[1]), None)
+            if data is None:
+                return None
+        return {'data': data, 'error': None, 'stale': False}
+
+
+def per_value(data, names):
+    """Whether preview.yaml's answer of a fetch the screen asks for holds one answer per value: a mapping whose keys are
+    all "<a name of asked>=<value>"."""
+    return isinstance(data, dict) and bool(data) and all(
+        isinstance(key, str) and '=' in key and key.split('=', 1)[0] in names for key in data)
 
 
 class PreviewApp(app_plugins.Plugins):
@@ -651,6 +677,11 @@ class Bench(run.Run):
                        for entity, value in moments(spec.get('states') or {}, spec.get('time_zone') or ZONE, self.now).items()}
         self.read = set()
         self.saver_shown = None   # the example of preview.yaml's savers on the glass, for its picture
+        # What answers a fetch the screen asks for (plugin API 0.27): the app's own code (Plugins.fetch_reply) with its
+        # own stand-in for the service, so preview.yaml's answers map as in the app whatever the tiles are given.
+        self.asker = PreviewApp(entry, self.states, args.live, secrets_from_env(entry), spec.get('time_zone') or ZONE)
+        if isinstance(self.asker.fetcher, SampleFetcher):
+            self.asker.fetcher.answers = moments(spec.get('answers') or {}, spec.get('time_zone') or ZONE, self.now)
 
     def find(self, level, where, text):
         self.findings.append({'level': level, 'screen': self.screen.key, 'where': where, 'text': text})
@@ -769,7 +800,7 @@ class Bench(run.Run):
         import tile_art
         import media_art
         question = plugin_pictures.parse(data, (self.screen.width, self.screen.height))
-        # A card over the page asks too (plugin API 0.13, `card`): the app answers it as "pcard".
+        # A card over the page asks too (plugin API 0.13, `card`), and a popup (0.27): the app answers both as "pcard".
         card = bool(getattr(question, 'card', False))
         # A screensaver asks too (plugin API 0.14, `saver`): the app answers it as "psaver".
         saver = bool(getattr(question, 'saver', False))
@@ -787,8 +818,11 @@ class Bench(run.Run):
         elif card:
             # The manifest's card; Home Assistant's own pictures when the card was opened for an entity (`for`), as the
             # app allows them for a card shown for an entity of the layout.
-            kind = next((c for c in self.entry.manifest.get('cards') or [] if c['id'] == question.tile), None)
-            problem = plugin_pictures.refused(question, self.entry.manifest, kind, bool(question.of))
+            # A popup's places (plugin API 0.27) ask as a card's do, and have only the hosts of permissions.network.
+            kind = (self.entry.card(question.tile) if hasattr(self.entry, 'card')
+                    else next((c for c in self.entry.manifest.get('cards') or [] if c['id'] == question.tile), None))
+            of = False if (kind or {}).get('popup') else bool(question.of)
+            problem = plugin_pictures.refused(question, self.entry.manifest, kind, of)
         else:
             kind = self.entry.tile(question.tile)
             problem = plugin_pictures.refused(question, self.entry.manifest, kind)
@@ -836,7 +870,9 @@ class Bench(run.Run):
         ask, reply = body.get('ask'), {'re': body.get('re') if isinstance(body.get('re'), int) else 0}
         commands = self.spec.get('commands') or {}
         self.asked.append(ask)
-        if ask not in self.entry.manifest['permissions']['ha_commands']:
+        if isinstance(ask, str) and ask.startswith('fetch:'):
+            await self.answer_fetch(ask, body.get('data'), reply)
+        elif ask not in self.entry.manifest['permissions']['ha_commands']:
             reply.update(ok=False, error='not_allowed')
             self.find('warning', 'questions', f'asked {ask!r}, which permissions.ha_commands does not name: the app refuses it')
         elif ask not in commands:
@@ -854,6 +890,27 @@ class Bench(run.Run):
                 if attempt == 7:
                     self.find('warning', 'questions', f'the answer to {ask!r} did not reach the screen: {error}')
                 await asyncio.sleep(0.5)
+
+    async def answer_fetch(self, ask, data, reply):
+        """A fetch the screen asks for (plugin API 0.27, `fetch:<id>`), answered as the app answers it
+        (Plugins.fetch_reply: the values checked, the map applied, bounded), from preview.yaml's `answers.<id>`, one
+        answer for every value or one per value (SampleFetcher); with --live from the service."""
+        fetch_id = ask[len('fetch:'):]
+        fetch = self.entry.fetch(fetch_id)
+        if not hasattr(self.asker, 'fetch_reply'):
+            reply.update(ok=False, error='refused')
+            self.find('warning', 'questions', f'asked {ask!r}, which this Tessera does not answer: it needs plugin API 0.27')
+            return
+        reply.update(await self.asker.fetch_reply(self.entry, fetch_id, data))
+        shown = json.dumps(data, ensure_ascii=False)[:120]
+        if not fetch or not fetch.get('asked'):
+            self.find('warning', 'questions', f'asked {ask!r}, which is no fetch of the manifest with "asked": the app refuses it')
+        elif reply.get('error') == 'refused':
+            self.find('warning', 'questions', f'asked {ask!r} with {shown}: the app refuses it (every name of asked, '
+                                              'each a text of 1 to 64 of A-Z a-z 0-9 _ . : + - and the space)')
+        elif reply.get('error') == 'failed' and not self.args.live:
+            self.find('info', 'questions', f'asked {ask!r} with {shown}; preview.yaml has no answer under answers.{fetch_id} '
+                                           'for it, so it got "failed"')
 
     async def dark(self, on):
         self.client.switch_command(self.dark_switch.key, on)
