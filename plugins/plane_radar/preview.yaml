@@ -4,18 +4,26 @@
 # "Office" stands next to an aircraft that has a photo, to show the photo and its credit.
 tiles:
   - tile: radar
+    name: Whole page
+    options: { place: zone.office, range: "13", within: "5" }
+    sizes: [full]
+  - tile: radar
     name: Overhead
     options: { place: zone.home, range: "13" }
     sizes: [1x1, 2x1, 1x2, 2x2, 3x2, 4x3]
   - tile: radar
     name: Photo
-    options: { place: zone.office, range: "13" }
+    options: { place: zone.office, range: "13", within: "5" }
     sizes: [2x2, 3x2]
   - tile: radar
     name: Tap through
-    options: { place: zone.office, range: "13" }
+    options: { place: zone.office, range: "13", within: "5" }
     sizes: [2x2]
     then: [[0.5, 0.69]]
+  - tile: radar
+    name: Radar only
+    options: { place: zone.home, range: "13", overhead: false }
+    sizes: [2x2]
   - tile: radar
     name: Aviation units
     options: { place: zone.home, range: "13", units: aviation }

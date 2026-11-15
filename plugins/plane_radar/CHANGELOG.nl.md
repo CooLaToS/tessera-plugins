@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 - 2026-11-15
+
+- Wat er boven je vliegt: onder of naast de radar, waar de tegel ruimte heeft, het dichtstbijzijnde toestel binnen een afstand die je kiest (1, 2, 3, 5 of 10 km, of het hele bereik; eerst 3 km), met route, foto en getallen; verder weg zegt de tegel hoe ver het dichtstbijzijnde is. Twee nieuwe instellingen: Laat zien wat overvliegt (uit: alleen de radar, zo groot als de tegel) en Boven je is binnen. Een tik op een toestel op de tegel, of op de tekst en foto van het getoonde, opent dat toestel meteen; elders de kaart met de hele lucht.
+
 ## 0.2.0 - 2026-11-15
 
 - Waar een toestel vandaan komt en heen gaat staat voorop: de tegel, de lijst op de kaart en de pop-up beginnen met de route ("Milaan naar Chicago", of de codes van de luchthavens waar de steden niet passen), met vlucht en maatschappij eronder, en de radar zegt waar het dichtstbijzijnde heen gaat. De foto staat hoger: boven de tekst waar een tegel er plek voor heeft, en direct onder de route in de pop-up. Het aantal toestellen staat nu onderaan.

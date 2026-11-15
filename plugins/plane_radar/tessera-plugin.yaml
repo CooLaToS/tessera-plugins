@@ -2,7 +2,7 @@
 # The place is an entity of Home Assistant (your home zone unless you choose another); its position, rounded to about a
 # kilometre, is what the position service gets. The details of one aircraft are asked when the screen shows it.
 id: plane_radar
-version: 0.2.0
+version: 0.3.0
 api: "0.27"
 icon: airplane
 maintainer: MaxGramser
@@ -104,6 +104,23 @@ tiles:
         choices:
           - { value: metric, label: units_metric }
           - { value: aviation, label: units_aviation }
+      - id: overhead
+        kind: toggle
+        label: opt_overhead
+        hint: opt_overhead_hint
+        default: true
+      - id: within
+        kind: choice
+        label: opt_within
+        hint: opt_within_hint
+        default: "3"
+        choices:
+          - { value: "1", label: within_1 }
+          - { value: "2", label: within_2 }
+          - { value: "3", label: within_3 }
+          - { value: "5", label: within_5 }
+          - { value: "10", label: within_10 }
+          - { value: "0", label: within_any }
 
 cards:
   - { id: sky, name: card_name, wide: true }

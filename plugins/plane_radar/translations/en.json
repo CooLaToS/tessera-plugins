@@ -24,7 +24,9 @@
     "no_photo": "No photo of this aircraft",
     "tap_plane": "Tap an aircraft for its details",
     "toward": "to {to}",
-    "photo_by_short": "Photo {name}"
+    "photo_by_short": "Photo {name}",
+    "none_over": "Nothing over you",
+    "nearest_at": "Nearest {distance} away"
   },
   "app": {
     "name": "Plane radar",
@@ -40,6 +42,16 @@
     "range_50": "50 km",
     "opt_units": "Units",
     "units_metric": "Metric (km, m, km/h)",
-    "units_aviation": "Aviation (nm, ft, kt)"
+    "units_aviation": "Aviation (nm, ft, kt)",
+    "opt_overhead": "Show what flies over",
+    "opt_overhead_hint": "Under or beside the radar, where the tile has room: the nearest aircraft with its route, photo and numbers. Off, the radar has the tile to itself.",
+    "opt_within": "Over you is within",
+    "opt_within_hint": "How close an aircraft comes before the tile shows it. Farther away, the radar alone shows it.",
+    "within_1": "1 km",
+    "within_2": "2 km",
+    "within_3": "3 km",
+    "within_5": "5 km",
+    "within_10": "10 km",
+    "within_any": "The whole range"
   }
 }

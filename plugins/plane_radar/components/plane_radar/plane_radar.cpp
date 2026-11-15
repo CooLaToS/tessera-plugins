@@ -364,11 +364,24 @@ struct About {
   int x = 0, y = 0, w = 0, h = 0, lift = 0;   // lift: how far the words move up while there is no photo
   bool lifted = false;
   int base[9] = {};   // where each word stands under a photo (kept here: LVGL lays out later)
+  int credit_w = 0;
   Font head_face = Font::TITLE;
 
-  void make(lv_obj_t *parent, int x_, int y_, int w_, int h_, bool with_photo) {
+  // `side`: the photo at the right of the words, as high as the room, instead of over them (a wide, low room).
+  void make(lv_obj_t *parent, int x_, int y_, int w_, int h_, bool with_photo, bool side = false) {
     x = x_, y = y_, w = w_, h = h_;
     const int lb = lh(Font::BODY), lt = lh(Font::TITLE), lhd = lh(Font::HEADLINE), g = ui::px(ui::large() ? 8 : 5);
+    if (side && with_photo && ui::pictures()) {
+      const int pw = std::min(w * 45 / 100, (h - lb - ui::px(1)) * 3 / 2), ph = pw * 2 / 3;
+      photo = ui::picture(parent);
+      box(photo, x + w - pw, y, pw, ph);
+      lv_obj_set_style_radius(photo, ui::px(ui::large() ? 10 : 6), 0);
+      credit = ui::label(parent, Font::BODY, theme::SUBTLE);
+      box(credit, x + w - pw, y + ph + ui::px(1), pw, lb);
+      credit_w = pw;
+      w -= pw + 2 * g;
+      with_photo = false;
+    }
     const int rows_h = 3 * (lt + ui::px(2));
     head_face = w >= ui::px(150) && h >= lhd + 2 * lb ? Font::HEADLINE : Font::TITLE;
     const int line_words = lh(head_face) + 2 * lb;   // head, sub, numbers on one line
@@ -383,6 +396,7 @@ struct About {
         lv_obj_set_style_radius(photo, ui::px(ui::large() ? 10 : 6), 0);
         credit = ui::label(parent, Font::BODY, theme::SUBTLE);
         box(credit, x, top + ph + ui::px(1), w, lb);
+        credit_w = w;
         lift = ph + lb + g;
         top += lift;
       }
@@ -430,26 +444,33 @@ struct About {
       if (words[i]) lv_obj_set_y(words[i], base[i] - (lifted ? lift : 0));
   }
 
-  void paint(const tessera::Plugin *plugin, const Sky &sky, int chosen, const Units &units, int range_nm, const Details *d) {
+  // `chosen`: the aircraft it is about, -1 for none; `nearest`: the nearest of the sky, which the words name while
+  // none is close enough to be about (the tile's "over you").
+  void paint(const tessera::Plugin *plugin, const Sky &sky, int chosen, const Units &units, int range_nm, const Details *d,
+             int nearest = -1) {
     const bool any = chosen >= 0;
+    const bool quiet = !any && nearest >= 0 && sky.placed && !sky.waiting;
     const bool pictured = any && d && *d->photo;
     if (photo) {
       ui::set_picture(photo, pictured ? d->photo : "");
       show(photo, pictured);
       show(credit, pictured);
-      ui::set_text(credit, pictured ? credit_of(plugin, d, w) : "");
+      ui::set_text(credit, pictured ? credit_of(plugin, d, credit_w) : "");
       slide(pictured);
     }
     if (count) {
       int within = 0;   // what the radar shows: the aircraft within its range of the place
       for (int i = 0; i < sky.n; ++i)
         if (sky.p[i].dist <= range_nm * 1.02f) ++within;
-      ui::set_text(count, sky.placed && !sky.waiting && any ? tessera::format(plugin->text("nearby"), within) : "");
+      ui::set_text(count, sky.placed && !sky.waiting && (any || quiet) ? tessera::format(plugin->text("nearby"), within) : "");
     }
     if (!any) {
-      ui::set_font(head, head_face);
-      ui::set_text(head, plugin->text(!sky.placed ? "no_place" : sky.waiting ? "waiting" : "clear"));
-      ui::set_text(sub, sky.placed && !sky.waiting ? tessera::fill(plugin->text("clear_hint"), "range", units.range(range_nm)) : "");
+      const char *said = plugin->text(!sky.placed ? "no_place" : sky.waiting ? "waiting" : quiet ? "none_over" : "clear");
+      ui::set_font(head, head_face == Font::HEADLINE && ui::text_width(said, head_face) > w ? Font::TITLE : head_face);
+      ui::set_text(head, said);
+      ui::set_text(sub, quiet ? tessera::fill(plugin->text("nearest_at"), "distance",
+                                              worded(units.distance(sky.p[nearest].dist), units.distance_unit()).c_str())
+                        : sky.placed && !sky.waiting ? tessera::fill(plugin->text("clear_hint"), "range", units.range(range_nm)) : "");
       for (int i = 0; i < 3; ++i) {
         if (stat[i]) ui::set_text(stat[i], "");
         if (caption[i]) ui::set_text(caption[i], "");
@@ -666,12 +687,20 @@ class RadarTile : public tessera::Tile {
     range_ = atoi(c.options["range"] | "13");
     if (range_ <= 0) range_ = 13;
     units_.aviation = !strcmp(c.options["units"] | "metric", "aviation");
+    overhead_ = c.options["overhead"] | true;
+    within_nm_ = atoi(c.options["within"] | "3") / 1.852f;   // 0: the whole range
     const int W = c.width, H = c.height, g = ui::px(ui::large() ? 12 : 8);
+    // Without what flies over: the radar alone, as large as the tile.
+    if (!overhead_) {
+      const int d = std::min(W, H);
+      scope_.make(c.parent, sx_ = (W - d) / 2, sy_ = (H - d) / 2, d);
+      return;
+    }
     // Lying down: the radar as high as the tile at the left, the words beside it, and a photo where the words leave
     // room for one. Standing: the radar on top, the words under it.
     if (W * 10 >= H * 13) {
       const int d = H;
-      scope_.make(c.parent, 0, 0, d);
+      scope_.make(c.parent, sx_ = 0, sy_ = 0, d);
       const int x = d + g, w = W - x;
       // A photo beside the words on a tile low and wide enough, else over them where the column is high enough.
       const int text_w = ui::px(ui::large() ? 150 : 100), photo_w = (H - lh(Font::BODY)) * 3 / 2;
@@ -685,10 +714,14 @@ class RadarTile : public tessera::Tile {
         about_.make(c.parent, x, 0, w, H, w >= ui::px(110));
       }
     } else {
-      const int words = std::min(H * 55 / 100, lh(Font::HEADLINE) + 2 * lh(Font::BODY) + 3 * (lh(Font::TITLE) + ui::px(2)) + W * 2 / 3);
+      // A wide tile puts the photo beside the words, which leaves the radar more of the height.
+      const bool side = W >= ui::px(300) && ui::pictures();
+      const int words = side ? std::min(H * 45 / 100, std::max(lh(Font::HEADLINE) + 3 * lh(Font::BODY) + g,
+                                                               W * 45 / 100 * 2 / 3 + lh(Font::BODY) + ui::px(2)))
+                             : std::min(H * 55 / 100, lh(Font::HEADLINE) + 2 * lh(Font::BODY) + 3 * (lh(Font::TITLE) + ui::px(2)) + W * 2 / 3);
       const int d = std::min(W, H - words - g);
-      scope_.make(c.parent, (W - d) / 2, 0, d);
-      about_.make(c.parent, 0, d + g, W, H - d - g, true);
+      scope_.make(c.parent, sx_ = (W - d) / 2, sy_ = 0, d);
+      about_.make(c.parent, 0, d + g, W, H - d - g, true, side);
     }
     about_.paint_colours();
   }
@@ -697,10 +730,22 @@ class RadarTile : public tessera::Tile {
 
   void on_tick(uint32_t epoch) override {
     sky_.now(epoch);
-    const int chosen = sky_.nearest();
-    const Details *d = chosen >= 0 ? plugin_->details(sky_.p[chosen].hex, sky_.p[chosen].flight) : nullptr;
-    scope_.paint(sky_, range_, chosen, units_, toward(plugin_, d, scope_.size / 2));
-    about_.paint(plugin_, sky_, chosen, units_, range_, d);
+    const int nearest = sky_.nearest();
+    // What flies over: the nearest within the tile's reach of the place. The one shown keeps its place a little
+    // beyond it (15 %), so an aircraft at the edge does not come and go every second.
+    int chosen = nearest;
+    if (overhead_ && within_nm_ > 0 && nearest >= 0) {
+      const Plane &q = sky_.p[nearest];
+      if (q.dist > within_nm_ * (strcmp(q.hex, shown_) ? 1.0f : 1.15f)) chosen = -1;
+    }
+    copy_trim(shown_, sizeof(shown_), chosen >= 0 ? sky_.p[chosen].hex : "");
+    shown_index_ = overhead_ ? chosen : -1;
+    // Its route, photo and type are asked for the one shown; the radar alone names the nearest by its route only.
+    const int named = overhead_ ? chosen : nearest;
+    const Details *d = named >= 0 ? plugin_->details(sky_.p[named].hex, sky_.p[named].flight, overhead_) : nullptr;
+    scope_.paint(sky_, range_, named, units_, toward(plugin_, d, scope_.size / 2));
+    if (!overhead_) return;
+    about_.paint(plugin_, sky_, chosen, units_, range_, d, nearest);
     if (side_photo_) {
       const bool has = chosen >= 0 && d && *d->photo;
       ui::set_picture(side_photo_, has ? d->photo : "");
@@ -715,7 +760,18 @@ class RadarTile : public tessera::Tile {
     if (side_credit_) ui::set_color(side_credit_, theme::SUBTLE);
   }
 
+  // A tap on an aircraft of the radar, or on the words and photo of the one shown, opens that aircraft; anywhere else
+  // the card with the whole sky.
   void on_tap() override {
+    const tessera::Point at = tessera::tap_point();
+    int index = -1;
+    const int d = scope_.size;
+    if (at.x >= sx_ && at.x < sx_ + d && at.y >= sy_ && at.y < sy_ + d) index = scope_.at(sky_, range_, at.x - sx_, at.y - sy_);
+    else if (at.x >= 0 && shown_index_ >= 0) index = shown_index_;
+    if (index >= 0) {
+      explain(plugin_, sky_, index, units_);
+      return;
+    }
     plugin_->card_range = range_;
     plugin_->card_aviation = units_.aviation;
     tessera::open_card(plugin_->plugin_id(), "sky", "", tile_);
@@ -729,6 +785,11 @@ class RadarTile : public tessera::Tile {
   About about_;
   lv_obj_t *side_photo_{}, *side_credit_{};
   int range_ = 13, tile_ = -1;
+  bool overhead_ = true;     // what flies over shows under or beside the radar
+  float within_nm_ = 0;      // how near it comes before it does, 0 for the whole range
+  char shown_[8] = "";       // the aircraft shown, kept a little beyond the reach
+  int shown_index_ = -1;     // its place in the sky, for a tap on its words
+  int sx_ = 0, sy_ = 0;      // where the radar stands in the tile
 };
 
 // The card: the radar as large as the room allows, every aircraft on it, and a list of them nearest first. A tap on
