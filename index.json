@@ -1,7 +1,7 @@
 {
  "format": 1,
- "generated": "2026-11-15T06:37:37Z",
- "plugin_api": "0.27",
+ "generated": "2026-11-15T07:35:55Z",
+ "plugin_api": "0.28",
  "blocked": [],
  "featured": [
   "ov_departures",
@@ -2586,14 +2586,14 @@
    "label": "tessera",
    "status": "ok",
    "release": {
-    "version": "0.3.0",
-    "sha": "f327d0b04cf48f2be661a83ed3034bca50e87a32",
+    "version": "0.4.0",
+    "sha": "3f1cd4a380092f8274b23fc9fa2fca71bf8a0ae7",
     "date": "2026-11-15"
    },
    "manifest": {
     "id": "plane_radar",
-    "version": "0.3.0",
-    "api": "0.27",
+    "version": "0.4.0",
+    "api": "0.28",
     "icon": "airplane",
     "maintainer": "MaxGramser",
     "license": "MIT",
@@ -2669,7 +2669,10 @@
       "every": "1d",
       "map": {
        "fields": {
-        "photo": "photos[0].thumbnail_large.src",
+        "photo": {
+         "path": "photos[0].thumbnail_large.src",
+         "as": "url"
+        },
         "by": "photos[0].photographer"
        }
       }
@@ -2721,6 +2724,23 @@
       "pictures": 1,
       "example": "tile_example",
       "options": [
+       {
+        "id": "view",
+        "kind": "choice",
+        "label": "opt_view",
+        "hint": "opt_view_hint",
+        "default": "full",
+        "choices": [
+         {
+          "value": "full",
+          "label": "view_full"
+         },
+         {
+          "value": "details",
+          "label": "view_details"
+         }
+        ]
+       },
        {
         "id": "place",
         "kind": "entity",
@@ -2885,7 +2905,11 @@
       "within_3": "3 km",
       "within_5": "5 km",
       "within_10": "10 km",
-      "within_any": "The whole range"
+      "within_any": "The whole range",
+      "opt_view": "View",
+      "opt_view_hint": "The radar as the whole tile, with what flies over on a card at the bottom; or the radar with its details, numbers and photo beside or under it.",
+      "view_full": "Radar fills the tile",
+      "view_details": "Radar and details"
      }
     },
     "nl": {
@@ -2942,7 +2966,11 @@
       "within_3": "3 km",
       "within_5": "5 km",
       "within_10": "10 km",
-      "within_any": "Het hele bereik"
+      "within_any": "Het hele bereik",
+      "opt_view": "Weergave",
+      "opt_view_hint": "De radar als de hele tegel, met wat overvliegt op een kaartje onderaan; of de radar met details, getallen en foto ernaast of eronder.",
+      "view_full": "Radar vult de tegel",
+      "view_details": "Radar met details"
      }
     }
    },
@@ -2951,8 +2979,8 @@
     "nl": "# Vliegtuigradar\n\nDe vliegtuigen die nu rond je huis in de lucht zijn, op een radar, met foto en route van het dichtstbijzijnde.\n\n- **Een radar die donker blijft**, in de lichte en de donkere stand, met een ring op een derde en twee derde van het\n  bereik, het noorden boven en je huis in het midden. Elk toestel is een vliegtuigje in zijn vliegrichting; het\n  dichtstbijzijnde licht op, met zijn naam ernaast.\n- **Ze bewegen.** Elke 30 seconden komen de posities binnen, en daartussen schuift het scherm elk toestel elke seconde\n  langs zijn koers op, met zijn eigen snelheid.\n- **Hoe groter de tegel, hoe meer hij zegt.** Eén vak toont de radar en het dichtstbijzijnde toestel. Grotere tegels\n  geven zijn route, afstand, hoogte en snelheid, en zijn foto als er plek is.\n- **Tik voor de hele lucht.** De kaart toont de radar groot en een lijst van de toestellen, dichtstbij eerst. Tik op\n  een toestel, op de radar of in de lijst, en je ziet zijn foto, maatschappij en type, waar het vandaan komt en\n  naartoe gaat, en zijn getallen.\n\n## Instellen\n\n1. Voeg de plugin toe aan een scherm in de Tessera-app.\n2. Zet de tegel Vliegtuigradar op een pagina.\n3. Hij staat bij je huis (de zone Thuis van Home Assistant), tenzij je in de instellingen van de tegel een andere\n   **Plek** kiest: een zone, of een persoon of tracker die beweegt, zodat de radar meegaat.\n4. Kies het **Bereik** (10, 25 of 50 km) en de **Eenheden**: metrisch (km, m, km/h) of luchtvaart (nm, ft, kt).\n\n## Waar de gegevens vandaan komen\n\n| Wat | Van | Voorwaarden |\n|---|---|---|\n| Posities | [adsb.lol](https://adsb.lol), live ADS-B van ontvangers van vrijwilligers | Open data (ODbL) |\n| Foto's | [planespotters.net](https://www.planespotters.net) | Elke foto toont zijn fotograaf en planespotters.net |\n| Routes en types | [adsbdb](https://www.adsbdb.com) | Gratis |\n\nToestellen aan de grond, en de auto's van een vliegveld, laat de radar weg: hij toont wat vliegt. Een toestel waarvan\nde transponder geen positie stuurt, zoals sommige militaire, verschijnt niet. Een route is wat het vluchtnummer meestal\nvliegt; op een bijzondere dag kan het een andere zijn.\n\n## Wat je huis verlaat\n\n- Naar adsb.lol, elke 30 seconden zolang een tegel in beeld is: de positie van je plek afgerond op twee decimalen,\n  ongeveer een kilometer, en het bereik. Verder niets.\n- Naar planespotters.net en adsbdb, voor het toestel dat een tegel, de kaart of een pop-up toont: zijn\n  transpondercode en vluchtnummer. Je plek gaat daar niet heen.\n\nDe Tessera-app vraagt deze diensten; het scherm zelf bereikt geen van alle.\n"
    },
    "changelog": {
-    "en": "# Changelog\n\n## 0.3.0 - 2026-11-15\n\n- What flies over you: under or beside the radar, where the tile has room, the nearest aircraft within a reach you choose (1, 2, 3, 5 or 10 km, or the whole range; 3 km at first), with its route, photo and numbers; farther away, the tile says how far the nearest is. Two new settings: Show what flies over (off: the radar alone, as large as the tile) and Over you is within. A tap on an aircraft of the tile, or on the words and photo of the one shown, opens that aircraft at once; anywhere else the card with the whole sky.\n\n## 0.2.0 - 2026-11-15\n\n- Where an aircraft flies comes first: the tile, the card's list and the popup lead with its route (\"Milan to Chicago\", or its airports' codes where the cities do not fit), with its flight and airline under it, and the radar says where the nearest one goes. The photo comes higher: above the words wherever a tile has room for it, and right under the route in the popup. The count of aircraft moved to the end.\n\n## 0.1.1 - 2026-11-15\n\n- The count says how many aircraft the radar shows, within its range of the place, not how many the service sent.\n\n## 0.1.0 - 2026-11-15\n\n- The first version: a radar of the aircraft around your home, with the nearest one's photo and route, a card with\n  every aircraft and a popup for each. Needs plugin API 0.27.\n",
-    "nl": "# Changelog\n\n## 0.3.0 - 2026-11-15\n\n- Wat er boven je vliegt: onder of naast de radar, waar de tegel ruimte heeft, het dichtstbijzijnde toestel binnen een afstand die je kiest (1, 2, 3, 5 of 10 km, of het hele bereik; eerst 3 km), met route, foto en getallen; verder weg zegt de tegel hoe ver het dichtstbijzijnde is. Twee nieuwe instellingen: Laat zien wat overvliegt (uit: alleen de radar, zo groot als de tegel) en Boven je is binnen. Een tik op een toestel op de tegel, of op de tekst en foto van het getoonde, opent dat toestel meteen; elders de kaart met de hele lucht.\n\n## 0.2.0 - 2026-11-15\n\n- Waar een toestel vandaan komt en heen gaat staat voorop: de tegel, de lijst op de kaart en de pop-up beginnen met de route (\"Milaan naar Chicago\", of de codes van de luchthavens waar de steden niet passen), met vlucht en maatschappij eronder, en de radar zegt waar het dichtstbijzijnde heen gaat. De foto staat hoger: boven de tekst waar een tegel er plek voor heeft, en direct onder de route in de pop-up. Het aantal toestellen staat nu onderaan.\n\n## 0.1.1 - 2026-11-15\n\n- Het getal zegt hoeveel toestellen de radar toont, binnen zijn bereik van de plek, niet hoeveel de dienst stuurde.\n\n## 0.1.0 - 2026-11-15\n\n- De eerste versie: een radar van de vliegtuigen rond je huis, met foto en route van het dichtstbijzijnde, een kaart met\n  alle toestellen en een pop-up per toestel. Heeft plugin-API 0.27 nodig.\n"
+    "en": "# Changelog\n\n## 0.4.0 - 2026-11-15\n\n- The radar can be the whole tile, and is at first: its face reaches every edge, dark in both looks, and what flies over you lies on a card at the bottom, as a map's card does (where it flies, its flight, how far and how high), where the tile is large enough. A tap on an aircraft or on the card opens it, anywhere else the card with the whole sky. The radar with its details, as before, is the other choice of the new View setting. Needs plugin API 0.28. The photo comes at last: its address reached the screen cut at 48 characters, so planespotters answered \"not found\".\n\n## 0.3.0 - 2026-11-15\n\n- What flies over you: under or beside the radar, where the tile has room, the nearest aircraft within a reach you choose (1, 2, 3, 5 or 10 km, or the whole range; 3 km at first), with its route, photo and numbers; farther away, the tile says how far the nearest is. Two new settings: Show what flies over (off: the radar alone, as large as the tile) and Over you is within. A tap on an aircraft of the tile, or on the words and photo of the one shown, opens that aircraft at once; anywhere else the card with the whole sky.\n\n## 0.2.0 - 2026-11-15\n\n- Where an aircraft flies comes first: the tile, the card's list and the popup lead with its route (\"Milan to Chicago\", or its airports' codes where the cities do not fit), with its flight and airline under it, and the radar says where the nearest one goes. The photo comes higher: above the words wherever a tile has room for it, and right under the route in the popup. The count of aircraft moved to the end.\n\n## 0.1.1 - 2026-11-15\n\n- The count says how many aircraft the radar shows, within its range of the place, not how many the service sent.\n\n## 0.1.0 - 2026-11-15\n\n- The first version: a radar of the aircraft around your home, with the nearest one's photo and route, a card with\n  every aircraft and a popup for each. Needs plugin API 0.27.\n",
+    "nl": "# Changelog\n\n## 0.4.0 - 2026-11-15\n\n- De radar kan de hele tegel zijn, en is dat eerst: het vlak loopt tot elke rand, donker in beide standen, en wat boven je vliegt ligt op een kaartje onderaan, zoals bij een kaart (waar het heen gaat, de vlucht, hoe ver en hoe hoog), waar de tegel groot genoeg is. Een tik op een toestel of op het kaartje opent het, elders de kaart met de hele lucht. De radar met details, zoals eerst, is de andere keuze van de nieuwe instelling Weergave. Vraagt plugin-API 0.28. De foto komt nu echt: het adres kwam afgekapt op 48 tekens bij het scherm, waardoor planespotters \"niet gevonden\" antwoordde.\n\n## 0.3.0 - 2026-11-15\n\n- Wat er boven je vliegt: onder of naast de radar, waar de tegel ruimte heeft, het dichtstbijzijnde toestel binnen een afstand die je kiest (1, 2, 3, 5 of 10 km, of het hele bereik; eerst 3 km), met route, foto en getallen; verder weg zegt de tegel hoe ver het dichtstbijzijnde is. Twee nieuwe instellingen: Laat zien wat overvliegt (uit: alleen de radar, zo groot als de tegel) en Boven je is binnen. Een tik op een toestel op de tegel, of op de tekst en foto van het getoonde, opent dat toestel meteen; elders de kaart met de hele lucht.\n\n## 0.2.0 - 2026-11-15\n\n- Waar een toestel vandaan komt en heen gaat staat voorop: de tegel, de lijst op de kaart en de pop-up beginnen met de route (\"Milaan naar Chicago\", of de codes van de luchthavens waar de steden niet passen), met vlucht en maatschappij eronder, en de radar zegt waar het dichtstbijzijnde heen gaat. De foto staat hoger: boven de tekst waar een tegel er plek voor heeft, en direct onder de route in de pop-up. Het aantal toestellen staat nu onderaan.\n\n## 0.1.1 - 2026-11-15\n\n- Het getal zegt hoeveel toestellen de radar toont, binnen zijn bereik van de plek, niet hoeveel de dienst stuurde.\n\n## 0.1.0 - 2026-11-15\n\n- De eerste versie: een radar van de vliegtuigen rond je huis, met foto en route van het dichtstbijzijnde, een kaart met\n  alle toestellen en een pop-up per toestel. Heeft plugin-API 0.27 nodig.\n"
    },
    "image": "store.png"
   },
