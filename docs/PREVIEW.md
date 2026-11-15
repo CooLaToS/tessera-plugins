@@ -164,7 +164,7 @@ tiles:                         # the tiles to show; each at every size it offers
   - tile: next                 # a tile id of the manifest
     name: Centraal Station     # the name a person gives it (default: the tile's name)
     options: { stop: "30005002", walk: 3 }   # its options, as the inspector sets them
-    sizes: [1x1, 3x2]          # optional
+    sizes: [1x1, 3x2]          # optional; `full` is the whole page, which many people give one large tile
   - tile: next
     name: No departures
     options: { stop: "30005002" }

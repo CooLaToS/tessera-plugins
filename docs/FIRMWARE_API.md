@@ -121,7 +121,9 @@ class NextTile : public tessera::Tile {
 5. **`on_tap()`**: a short tap on the card, after the touch filter (a finger that moved or was too short never reaches
    it). The tile's `tap` option set to "none" in the editor keeps taps away. `tessera::tap_point()` (0.10) says where
    the finger was, in the tile's own pixels (`0,0` the top left of `context.parent`), so a list knows which row, a
-   row of posters which film; `-1,-1` when the screen could not say.
+   row of posters which film; `-1,-1` when the screen could not say. A tile whose parts look like keys answers a tap
+   on them itself (a marker opens its popup, a row its item) and opens the card only for a tap elsewhere: one tap
+   does one thing.
 6. **Destructor**: the card shows something else. The core deletes the LVGL objects; free only memory of your own.
 
 A change of the tile's size or options makes a new object: `create()` never has to handle a resize.

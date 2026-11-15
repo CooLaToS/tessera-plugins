@@ -140,6 +140,24 @@ pictures, every board), [`plugins/vinyl_deck/`](plugins/vinyl_deck) (a face of t
     small and still them when their moment is over.
   - **It lights the screen**: show one because a person did something, or behind a setting of the plugin's own, on by
     default only when a person asked for what it shows (the voice assistant's Show popup).
+- **A tile on real glass** keeps what only showed when someone used one at home:
+  - **One tap, one thing.** Every tap on a tile goes to `on_tap`, and a tile usually opens its card there. When the tile
+    draws parts a person will take for keys (a row, a marker, an item, a photo), read `tessera::tap_point()`, open what
+    is under the finger, and open the card only for a tap anywhere else. A tap never opens two things.
+  - **The data and the chosen entities share one message** of about 2.6 KB: map only the fields you draw, and keep a
+    fetch's `limit` to what the largest tile shows. The app gives an entity a person chose (a place, a sensor) up to half
+    of it, and drops a list's last items first.
+  - **`preview.yaml` holds real, successful answers.** Read them before you commit: a recorded error (a refused
+    User-Agent, a missing key, a rate limit) means the service refuses the app too, and the bench then shows a
+    stand-in. Run the bench once with `--live`.
+  - **Bench the shapes people use**: the smallest and the largest size, and the whole page (`sizes: [full]` in
+    `preview.yaml`) when the tile takes it, with an answer as long as the fetch's `limit`.
+  - **Keep your own coordinates.** LVGL reads a position as 0 until it lays out: a part you move later is moved from
+    the number you gave it, kept in a member, never from `lv_obj_get_y`.
+  - **A choice by a threshold keeps a margin** (the nearest within 3 km, kept to 3.5 once shown), or it flips every
+    tick when a value sits at the edge.
+  - **Only the screen's characters.** The fonts hold letters, digits, common signs and Tessera's icons; an arrow or
+    another symbol shows as a square. Say it in words of the screen's language.
 - **Memory inside the chip is scarce** (since API 0.10): keep texts and lists a tile holds as `tessera::Text` and
   `tessera::List`, which take PSRAM; a `std::string` member stays in the memory Wi-Fi needs (docs/FIRMWARE_API.md,
   "Memory").
