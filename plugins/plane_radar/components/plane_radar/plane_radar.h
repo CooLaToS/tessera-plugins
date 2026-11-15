@@ -22,15 +22,16 @@ class PlaneRadar : public Component, public tessera::Plugin {
   void setup() override;
   float get_setup_priority() const override { return setup_priority::DATA; }
   void on_message(JsonObjectConst message) override;
-  // The details of an aircraft, asked for once when they are not known yet; nullptr for no aircraft.
-  const Details *details(const char *hex, const char *callsign);
+  // The details of an aircraft, each asked for once when it is not known yet: its route always, its photo and type
+  // with `full` (the aircraft a part shows large); nullptr for no aircraft.
+  const Details *details(const char *hex, const char *callsign, bool full = true);
   // What the tile that opens the card hands it (a card gets the tile's data, not its options).
   int card_range = 13;
   bool card_aviation = false;
 
  private:
-  static constexpr int KEPT = 8;
-  Details kept_[KEPT];
+  static constexpr size_t KEPT = 24;   // the card's list asks the route of each row
+  tessera::List<Details> kept_;          // in PSRAM: a few hundred bytes each
   int next_ = 0;
 };
 

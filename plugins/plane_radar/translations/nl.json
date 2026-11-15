@@ -1,5 +1,7 @@
 {
-  "_meta": { "name": "Nederlands" },
+  "_meta": {
+    "name": "Nederlands"
+  },
   "screen": {
     "nearby": "1 toestel | {n} toestellen",
     "nearest": "Dichtstbij",
@@ -20,7 +22,9 @@
     "from_to": "{from} naar {to}",
     "photo_by": "Foto {name} · planespotters.net",
     "no_photo": "Geen foto van dit toestel",
-    "tap_plane": "Tik op een toestel voor details"
+    "tap_plane": "Tik op een toestel voor details",
+    "toward": "naar {to}",
+    "photo_by_short": "Foto {name}"
   },
   "app": {
     "name": "Vliegtuigradar",

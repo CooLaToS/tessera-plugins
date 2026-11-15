@@ -259,7 +259,8 @@ struct Scope {
     return true;
   }
 
-  void paint(const Sky &sky, int range_nm, int chosen, const Units &units) {
+  // `label`: the words beside the chosen one, "" for its flight.
+  void paint(const Sky &sky, int range_nm, int chosen, const Units &units, const std::string &label = "") {
     if (range) ui::set_text(range, units.range(range_nm));
     int tag_x = -1, tag_y = -1;
     for (int i = 0; i < MOST; ++i) {
@@ -298,7 +299,7 @@ struct Scope {
     if (!tag) return;
     show(tag, tag_x >= 0);
     if (tag_x < 0) return;
-    const std::string name = name_of(sky.p[chosen]);
+    const std::string name = label.empty() ? std::string(name_of(sky.p[chosen])) : label;
     ui::set_text(tag, name);
     const int tw = ui::text_width(name, Font::BODY) + 2, gap = glyph / 2 + ui::px(4);
     const int x = tag_x + gap + tw <= size - ui::px(4) ? tag_x + gap : tag_x - gap - tw;
@@ -319,35 +320,82 @@ struct Scope {
   }
 };
 
-// The words about one aircraft: its name, where it flies, and its numbers; a photo where there is room.
+// The words beside the chosen aircraft on the radar: where it goes ("to Chicago"), else nothing (its flight).
+static std::string toward(const tessera::Plugin *plugin, const Details *d, int width) {
+  if (!d || !*d->to) return "";
+  std::string said = tessera::fill(plugin->text("toward"), "to", *d->to_city ? d->to_city : d->to);
+  if (width > 0 && ui::text_width(said, Font::BODY) > width) said = tessera::fill(plugin->text("toward"), "to", d->to);
+  return said;
+}
+
+// The photographer's credit in the words that fit: with the site, else the name.
+static std::string credit_of(const tessera::Plugin *plugin, const Details *d, int width) {
+  if (!d || !*d->by) return "";
+  const std::string full = tessera::fill(plugin->text("photo_by"), "name", d->by);
+  return width <= 0 || ui::text_width(full, Font::BODY) <= width ? full : tessera::fill(plugin->text("photo_by_short"), "name", d->by);
+}
+
+// Where an aircraft flies as words that fit `width` in `face`: its cities ("Milan → Chicago"), else its airports
+// ("MXP → ORD"); "" while its route is not known.
+static std::string route_of(const tessera::Plugin *plugin, const Details *d, Font face, int width) {
+  if (!d || !*d->from || !*d->to) return "";
+  // An arrow where the screen's font has one, else the words of the screen's language ("Milan to Chicago"); the
+  // airports' codes with a dash where the cities do not fit.
+  const bool arrow = ui::covers("\u2192", face);
+  if (*d->from_city && *d->to_city) {
+    const std::string cities = arrow ? std::string(d->from_city) + " \u2192 " + d->to_city
+                                     : tessera::fill(tessera::fill(plugin->text("from_to"), "from", d->from_city).c_str(), "to", d->to_city);
+    if (width <= 0 || ui::text_width(cities, face) <= width) return cities;
+  }
+  return std::string(d->from) + (arrow ? " \u2192 " : " \u2013 ") + d->to;
+}
+// What it is, in a few words: its airline, else its maker and model, else its type code.
+static std::string kind_of(const Details *d, const Plane &q) {
+  if (d && *d->airline) return d->airline;
+  if (d && *d->model) return std::string(d->maker) + (*d->maker ? " " : "") + d->model;
+  return q.type;
+}
+
+// The words about one aircraft: where it flies first, then its flight and airline, then its numbers; a photo above
+// them where there is room, and how many aircraft the radar shows where the column has a line to spare.
 struct About {
-  lv_obj_t *count{}, *name{}, *route{}, *stat[3]{}, *caption[3]{}, *photo{}, *credit{}, *note{};
+  lv_obj_t *head{}, *sub{}, *stat[3]{}, *caption[3]{}, *photo{}, *credit{}, *count{};
   bool grid = false;   // the numbers as three rows with their captions, else one line
-  int x = 0, y = 0, w = 0, h = 0;
-  Font name_face = Font::TITLE;
+  int x = 0, y = 0, w = 0, h = 0, lift = 0;   // lift: how far the words move up while there is no photo
+  bool lifted = false;
+  int base[9] = {};   // where each word stands under a photo (kept here: LVGL lays out later)
+  Font head_face = Font::TITLE;
 
   void make(lv_obj_t *parent, int x_, int y_, int w_, int h_, bool with_photo) {
     x = x_, y = y_, w = w_, h = h_;
     const int lb = lh(Font::BODY), lt = lh(Font::TITLE), lhd = lh(Font::HEADLINE), g = ui::px(ui::large() ? 8 : 5);
-    int top = y;
-    // Low on room: the count goes first, then the large name, so the numbers stay.
-    const bool counted = h >= 3 * lb + lhd + g / 2 || h >= 4 * lb + lt + g / 2;
-    count = ui::label(parent, Font::BODY, theme::MUTED);
-    box(count, x, top, w, lb);
-    show(count, counted);
-    if (counted) top += lb;
-    name_face = w >= ui::px(150) && h - (top - y) >= lhd + 2 * lb ? Font::HEADLINE : Font::TITLE;
-    name = ui::label(parent, name_face, theme::INK);
-    box(name, x, top, w, lh(name_face));
-    top += lh(name_face);
-    // The numbers as three rows with their captions where there is room for them and the route above them, else on
-    // one line right under the name, with the route after it.
     const int rows_h = 3 * (lt + ui::px(2));
-    grid = h - (top - y) >= lb + g / 2 + rows_h;
+    head_face = w >= ui::px(150) && h >= lhd + 2 * lb ? Font::HEADLINE : Font::TITLE;
+    const int line_words = lh(head_face) + 2 * lb;   // head, sub, numbers on one line
+    int top = y;
+    // The photo first, at its own shape (3 by 2), where it leaves room for the words under it.
+    if (with_photo && ui::pictures()) {
+      const int ph = std::min(w * 2 / 3, h - line_words - lb - g);
+      if (ph >= ui::px(60)) {
+        const int pw = std::min(w, ph * 3 / 2);
+        photo = ui::picture(parent);
+        box(photo, x, top, pw, ph);
+        lv_obj_set_style_radius(photo, ui::px(ui::large() ? 10 : 6), 0);
+        credit = ui::label(parent, Font::BODY, theme::SUBTLE);
+        box(credit, x, top + ph + ui::px(1), w, lb);
+        lift = ph + lb + g;
+        top += lift;
+      }
+    }
+    head = ui::label(parent, head_face, theme::INK);
+    box(head, x, top, w, lh(head_face));
+    top += lh(head_face);
+    sub = ui::label(parent, Font::BODY, theme::MUTED);
+    box(sub, x, top, w, lb);
+    top += lb;
+    grid = y + h - top >= g / 2 + rows_h;
     if (grid) {
-      route = ui::label(parent, Font::BODY, theme::MUTED);
-      box(route, x, top, w, lb);
-      top += lb + g / 2;
+      top += g / 2;
       // A caption and its value stay near each other on a wide tile: the rows are at most so wide.
       const int gw = std::min(w, ui::px(ui::large() ? 280 : 180));
       for (int i = 0; i < 3; ++i) {
@@ -361,52 +409,47 @@ struct About {
     } else {
       stat[0] = ui::label(parent, Font::BODY, theme::INK_SOFT);
       box(stat[0], x, top, w, lb);
-      top += lb;
-      route = ui::label(parent, Font::BODY, theme::MUTED);
-      box(route, x, top, w, lb);
-      show(route, top + lb <= y + h);
+      show(stat[0], top + lb <= y + h);
       top += lb;
     }
-    note = ui::label(parent, Font::BODY, theme::MUTED);
-    box(note, x, y, w, lb);
-    show(note, false);
-    // A photo under the words where the column leaves room for one, at the photos' own shape (3 by 2); without a
-    // photo the space under the words stays empty, and the words keep their place.
-    if (with_photo && ui::pictures()) {
-      const int room = y + h - top - g - lb;
-      const int ph = std::min(room, w * 2 / 3);
-      if (ph >= ui::px(70)) {
-        const int pw = std::min(w, ph * 3 / 2);
-        photo = ui::picture(parent);
-        box(photo, x, top + g, pw, ph);
-        lv_obj_set_style_radius(photo, ui::px(ui::large() ? 10 : 6), 0);
-        credit = ui::label(parent, Font::BODY, theme::SUBTLE);
-        box(credit, x, top + g + ph + ui::px(2), w, lb);
-      }
+    // How many, last and only with a line to spare.
+    if (y + h - top >= lb + g / 2) {
+      count = ui::label(parent, Font::BODY, theme::SUBTLE);
+      box(count, x, top + g / 2, w, lb);
     }
+    lv_obj_t *const words[9] = {head, sub, stat[0], stat[1], stat[2], caption[0], caption[1], caption[2], count};
+    for (int i = 0; i < 9; ++i) base[i] = words[i] ? static_cast<int>(lv_obj_get_style_y(words[i], LV_PART_MAIN)) : 0;
+  }
+
+  // Every word up by the photo's room while no photo shows, and back down when one does.
+  void slide(bool photo_shows) {
+    if (!lift || photo_shows == !lifted) return;
+    lifted = !photo_shows;
+    lv_obj_t *const words[9] = {head, sub, stat[0], stat[1], stat[2], caption[0], caption[1], caption[2], count};
+    for (int i = 0; i < 9; ++i)
+      if (words[i]) lv_obj_set_y(words[i], base[i] - (lifted ? lift : 0));
   }
 
   void paint(const tessera::Plugin *plugin, const Sky &sky, int chosen, const Units &units, int range_nm, const Details *d) {
     const bool any = chosen >= 0;
+    const bool pictured = any && d && *d->photo;
     if (photo) {
-      ui::set_picture(photo, any && d && *d->photo ? d->photo : "");
-      show(photo, any && d && *d->photo);
-      ui::set_text(credit, any && d && *d->by ? tessera::fill(plugin->text("photo_by"), "name", d->by) : "");
+      ui::set_picture(photo, pictured ? d->photo : "");
+      show(photo, pictured);
+      show(credit, pictured);
+      ui::set_text(credit, pictured ? credit_of(plugin, d, w) : "");
+      slide(pictured);
     }
-    // How many, or why none.
-    std::string head;
-    if (!sky.placed) head = "";
-    else if (sky.waiting) head = "";
-    else {
+    if (count) {
       int within = 0;   // what the radar shows: the aircraft within its range of the place
       for (int i = 0; i < sky.n; ++i)
         if (sky.p[i].dist <= range_nm * 1.02f) ++within;
-      head = tessera::format(plugin->text("nearby"), within);
+      ui::set_text(count, sky.placed && !sky.waiting && any ? tessera::format(plugin->text("nearby"), within) : "");
     }
-    ui::set_text(count, head);
     if (!any) {
-      ui::set_text(name, plugin->text(!sky.placed ? "no_place" : sky.waiting ? "waiting" : "clear"));
-      ui::set_text(route, sky.placed && !sky.waiting ? tessera::fill(plugin->text("clear_hint"), "range", units.range(range_nm)) : "");
+      ui::set_font(head, head_face);
+      ui::set_text(head, plugin->text(!sky.placed ? "no_place" : sky.waiting ? "waiting" : "clear"));
+      ui::set_text(sub, sky.placed && !sky.waiting ? tessera::fill(plugin->text("clear_hint"), "range", units.range(range_nm)) : "");
       for (int i = 0; i < 3; ++i) {
         if (stat[i]) ui::set_text(stat[i], "");
         if (caption[i]) ui::set_text(caption[i], "");
@@ -414,27 +457,32 @@ struct About {
       return;
     }
     const Plane &q = sky.p[chosen];
-    ui::set_text(name, name_of(q));
-    // Where it flies: its route by its airports, else its airline, else what it is.
-    std::string where;
-    if (d && *d->from && *d->to) {
-      where = tessera::fill(tessera::fill(plugin->text("from_to"), "from", d->from).c_str(), "to", d->to);
-      if (d->from_city[0] && d->to_city[0]) {
-        const std::string cities = tessera::fill(tessera::fill(plugin->text("from_to"), "from", d->from_city).c_str(), "to", d->to_city);
-        if (ui::text_width(cities, Font::BODY) <= w) where = cities;
-      }
-    } else if (d && *d->airline) {
-      where = d->airline;
-    } else if (d && *d->model) {
-      where = std::string(d->maker) + (*d->maker ? " " : "") + d->model;
-    } else {
-      where = *q.type ? q.type : "";
+    // The head: where it flies, in the largest face it fits; its flight and airline under it. Without a known route
+    // the flight is the head and what it is the line under it.
+    // The cities in the large face, else the cities in a smaller one, else the airports' codes.
+    Font face = head_face;
+    std::string route = route_of(plugin, d, face, w);
+    const std::string codes = route_of(plugin, d, face, 1);
+    if (!route.empty() && (route == codes || ui::text_width(route, face) > w) && face == Font::HEADLINE) {
+      const std::string smaller = route_of(plugin, d, Font::TITLE, w);
+      if (smaller != route_of(plugin, d, Font::TITLE, 1) || ui::text_width(route, face) > w) face = Font::TITLE, route = smaller;
     }
-    if (ui::text_width(where, Font::BODY) > w && d && *d->model) where = d->model;
-    if (ui::text_width(where, Font::BODY) > w && *q.type) where = q.type;
-    ui::set_text(route, where);
+    ui::set_font(head, face);
+    std::string under;
+    if (!route.empty()) {
+      ui::set_text(head, route);
+      under = name_of(q);
+      const std::string kind = kind_of(d, q);
+      if (!kind.empty() && ui::text_width(under + "  ·  " + kind, Font::BODY) <= w) under += "  ·  " + kind;
+    } else {
+      ui::set_text(head, name_of(q));
+      under = kind_of(d, q);
+      if (ui::text_width(under, Font::BODY) > w && d && *d->model) under = d->model;
+      if (ui::text_width(under, Font::BODY) > w) under = q.type;
+    }
+    ui::set_text(sub, under);
     const std::string dist = worded(units.distance(q.dist), units.distance_unit());
-    const std::string alt = q.ground ? plugin->text("ground") : worded(units.altitude(q), units.altitude_unit());
+    const std::string alt = worded(units.altitude(q), units.altitude_unit());
     const std::string speed = worded(units.speed(q), units.speed_unit());
     if (grid) {
       const char *keys[3] = {"distance", "altitude", "speed"};
@@ -452,8 +500,9 @@ struct About {
   }
 
   void paint_colours() {
-    for (auto *l : {count, route, note}) if (l) ui::set_color(l, theme::MUTED);
-    if (name) ui::set_color(name, theme::INK);
+    if (head) ui::set_color(head, theme::INK);
+    if (sub) ui::set_color(sub, theme::MUTED);
+    if (count) ui::set_color(count, theme::SUBTLE);
     for (auto *l : caption) if (l) ui::set_color(l, theme::MUTED);
     for (auto *l : stat) if (l) ui::set_color(l, grid ? theme::INK : theme::INK_SOFT);
     if (credit) ui::set_color(credit, theme::SUBTLE);
@@ -480,7 +529,8 @@ class PlanePopup : public tessera::Popup {
     const bool large = ui::large();
     const int g = ui::px(large ? 12 : 8), lb = lh(Font::BODY), lt = lh(Font::TITLE), lhd = lh(Font::HEADLINE);
     width_ = c.width;
-    // The first row: an airplane on the instrument's ground as large as the close key, the name and what it is.
+    // The first row: an airplane on the instrument's ground as large as the close key, where it flies, and its flight
+    // and airline under that.
     disc_ = ui::block(c.parent, theme::INSTRUMENT);
     box(disc_, 0, 0, c.key, c.key);
     lv_obj_set_style_radius(disc_, LV_RADIUS_CIRCLE, 0);
@@ -490,15 +540,16 @@ class PlanePopup : public tessera::Popup {
     box(icon_, (c.key - lh(glyph)) / 2, (c.key - lh(glyph)) / 2, lh(glyph), lh(glyph));
     ui::set_text(icon_, ui::icon(AIRPLANE));
     ui::rotate(icon_, plane_.track - 45);
-    const int tx = c.key + g, tw = c.width - tx - c.corner;
-    name_ = ui::label(c.parent, Font::HEADLINE, theme::INK);
-    box(name_, tx, std::max(0, (c.key - lhd - lb) / 2), tw, lhd);
-    what_ = ui::label(c.parent, Font::BODY, theme::MUTED);
-    box(what_, tx, std::max(0, (c.key - lhd - lb) / 2) + lhd, tw, lb);
+    const int tx = c.key + g;
+    head_w_ = c.width - tx - c.corner;
+    head_ = ui::label(c.parent, Font::HEADLINE, theme::INK);
+    box(head_, tx, std::max(0, (c.key - lhd - lb) / 2), head_w_, lhd);
+    sub_ = ui::label(c.parent, Font::BODY, theme::MUTED);
+    box(sub_, tx, std::max(0, (c.key - lhd - lb) / 2) + lhd, head_w_, lb);
     int y = std::max(c.key, lhd + lb) + g;
-    // The photo, at its own shape, as wide as the popup allows within the glass.
+    // The photo, at its own shape, as large as the popup allows within the glass.
     if (ui::pictures()) {
-      const int ph = std::min(c.width * 2 / 3, c.height - y - 2 * lb - 2 * (lt + lb) - 3 * g);
+      const int ph = std::min(c.width * 2 / 3, c.height - y - lb - 2 * (lt + lb) - 2 * g);
       if (ph >= ui::px(80)) {
         const int pw = std::min(c.width, ph * 3 / 2), r = ui::px(large ? 12 : 8);
         // Under the photo, and in its place while there is none: the aircraft on the instrument's ground.
@@ -521,10 +572,6 @@ class PlanePopup : public tessera::Popup {
         y += ph + lb + g;
       }
     }
-    // Where it flies.
-    route_ = ui::label(c.parent, Font::TITLE, theme::INK);
-    box(route_, 0, y, c.width, lt);
-    y += lt + g;
     // Six numbers in two rows of three: a caption over each value.
     const int cols = 3, cw = (c.width - (cols - 1) * g) / cols;
     for (int i = 0; i < 6; ++i) {
@@ -545,21 +592,35 @@ class PlanePopup : public tessera::Popup {
   Sky sky_;
   Plane plane_;
   Units units_;
-  int width_ = 0;
-  lv_obj_t *disc_{}, *icon_{}, *name_{}, *what_{}, *stage_{}, *big_{}, *photo_{}, *credit_{}, *route_{}, *cap_[6]{}, *val_[6]{};
+  int width_ = 0, head_w_ = 0;
+  lv_obj_t *disc_{}, *icon_{}, *head_{}, *sub_{}, *stage_{}, *big_{}, *photo_{}, *credit_{}, *cap_[6]{}, *val_[6]{};
 
   void paint() {
-    if (!name_) return;
+    if (!head_) return;
     const Details *d = plugin_->details(plane_.hex, plane_.flight);
     lv_obj_set_style_bg_color(disc_, ui::color(theme::INSTRUMENT), 0);
     ui::set_color(icon_, theme::INSTRUMENT_GLOW);
-    ui::set_text(name_, name_of(plane_));
-    ui::set_color(name_, theme::INK);
-    std::string what = d && *d->airline ? d->airline : "";
-    if (d && *d->model) what += (what.empty() ? "" : " · ") + std::string(d->maker) + (*d->maker ? " " : "") + d->model;
-    if (what.empty()) what = *plane_.type ? plane_.type : plane_.hex;
-    ui::set_text(what_, what);
-    ui::set_color(what_, theme::MUTED);
+    // Where it flies, as the head; its flight and airline under it. Without a route the flight is the head.
+    std::string route = route_of(plugin_, d, Font::HEADLINE, head_w_);
+    Font face = Font::HEADLINE;
+    if (!route.empty() && ui::text_width(route, face) > head_w_) {
+      face = Font::TITLE;
+      route = route_of(plugin_, d, face, head_w_);
+    }
+    ui::set_font(head_, face);
+    const std::string kind = kind_of(d, plane_);
+    std::string under;
+    if (!route.empty()) {
+      ui::set_text(head_, route);
+      under = name_of(plane_);
+      if (!kind.empty()) under += "  ·  " + kind;
+    } else {
+      ui::set_text(head_, name_of(plane_));
+      under = kind.empty() ? (d && *d->owner ? d->owner : "") : kind;
+    }
+    ui::set_text(sub_, under);
+    ui::set_color(head_, theme::INK);
+    ui::set_color(sub_, theme::MUTED);
     if (photo_) {
       lv_obj_set_style_bg_color(stage_, ui::color(theme::INSTRUMENT), 0);
       ui::set_color(big_, theme::INSTRUMENT_MUTED);
@@ -568,19 +629,14 @@ class PlanePopup : public tessera::Popup {
                                         : (d && d->answered[0] ? plugin_->text("no_photo") : ""));
       ui::set_color(credit_, theme::SUBTLE);
     }
-    std::string where = d && *d->owner ? d->owner : "";
-    if (d && *d->from && *d->to)
-      where = tessera::fill(tessera::fill(plugin_->text("from_to"), "from", *d->from_city ? d->from_city : d->from).c_str(), "to",
-                            *d->to_city ? d->to_city : d->to);
-    ui::set_text(route_, where);
-    ui::set_color(route_, theme::INK);
     const char *keys[6] = {"altitude", "speed", "distance", "climb", "type", "registration"};
+    const std::string type = d && *d->model ? std::string(d->model) : std::string(*plane_.type ? plane_.type : "–");
     const std::string values[6] = {
-        plane_.ground ? plugin_->text("ground") : worded(units_.altitude(plane_), units_.altitude_unit()),
+        worded(units_.altitude(plane_), units_.altitude_unit()),
         worded(units_.speed(plane_), units_.speed_unit()),
         worded(units_.distance(plane_.dist), units_.distance_unit()),
         std::fabs(plane_.rate) < 64 ? plugin_->text("level") : worded(units_.climb(plane_), units_.climb_unit()),
-        *plane_.type ? plane_.type : "–",
+        ui::text_width(type, Font::TITLE) <= lv_obj_get_width(val_[4]) ? type : std::string(*plane_.type ? plane_.type : "–"),
         *plane_.reg ? plane_.reg : "–"};
     for (int i = 0; i < 6; ++i) {
       ui::set_text(cap_[i], plugin_->text(keys[i]));
@@ -618,7 +674,7 @@ class RadarTile : public tessera::Tile {
       scope_.make(c.parent, 0, 0, d);
       const int x = d + g, w = W - x;
       // A photo beside the words on a tile low and wide enough, else over them where the column is high enough.
-      const int text_w = ui::px(ui::large() ? 170 : 110), photo_w = (H - lh(Font::BODY)) * 3 / 2;
+      const int text_w = ui::px(ui::large() ? 150 : 100), photo_w = (H - lh(Font::BODY)) * 3 / 2;
       if (ui::pictures() && w >= text_w + g + photo_w && H >= ui::px(90)) {
         about_.make(c.parent, x, 0, w - photo_w - g, H, false);
         side_photo_ = ui::picture(c.parent);
@@ -626,13 +682,13 @@ class RadarTile : public tessera::Tile {
         side_credit_ = ui::label(c.parent, Font::BODY, theme::SUBTLE);
         box(side_credit_, W - photo_w, H - lh(Font::BODY), photo_w, lh(Font::BODY));
       } else {
-        about_.make(c.parent, x, 0, w, H, w >= ui::px(120));
+        about_.make(c.parent, x, 0, w, H, w >= ui::px(110));
       }
     } else {
-      const int words = std::min(H / 2, lh(Font::HEADLINE) + 2 * lh(Font::BODY) + 3 * (lh(Font::TITLE) + ui::px(2)));
+      const int words = std::min(H * 55 / 100, lh(Font::HEADLINE) + 2 * lh(Font::BODY) + 3 * (lh(Font::TITLE) + ui::px(2)) + W * 2 / 3);
       const int d = std::min(W, H - words - g);
       scope_.make(c.parent, (W - d) / 2, 0, d);
-      about_.make(c.parent, 0, d + g, W, H - d - g, H - d - g >= ui::px(260));
+      about_.make(c.parent, 0, d + g, W, H - d - g, true);
     }
     about_.paint_colours();
   }
@@ -643,13 +699,13 @@ class RadarTile : public tessera::Tile {
     sky_.now(epoch);
     const int chosen = sky_.nearest();
     const Details *d = chosen >= 0 ? plugin_->details(sky_.p[chosen].hex, sky_.p[chosen].flight) : nullptr;
-    scope_.paint(sky_, range_, chosen, units_);
+    scope_.paint(sky_, range_, chosen, units_, toward(plugin_, d, scope_.size / 2));
     about_.paint(plugin_, sky_, chosen, units_, range_, d);
     if (side_photo_) {
       const bool has = chosen >= 0 && d && *d->photo;
       ui::set_picture(side_photo_, has ? d->photo : "");
       show(side_photo_, has);
-      ui::set_text(side_credit_, has && *d->by ? tessera::fill(plugin_->text("photo_by"), "name", d->by) : "");
+      ui::set_text(side_credit_, has ? credit_of(plugin_, d, lv_obj_get_style_width(side_credit_, LV_PART_MAIN)) : "");
     }
   }
 
@@ -732,13 +788,19 @@ class SkyCard : public tessera::Card {
     shown_ = std::min(rows_, sky_.n);
     for (int i = 0; i < shown_; ++i) index_[i] = order[i];
     const int chosen = sky_.nearest();
-    scope_.paint(sky_, range_, chosen, units_);
+    const Details *near = chosen >= 0 ? plugin_->details(sky_.p[chosen].hex, sky_.p[chosen].flight, false) : nullptr;
+    scope_.paint(sky_, range_, chosen, units_, toward(plugin_, near, d_ / 2));
     for (int i = 0; i < rows_; ++i) {
       Row &r = row_[i];
       show(r.bg, i < shown_);
       if (i >= shown_) continue;
       const Plane &q = sky_.p[index_[i]];
-      ui::set_text(r.name, name_of(q));
+      // Where it flies by its airports, the way a departures board says it; its flight while that is not known.
+      const Details *d = plugin_->details(q.hex, q.flight, false);
+      // A width of 1 leaves the airports' codes: a list row has room for those.
+      const std::string codes = route_of(plugin_, d, narrow_ ? Font::BODY_LARGE : Font::TITLE, 1);
+      const std::string said = codes.empty() ? std::string(name_of(q)) : codes;
+      ui::set_text(r.name, said);
       const std::string alt = q.ground ? plugin_->text("ground") : worded(units_.altitude(q), units_.altitude_unit());
       const std::string dist = worded(units_.distance(q.dist), units_.distance_unit());
       ui::set_text(r.dist, narrow_ ? dist : dist + "  ·  " + alt);
@@ -799,30 +861,33 @@ void PlaneRadar::setup() {
   add_card("sky", [this]() { return new SkyCard(this); }, true);
 }
 
-const Details *PlaneRadar::details(const char *hex, const char *callsign) {
+const Details *PlaneRadar::details(const char *hex, const char *callsign, bool full) {
   if (!hex || !*hex) return nullptr;
-  for (auto &d : kept_)
-    if (!strcmp(d.hex, hex)) return &d;
-  // Not known yet: its three questions, once, in the place of the oldest.
-  Details &d = kept_[next_];
-  next_ = (next_ + 1) % KEPT;
-  d = Details();
-  snprintf(d.hex, sizeof(d.hex), "%s", hex);
-  JsonDocument request;
-  request["ask"] = "fetch:photo";
-  request["data"]["hex"] = hex;
-  d.asked[0] = tessera::send(this, request.as<JsonObjectConst>());
-  request["ask"] = "fetch:aircraft";
-  d.asked[2] = tessera::send(this, request.as<JsonObjectConst>());
-  if (callsign && *callsign) {
-    JsonDocument route;
-    route["ask"] = "fetch:route";
-    route["data"]["callsign"] = callsign;
-    d.asked[1] = tessera::send(this, route.as<JsonObjectConst>());
-  } else {
-    d.answered[1] = true;
+  if (kept_.size() < KEPT) kept_.resize(KEPT);
+  Details *d = nullptr;
+  for (auto &k : kept_)
+    if (!strcmp(k.hex, hex)) d = &k;
+  if (!d) {   // not known yet: in the place of the oldest
+    d = &kept_[next_];
+    next_ = (next_ + 1) % KEPT;
+    *d = Details();
+    snprintf(d->hex, sizeof(d->hex), "%s", hex);
   }
-  return &d;
+  // Each question once: the route for every aircraft a part names, its photo and type for the one it shows.
+  auto ask = [this, d](int k, const char *fetch, const char *name, const char *value) {
+    if (d->asked[k] || d->answered[k]) return;
+    JsonDocument request;
+    request["ask"] = fetch;
+    request["data"][name] = value;
+    d->asked[k] = tessera::send(this, request.as<JsonObjectConst>());
+  };
+  if (callsign && *callsign) ask(1, "fetch:route", "callsign", callsign);
+  else d->answered[1] = true;
+  if (full) {
+    ask(0, "fetch:photo", "hex", hex);
+    ask(2, "fetch:aircraft", "hex", hex);
+  }
+  return d;
 }
 
 void PlaneRadar::on_message(JsonObjectConst message) {

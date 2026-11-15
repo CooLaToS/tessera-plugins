@@ -2,7 +2,7 @@
 # The place is an entity of Home Assistant (your home zone unless you choose another); its position, rounded to about a
 # kilometre, is what the position service gets. The details of one aircraft are asked when the screen shows it.
 id: plane_radar
-version: 0.1.1
+version: 0.2.0
 api: "0.27"
 icon: airplane
 maintainer: MaxGramser

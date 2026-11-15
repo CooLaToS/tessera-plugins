@@ -1,5 +1,7 @@
 {
-  "_meta": { "name": "English" },
+  "_meta": {
+    "name": "English"
+  },
   "screen": {
     "nearby": "1 aircraft | {n} aircraft",
     "nearest": "Nearest",
@@ -20,7 +22,9 @@
     "from_to": "{from} to {to}",
     "photo_by": "Photo {name} · planespotters.net",
     "no_photo": "No photo of this aircraft",
-    "tap_plane": "Tap an aircraft for its details"
+    "tap_plane": "Tap an aircraft for its details",
+    "toward": "to {to}",
+    "photo_by_short": "Photo {name}"
   },
   "app": {
     "name": "Plane radar",
