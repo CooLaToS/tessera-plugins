@@ -1,6 +1,6 @@
 {
  "format": 1,
- "generated": "2026-11-15T07:35:55Z",
+ "generated": "2026-11-15T07:42:07Z",
  "plugin_api": "0.28",
  "blocked": [],
  "featured": [
@@ -2587,7 +2587,7 @@
    "status": "ok",
    "release": {
     "version": "0.4.0",
-    "sha": "3f1cd4a380092f8274b23fc9fa2fca71bf8a0ae7",
+    "sha": "009ebb98f0a189ed2569d796a0bdefbc1447ed2e",
     "date": "2026-11-15"
    },
    "manifest": {
