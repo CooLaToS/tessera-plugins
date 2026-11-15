@@ -4,7 +4,7 @@
   "bt_proxy": 1,
   "buienradar": 2,
   "cinema": 2,
-  "custom_card": 21,
+  "custom_card": 22,
   "dwd_rain": 2,
   "electricity_price": 3,
   "energidata_price": 3,
@@ -31,7 +31,7 @@
   "waste_overview": 5,
   "waze_traveltime": 4,
   "weather_warnings": 1,
-  "wifi_qr": 4,
+  "wifi_qr": 5,
   "world_clock": 3
  }
 }

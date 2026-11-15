@@ -17,7 +17,7 @@
    "likes": 2,
    "rating": 4.1,
    "ratings": 10,
-   "homes": 13
+   "homes": 14
   },
   "cinema": {
    "likes": 2,
@@ -26,16 +26,16 @@
    "homes": 2
   },
   "custom_card": {
-   "likes": 21,
+   "likes": 22,
    "rating": 4.7,
-   "ratings": 41,
-   "homes": 47
+   "ratings": 42,
+   "homes": 50
   },
   "dwd_rain": {
    "likes": 2,
    "rating": 3.8,
    "ratings": 9,
-   "homes": 11
+   "homes": 12
   },
   "electricity_price": {
    "likes": 3,
@@ -52,14 +52,14 @@
   "energy_flow": {
    "likes": 10,
    "rating": 3.8,
-   "ratings": 5,
+   "ratings": 6,
    "homes": 9
   },
   "flip_clock": {
    "likes": 18,
    "rating": 4.4,
-   "ratings": 57,
-   "homes": 49
+   "ratings": 59,
+   "homes": 50
   },
   "guition_relays": {
    "likes": 3,
@@ -81,8 +81,8 @@
   },
   "photo_clock": {
    "likes": 2,
-   "rating": 4.5,
-   "ratings": 4,
+   "rating": 4.2,
+   "ratings": 5,
    "homes": 14
   },
   "photo_slideshow": {
@@ -118,8 +118,8 @@
   "status_tile": {
    "likes": 3,
    "rating": 4.4,
-   "ratings": 18,
-   "homes": 25
+   "ratings": 19,
+   "homes": 26
   },
   "sweden_public_transport": {
    "likes": 0,
@@ -143,13 +143,13 @@
    "likes": 2,
    "rating": 4.5,
    "ratings": 13,
-   "homes": 19
+   "homes": 20
   },
   "timers": {
    "likes": 2,
    "rating": 4.7,
-   "ratings": 16,
-   "homes": 19
+   "ratings": 17,
+   "homes": 20
   },
   "toothbrush": {
    "likes": 2,
@@ -166,13 +166,13 @@
   "voice_assist": {
    "likes": 12,
    "rating": 4.7,
-   "ratings": 19,
-   "homes": 27
+   "ratings": 20,
+   "homes": 28
   },
   "waste_collection": {
    "likes": 11,
    "rating": 4.5,
-   "ratings": 24,
+   "ratings": 26,
    "homes": 26
   },
   "waste_overview": {
@@ -194,7 +194,7 @@
    "homes": 4
   },
   "wifi_qr": {
-   "likes": 4,
+   "likes": 5,
    "rating": 4.5,
    "ratings": 10,
    "homes": 9
@@ -202,7 +202,7 @@
   "world_clock": {
    "likes": 3,
    "rating": 4.5,
-   "ratings": 11,
+   "ratings": 12,
    "homes": 13
   }
  }
