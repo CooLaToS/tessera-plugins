@@ -52,6 +52,10 @@
     "within_3": "3 km",
     "within_5": "5 km",
     "within_10": "10 km",
-    "within_any": "Het hele bereik"
+    "within_any": "Het hele bereik",
+    "opt_view": "Weergave",
+    "opt_view_hint": "De radar als de hele tegel, met wat overvliegt op een kaartje onderaan; of de radar met details, getallen en foto ernaast of eronder.",
+    "view_full": "Radar vult de tegel",
+    "view_details": "Radar met details"
   }
 }

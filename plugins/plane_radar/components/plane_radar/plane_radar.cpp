@@ -172,13 +172,54 @@ static std::string worded(const std::string &value, const char *unit) {
 // The radar's face: a dark disc (the instrument roles, dark in both looks) with two rings, a cross, north, the place in
 // its middle, and an airplane for every aircraft turned along its course. The one it is about glows, with its name.
 struct Scope {
-  lv_obj_t *disc{}, *ring[2]{}, *cross[2]{}, *north{}, *home{}, *range{}, *plane[MOST]{}, *dot[MOST]{}, *tag{};
+  lv_obj_t *disc{}, *ring[3]{}, *cross[2]{}, *north{}, *home{}, *range{}, *plane[MOST]{}, *dot[MOST]{}, *tag{};
   int size = 0, glyph = 0, pip = 0;
+  int w = 0, h = 0, cx = 0, cy = 0;   // the face and its middle, the place: a disc's or a whole tile's
   bool tags = false;   // the name beside the chosen one
   bool dots = false;   // a small disc: every aircraft a dot, the chosen one its airplane
 
+  // The radar as the whole of a w x h room (a tile whose card is the instrument): no disc, the range a ring as large as
+  // the room's shorter side, the cross from edge to edge, north and the range in the top corners.
+  // `below`: the height a card lying at the bottom takes; the middle moves up by half of it, so the card lies over the
+  // outer ring and not over the aircraft near the place.
+  void make_full(lv_obj_t *parent, int w_, int h_, int below = 0) {
+    const int d = std::min(w_, h_);
+    make(parent, 0, 0, d);
+    w = w_, h = h_, cx = w_ / 2, cy = below ? std::max(d / 3, (h_ - below) / 2) : h_ / 2;
+    box(disc, 0, 0, w, h);
+    lv_obj_set_style_radius(disc, 0, 0);
+    const int line = std::max(1, ui::px(1));
+    box(cross[0], 0, cy, w, line);
+    box(cross[1], cx, 0, line, h);
+    for (int i = 0; i < 3; ++i) {
+      if (!ring[i]) {
+        ring[i] = ui::block(disc, theme::INSTRUMENT);
+        lv_obj_set_style_bg_opa(ring[i], LV_OPA_TRANSP, 0);
+        lv_obj_set_style_border_width(ring[i], line, 0);
+        lv_obj_set_style_radius(ring[i], LV_RADIUS_CIRCLE, 0);
+      }
+      const int r = d * (i + 1) / 3 - (i == 2 ? 2 * line : 0);
+      box(ring[i], cx - r / 2, cy - r / 2, r, r);
+    }
+    const int hd = std::max(4, ui::px(6));
+    box(home, cx - hd / 2, cy - hd / 2, hd, hd);
+    const int m = ui::px(ui::large() ? 12 : 8);
+    if (north) box(north, cx - lv_obj_get_style_width(north, LV_PART_MAIN) / 2, m / 2, lv_obj_get_style_width(north, LV_PART_MAIN), lh(Font::BODY));
+    if (range) {
+      lv_obj_set_style_text_align(range, LV_TEXT_ALIGN_RIGHT, 0);
+      box(range, w / 2, m / 2, w / 2 - m, lh(Font::BODY));
+    }
+    // Behind the aircraft: the outer ring, then the cross.
+    lv_obj_move_background(ring[2]);
+    for (auto *l : cross) lv_obj_move_background(l);
+    paint_colours();
+  }
+
+  bool contains(int x, int y) const { return x >= 0 && y >= 0 && x < w && y < h; }
+
   void make(lv_obj_t *parent, int x, int y, int d) {
     size = d;
+    w = h = d, cx = cy = d / 2;
     disc = ui::block(parent, theme::INSTRUMENT);
     box(disc, x, y, d, d);
     lv_obj_set_style_radius(disc, LV_RADIUS_CIRCLE, 0);
@@ -243,7 +284,7 @@ struct Scope {
   void paint_colours() {
     lv_obj_set_style_bg_color(disc, ui::color(theme::INSTRUMENT), 0);
     for (auto *c : cross) lv_obj_set_style_bg_color(c, ui::color(theme::INSTRUMENT_LINE), 0);
-    for (auto *r : ring) lv_obj_set_style_border_color(r, ui::color(theme::INSTRUMENT_LINE), 0);
+    for (auto *r : ring) if (r) lv_obj_set_style_border_color(r, ui::color(theme::INSTRUMENT_LINE), 0);
     lv_obj_set_style_bg_color(home, ui::color(theme::INSTRUMENT_INK), 0);
     if (north) ui::set_color(north, theme::INSTRUMENT_MUTED);
     if (range) ui::set_color(range, theme::INSTRUMENT_MUTED);
@@ -254,8 +295,8 @@ struct Scope {
   bool spot(const Plane &q, int range_nm, int &x, int &y) const {
     const float r = (size / 2.0f) - glyph / 2.0f;
     if (q.dist > range_nm * 1.02f) return false;
-    x = size / 2 + static_cast<int>(lroundf(q.east / range_nm * r));
-    y = size / 2 - static_cast<int>(lroundf(q.north / range_nm * r));
+    x = cx + static_cast<int>(lroundf(q.east / range_nm * r));
+    y = cy - static_cast<int>(lroundf(q.north / range_nm * r));
     return true;
   }
 
@@ -302,8 +343,8 @@ struct Scope {
     const std::string name = label.empty() ? std::string(name_of(sky.p[chosen])) : label;
     ui::set_text(tag, name);
     const int tw = ui::text_width(name, Font::BODY) + 2, gap = glyph / 2 + ui::px(4);
-    const int x = tag_x + gap + tw <= size - ui::px(4) ? tag_x + gap : tag_x - gap - tw;
-    box(tag, std::max(0, x), std::clamp(tag_y - lh(Font::BODY) / 2, 0, size - lh(Font::BODY)), tw, lh(Font::BODY));
+    const int x = tag_x + gap + tw <= w - ui::px(4) ? tag_x + gap : tag_x - gap - tw;
+    box(tag, std::max(0, x), std::clamp(tag_y - lh(Font::BODY) / 2, 0, h - lh(Font::BODY)), tw, lh(Font::BODY));
     lv_obj_move_foreground(tag);
   }
 
@@ -530,6 +571,100 @@ struct About {
   }
 };
 
+// A card lying on a radar that fills its tile, at the bottom, as the map's card lies on a map: the aircraft over you
+// in a few words (where it flies, its flight, how far and how high), or that nothing is.
+struct Sheet {
+  lv_obj_t *panel{}, *disc{}, *icon{}, *head{}, *sub{};
+  int x = 0, y = 0, w = 0, h = 0, text_w = 0;
+  bool with_disc = false;
+  bool idle = false;   // the airplane is the muted one of an empty sky
+
+  // How much of a tile's height the card and its margin take.
+  static int room() { return lh(Font::TITLE) + lh(Font::BODY) + 2 * ui::px(ui::large() ? 10 : 7) + ui::px(ui::large() ? 12 : 8); }
+
+  void make(lv_obj_t *parent, int W, int H) {
+    const int m = ui::px(ui::large() ? 12 : 8), pad = ui::px(ui::large() ? 10 : 7);
+    const int lt = lh(Font::TITLE), lb = lh(Font::BODY);
+    h = lt + lb + 2 * pad, w = W - 2 * m, x = m, y = H - m - h;
+    with_disc = w >= ui::px(230);
+    panel = ui::block(parent, theme::CARD);
+    box(panel, x, y, w, h);
+    lv_obj_set_style_radius(panel, ui::px(ui::large() ? 14 : 10), 0);
+    lv_obj_set_style_border_width(panel, 1, 0);
+    // An airplane on the instrument's ground at the left, as the popup's first row has it, where the card is wide.
+    const int dd = with_disc ? h - 2 * pad : 0;
+    const int tx = with_disc ? pad + dd + pad : pad + ui::px(2);
+    text_w = w - tx - pad;
+    head = ui::label(panel, Font::TITLE, theme::INK);
+    box(head, tx, pad, text_w, lt);
+    sub = ui::label(panel, Font::BODY, theme::MUTED);
+    box(sub, tx, pad + lt, text_w, lb);
+    if (!with_disc) {
+      paint_colours();
+      return;
+    }
+    disc = ui::block(panel, theme::INSTRUMENT);
+    box(disc, pad, pad, dd, dd);
+    lv_obj_set_style_radius(disc, LV_RADIUS_CIRCLE, 0);
+    const Font glyph = lh(Font::ICON) <= dd * 3 / 4 ? Font::ICON : Font::ICON_SMALL;
+    icon = ui::label(disc, glyph, theme::INSTRUMENT_GLOW);
+    lv_obj_set_style_text_align(icon, LV_TEXT_ALIGN_CENTER, 0);
+    ui::set_text(icon, ui::icon(AIRPLANE));
+    box(icon, 0, (dd - lh(glyph)) / 2, dd, lh(glyph));
+    paint_colours();
+  }
+
+  // The head in the title's face, else the body's where it does not fit.
+  void say(const std::string &text) {
+    ui::set_font(head, ui::text_width(text, Font::TITLE) <= text_w ? Font::TITLE : Font::BODY);
+    ui::set_text(head, text);
+  }
+
+  bool contains(int px_, int py_) const { return panel && px_ >= x && px_ < x + w && py_ >= y && py_ < y + h; }
+
+  void paint(const tessera::Plugin *plugin, const Sky &sky, int chosen, int nearest, const Units &units, int range_nm,
+             const Details *d) {
+    if (!panel) return;
+    if (icon && idle != (chosen < 0)) {
+      idle = chosen < 0;
+      ui::set_color(icon, idle ? theme::INSTRUMENT_MUTED : theme::INSTRUMENT_GLOW);
+      if (idle) ui::rotate(icon, 0);
+    }
+    if (chosen < 0) {
+      const bool quiet = nearest >= 0 && sky.placed && !sky.waiting;
+      say(plugin->text(!sky.placed ? "no_place" : sky.waiting ? "waiting" : quiet ? "none_over" : "clear"));
+      const std::string far = quiet ? worded(units.distance(sky.p[nearest].dist), units.distance_unit()) : "";
+      std::string line = quiet ? tessera::fill(plugin->text("nearest_at"), "distance", far.c_str())
+                       : sky.placed && !sky.waiting ? tessera::fill(plugin->text("clear_hint"), "range", units.range(range_nm)) : "";
+      if (quiet && ui::text_width(line, Font::BODY) > text_w) line = far;   // a narrow card: how far, alone
+      ui::set_text(sub, line);
+      return;
+    }
+    const Plane &q = sky.p[chosen];
+    if (icon) ui::rotate(icon, q.track - 45);
+    // Where it flies, else its flight; then its flight (when the route leads), how far and how high.
+    const std::string route = route_of(plugin, d, Font::TITLE, text_w);
+    say(route.empty() ? std::string(name_of(q)) : route);
+    const std::string dist = worded(units.distance(q.dist), units.distance_unit());
+    const std::string alt = worded(units.altitude(q), units.altitude_unit());
+    std::string line = route.empty() ? kind_of(d, q) : std::string(name_of(q));
+    for (const std::string &more : {dist, alt})
+      if (line.empty()) line = more;
+      else if (ui::text_width(line + "  ·  " + more, Font::BODY) <= text_w) line += "  ·  " + more;
+    ui::set_text(sub, line);
+  }
+
+  void paint_colours() {
+    if (!panel) return;
+    lv_obj_set_style_bg_color(panel, ui::color(theme::CARD), 0);
+    lv_obj_set_style_border_color(panel, ui::color(theme::LINE), 0);
+    if (disc) lv_obj_set_style_bg_color(disc, ui::color(theme::INSTRUMENT), 0);
+    if (icon) ui::set_color(icon, idle ? theme::INSTRUMENT_MUTED : theme::INSTRUMENT_GLOW);
+    ui::set_color(head, theme::INK);
+    ui::set_color(sub, theme::MUTED);
+  }
+};
+
 // ---------------------------------------------------------------------------------------------------------------------
 // The popup: one aircraft, large
 // ---------------------------------------------------------------------------------------------------------------------
@@ -689,7 +824,18 @@ class RadarTile : public tessera::Tile {
     units_.aviation = !strcmp(c.options["units"] | "metric", "aviation");
     overhead_ = c.options["overhead"] | true;
     within_nm_ = atoi(c.options["within"] | "3") / 1.852f;   // 0: the whole range
+    full_ = !strcmp(c.options["view"] | "full", "full");
     const int W = c.width, H = c.height, g = ui::px(ui::large() ? 12 : 8);
+    // The radar as the whole tile: its card the instrument's ground edge to edge, and what flies over on a card lying
+    // at the bottom where the tile is large enough to keep most of the radar free.
+    ui::set_card_color(full_ ? tessera::CardColor::INSTRUMENT : tessera::CardColor::NONE);
+    if (full_) {
+      const bool sheet = overhead_ && W >= ui::px(150) && H >= ui::px(150);
+      scope_.make_full(c.parent, W, H, sheet ? Sheet::room() : 0);
+      sx_ = sy_ = 0;
+      if (sheet) sheet_.make(c.parent, W, H);
+      return;
+    }
     // Without what flies over: the radar alone, as large as the tile.
     if (!overhead_) {
       const int d = std::min(W, H);
@@ -744,6 +890,10 @@ class RadarTile : public tessera::Tile {
     const int named = overhead_ ? chosen : nearest;
     const Details *d = named >= 0 ? plugin_->details(sky_.p[named].hex, sky_.p[named].flight, overhead_) : nullptr;
     scope_.paint(sky_, range_, named, units_, toward(plugin_, d, scope_.size / 2));
+    if (full_) {
+      sheet_.paint(plugin_, sky_, overhead_ ? chosen : -1, nearest, units_, range_, d);
+      return;
+    }
     if (!overhead_) return;
     about_.paint(plugin_, sky_, chosen, units_, range_, d, nearest);
     if (side_photo_) {
@@ -757,6 +907,7 @@ class RadarTile : public tessera::Tile {
   void on_theme() override {
     scope_.paint_colours();
     about_.paint_colours();
+    sheet_.paint_colours();
     if (side_credit_) ui::set_color(side_credit_, theme::SUBTLE);
   }
 
@@ -765,8 +916,8 @@ class RadarTile : public tessera::Tile {
   void on_tap() override {
     const tessera::Point at = tessera::tap_point();
     int index = -1;
-    const int d = scope_.size;
-    if (at.x >= sx_ && at.x < sx_ + d && at.y >= sy_ && at.y < sy_ + d) index = scope_.at(sky_, range_, at.x - sx_, at.y - sy_);
+    if (sheet_.contains(at.x, at.y)) index = shown_index_;   // the card lying on the radar: the one it names
+    else if (scope_.contains(at.x - sx_, at.y - sy_)) index = scope_.at(sky_, range_, at.x - sx_, at.y - sy_);
     else if (at.x >= 0 && shown_index_ >= 0) index = shown_index_;
     if (index >= 0) {
       explain(plugin_, sky_, index, units_);
@@ -783,6 +934,8 @@ class RadarTile : public tessera::Tile {
   Units units_;
   Scope scope_;
   About about_;
+  Sheet sheet_;
+  bool full_ = true;         // the radar is the whole tile
   lv_obj_t *side_photo_{}, *side_credit_{};
   int range_ = 13, tile_ = -1;
   bool overhead_ = true;     // what flies over shows under or beside the radar

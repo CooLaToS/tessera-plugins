@@ -2,8 +2,8 @@
 # The place is an entity of Home Assistant (your home zone unless you choose another); its position, rounded to about a
 # kilometre, is what the position service gets. The details of one aircraft are asked when the screen shows it.
 id: plane_radar
-version: 0.3.0
-api: "0.27"
+version: 0.4.0
+api: "0.28"
 icon: airplane
 maintainer: MaxGramser
 license: MIT
@@ -49,7 +49,7 @@ fetch:
     every: 1d
     map:
       fields:
-        photo: "photos[0].thumbnail_large.src"
+        photo: { path: "photos[0].thumbnail_large.src", as: url }   # whole: a text stops at 48 bytes
         by: "photos[0].photographer"
   - id: route
     url: "https://api.adsbdb.com/v0/callsign/{callsign}"
@@ -82,6 +82,14 @@ tiles:
     pictures: 1
     example: tile_example
     options:
+      - id: view
+        kind: choice
+        label: opt_view
+        hint: opt_view_hint
+        default: full
+        choices:
+          - { value: full, label: view_full }
+          - { value: details, label: view_details }
       - id: place
         kind: entity
         domains: [zone, person, device_tracker]

@@ -52,6 +52,10 @@
     "within_3": "3 km",
     "within_5": "5 km",
     "within_10": "10 km",
-    "within_any": "The whole range"
+    "within_any": "The whole range",
+    "opt_view": "View",
+    "opt_view_hint": "The radar as the whole tile, with what flies over on a card at the bottom; or the radar with its details, numbers and photo beside or under it.",
+    "view_full": "Radar fills the tile",
+    "view_details": "Radar and details"
   }
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 - 2026-11-15
+
+- The radar can be the whole tile, and is at first: its face reaches every edge, dark in both looks, and what flies over you lies on a card at the bottom, as a map's card does (where it flies, its flight, how far and how high), where the tile is large enough. A tap on an aircraft or on the card opens it, anywhere else the card with the whole sky. The radar with its details, as before, is the other choice of the new View setting. Needs plugin API 0.28. The photo comes at last: its address reached the screen cut at 48 characters, so planespotters answered "not found".
+
 ## 0.3.0 - 2026-11-15
 
 - What flies over you: under or beside the radar, where the tile has room, the nearest aircraft within a reach you choose (1, 2, 3, 5 or 10 km, or the whole range; 3 km at first), with its route, photo and numbers; farther away, the tile says how far the nearest is. Two new settings: Show what flies over (off: the radar alone, as large as the tile) and Over you is within. A tap on an aircraft of the tile, or on the words and photo of the one shown, opens that aircraft at once; anywhere else the card with the whole sky.

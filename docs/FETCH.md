@@ -252,6 +252,7 @@ A field is a path, or `{ path, as, tz }`:
 | `number` | A number (a text such as `"0,23"` is read as one). |
 | `epoch` | Seconds since 1970, from a number (seconds or milliseconds) or an ISO 8601 time. A time without a zone is read in `tz` (`Europe/Amsterdam`), or in Home Assistant's time zone without one. |
 | `numbers` | Every value the path reaches, in order, as one list of numbers: `prices[*].price` of 96 objects is 96 numbers. A value that is not a number is `null`, so a slot keeps its place. |
+| `url` (0.28) | A web address whole, up to 255 bytes: a picture's, for `ui::set_picture`. Only `http://` or `https://`; anything else, or longer, is `null`. A text field would cut it at 48 bytes into an address of nothing. |
 
 At most 12 fields (8 before 0.27; a manifest with more names `api: "0.27"`). The bytes still decide what travels: more
 fields leave room for fewer items. A field that is missing in an item is `null`.

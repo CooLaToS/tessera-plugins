@@ -1,4 +1,4 @@
-# The firmware API (plugin API 0.27)
+# The firmware API (plugin API 0.28)
 
 A plugin's code runs on the screen as an ESPHome component. It talks to Tessera's core through one header:
 
@@ -9,8 +9,8 @@ A plugin's code runs on the screen as an ESPHome component. It talks to Tessera'
 The header lives in the Tessera repository at `components/smart_display/plugin_api.h`; it is the reference, and this
 page explains it. Everything is in namespace `tessera`.
 
-A manifest names the plugin API it was written for: `api: "0.8"`, or `"0.9"` up to `"0.27"` for the parts those
-brought; the plugin API 0.27 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). Which cores a plugin builds on is under "Versions" at the end of this page.
+A manifest names the plugin API it was written for: `api: "0.8"`, or `"0.9"` up to `"0.28"` for the parts those
+brought; the plugin API 0.28 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). Which cores a plugin builds on is under "Versions" at the end of this page.
 
 A plugin adds to the screen in a few kinds of parts: tiles on a page, cards over the page, tap actions for Tessera's own
 tiles, items in the top bar, rows on the settings page, (0.14) screensavers, which the screen shows over the whole
@@ -814,7 +814,7 @@ void on_state(JsonObjectConst data) override {
 
 | Function | What |
 |---|---|
-| `ui::set_card_color(CardColor)` | The card of the tile in whose call this is: `RED`, `ORANGE`, `YELLOW`, `GREEN`, `MINT`, `BLUE`, `PURPLE`, `PINK` or `GRAY`, the colours a person can give any tile in the editor. `CardColor::NONE` gives the card back to what the person chose there. |
+| `ui::set_card_color(CardColor)` | The card of the tile in whose call this is: `RED`, `ORANGE`, `YELLOW`, `GREEN`, `MINT`, `BLUE`, `PURPLE`, `PINK` or `GRAY`, the colours a person can give any tile in the editor. `CardColor::NONE` gives the card back to what the person chose there. `CardColor::INSTRUMENT` (0.28) is the ground of the instrument roles, dark in both looks: a tile that is a radar, a night sky or a clock face edge to edge, drawn with `theme::INSTRUMENT_INK` and its kin. |
 | `ui::card_color()` | The colour of the card under the tile as it is drawn now: the tile's own, else the person's, else the plain card; the page's colour for a tile whose background the person set to None. For parts that have to go with the card. |
 | `ui::card_color(CardColor)` | A named card colour as this look draws it, anywhere: for a panel on a card over the page that wears the colour its tile wears. |
 
@@ -973,7 +973,7 @@ readout by it, so the pictures, a video and whatever reads the frames all stand 
 
 ## Versions
 
-A manifest names the plugin API it was written for: `api: "0.8"` up to `"0.27"`; the plugin API 0.27 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). When a
+A manifest names the plugin API it was written for: `api: "0.8"` up to `"0.28"`; the plugin API 0.28 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). When a
 screen is built, `smart_display.register_plugin()` compares it with the core's and stops the build with one sentence
 when it does not fit. A plugin fits a core when all three hold:
 
@@ -1034,6 +1034,7 @@ brought:
 | 0.25 | How large a tile is: `sizes: { full: true }` for a tile that only takes the whole page, `full: true` beside `min` and `max` now offers it, a `max` that reaches the grid offers it there too; `TileContext::full` says the tile is the whole page. |
 | 0.26 | A card's own colour: `ui::set_card_color(CardColor)`, `ui::card_color()` and `ui::card_color(CardColor)`, the tile's card in one of the screen's nine card colours. The manifest's side: an entity option that says which entities it is for (`device_class`, `matches`), a tile whose entity options one device fills (`from_device`), up to 24 options, options in a `group`, and a number that may stay empty (`optional`, `placeholder_from`). `tools/check.py` refuses these in a plugin of an older `api`. |
 | 0.27 | Pictures in a popup (`show_popup(plugin, id, make, width)`, the manifest's `popups`, `Popup::on_picture`); `ui::rotate`, a part turned along a course; the roles of an instrument that stays dark in both looks (`theme::INSTRUMENT`, `INSTRUMENT_LINE`, `INSTRUMENT_INK`, `INSTRUMENT_MUTED`, `INSTRUMENT_GLOW`). The app's side: a fetch that uses an attribute of an entity a person chose (`{place.latitude:2}`), a fetch the screen asks for (`asked`, `tessera::send` with `fetch:<id>`), an entity option's `default`, and 12 fields of a mapped item. `tools/check.py` refuses the C++ parts in a plugin of an older `api`. |
+| 0.28 | A card that is an instrument's face: `ui::set_card_color(CardColor::INSTRUMENT)`, the tile's card in the instrument roles' ground in both looks, so a radar, a night sky or a clock face reaches every edge. `tools/check.py` refuses it in a plugin of an older `api`. |
 
 A minor of the app's or the manifest's side only still counts: a plugin that uses what it brought needs an app that
 knows it ([MANIFEST.md](MANIFEST.md), "Which minor brought a field").

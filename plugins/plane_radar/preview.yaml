@@ -13,7 +13,7 @@ tiles:
     sizes: [1x1, 2x1, 1x2, 2x2, 3x2, 4x3]
   - tile: radar
     name: Photo
-    options: { place: zone.office, range: "13", within: "5" }
+    options: { view: details, place: zone.office, range: "13", within: "5" }
     sizes: [2x2, 3x2]
   - tile: radar
     name: Tap through
@@ -26,7 +26,7 @@ tiles:
     sizes: [2x2]
   - tile: radar
     name: Aviation units
-    options: { place: zone.home, range: "13", units: aviation }
+    options: { view: details, place: zone.home, range: "13", units: aviation }
     sizes: [2x1]
 
 states:
