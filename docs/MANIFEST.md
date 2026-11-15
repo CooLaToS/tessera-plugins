@@ -87,7 +87,7 @@ fetch:
       label: [LinePublicNumber, DestinationName50]
 ```
 
-It names `api: "0.7"` and builds on today's core, which offers plugin API 0.27: no minor after 0.7 changed a name
+It names `api: "0.7"` and builds on today's core, which offers plugin API 0.28: no minor after 0.7 changed a name
 ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). The fetch is plain `http` because OVapi offers nothing else and the
 fetch carries no secret.
 
@@ -109,7 +109,7 @@ fetch carries no secret.
 |---|---|---|
 | `id` | yes | The plugin's id. Unique in the index, the same as its folder and its component, and never changed. |
 | `version` | yes | Three numbers, `1.0.0`. Raise it for every change that reaches screens, and give it a `## 1.0.0` heading with its lines at the top of `CHANGELOG.md` ([MAKING_A_PLUGIN.md](MAKING_A_PLUGIN.md#the-changelog)). |
-| `api` | yes | The plugin API it was written for, as major and minor in quotes: `"0.8"`; the plugin API 0.27 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). Without quotes YAML reads a number, which the check refuses. It builds on a core with the same major and at least that minor, unless a minor after its own up to the core's is listed as a break (0.4, where a name changed its meaning; a form a minor takes away, as 0.24 did four, fails in the compiler at its call instead); `tools/check.py` refuses an `api` newer than the core it checks against, and one from before such a minor ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
+| `api` | yes | The plugin API it was written for, as major and minor in quotes: `"0.8"`; the plugin API 0.28 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). Without quotes YAML reads a number, which the check refuses. It builds on a core with the same major and at least that minor, unless a minor after its own up to the core's is listed as a break (0.4, where a name changed its meaning; a form a minor takes away, as 0.24 did four, fails in the compiler at its call instead); `tools/check.py` refuses an `api` newer than the core it checks against, and one from before such a minor ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
 | `icon` | yes | <a id="icon"></a>A Material Design Icons name from Tessera's icon set (`screen_manager/app/tile_icons.py` in the Tessera repository, such as `bus`, `train`, `calendar`, `thermometer`, `lightbulb`). The screen's icon font holds only that set. Tiles and top bar items take it when they name no icon of their own. |
 | `maintainer` | yes | The GitHub name of whoever looks after the plugin, 1 to 39 characters. `tools/check.py` refuses the template's `your-github-name` in any folder but `template/`. |
 | `license` | yes | An SPDX name that goes with AGPL-3.0: `MIT`, `Apache-2.0`, `BSD-2-Clause`, `BSD-3-Clause`, `ISC`, `MPL-2.0`, `LGPL-2.1-or-later`, `LGPL-3.0-or-later`, `GPL-3.0-or-later`, `GPL-3.0-only`, `AGPL-3.0-or-later`, `AGPL-3.0-only`, `Unlicense`, `0BSD`, `CC0-1.0`. |
@@ -398,7 +398,7 @@ The map's fields, in short ([FETCH.md](FETCH.md), "The map", has them in full):
 | Field | What |
 |---|---|
 | `items` | Where the list is, a path that starts with `$`. Required for a fetch that fills a list of choices. |
-| `fields` | 1 to 12 fields (8 before 0.27), each a path or `{ path, as, tz }`. `as` is `text` (default), `number`, `epoch` or `numbers` (0.5); `tz` only with `as: epoch`. In a fetch with `each`, `{ each: value }` or `{ each: label }` (0.12) is the value whose ask brought the item. Required for a fetch a tile shows. |
+| `fields` | 1 to 12 fields (8 before 0.27), each a path or `{ path, as, tz }`. `as` is `text` (default), `number`, `epoch`, `numbers` (0.5) or `url` (0.28, a picture's address whole); `tz` only with `as: epoch`. In a fetch with `each`, `{ each: value }` or `{ each: label }` (0.12) is the value whose ask brought the item. Required for a fetch a tile shows. |
 | `where`, `skip` | Keep, or drop, the items whose field (named by its key) is one of the values: a value or a list of values, texts or numbers, which may hold placeholders. Only with `items`. |
 | `sort` | A field, with `-` in front for the other way round. Only with `items`. |
 | `limit` | How many items at most, a whole number from 1 to 48. Default 48. Only with `items`. |
