@@ -5,7 +5,7 @@
    "likes": 0,
    "rating": null,
    "ratings": 1,
-   "homes": 3
+   "homes": 2
   },
   "bt_proxy": {
    "likes": 1,
@@ -21,8 +21,8 @@
   },
   "cinema": {
    "likes": 2,
-   "rating": null,
-   "ratings": 2,
+   "rating": 4.7,
+   "ratings": 3,
    "homes": 2
   },
   "custom_card": {
@@ -58,8 +58,8 @@
   "flip_clock": {
    "likes": 18,
    "rating": 4.4,
-   "ratings": 56,
-   "homes": 51
+   "ratings": 57,
+   "homes": 50
   },
   "guition_relays": {
    "likes": 3,
@@ -137,7 +137,7 @@
    "likes": 2,
    "rating": 4.4,
    "ratings": 9,
-   "homes": 12
+   "homes": 13
   },
   "thermo_dial": {
    "likes": 2,
