@@ -28,13 +28,13 @@
   "custom_card": {
    "likes": 21,
    "rating": 4.7,
-   "ratings": 40,
+   "ratings": 41,
    "homes": 47
   },
   "dwd_rain": {
-   "likes": 1,
-   "rating": 3.6,
-   "ratings": 8,
+   "likes": 2,
+   "rating": 3.8,
+   "ratings": 9,
    "homes": 11
   },
   "electricity_price": {
@@ -51,15 +51,15 @@
   },
   "energy_flow": {
    "likes": 10,
-   "rating": 3.5,
-   "ratings": 4,
+   "rating": 3.8,
+   "ratings": 5,
    "homes": 9
   },
   "flip_clock": {
    "likes": 18,
    "rating": 4.4,
    "ratings": 57,
-   "homes": 50
+   "homes": 49
   },
   "guition_relays": {
    "likes": 3,
@@ -68,9 +68,9 @@
    "homes": 15
   },
   "new_music": {
-   "likes": 4,
-   "rating": 4.7,
-   "ratings": 3,
+   "likes": 5,
+   "rating": 4.8,
+   "ratings": 4,
    "homes": 15
   },
   "ov_departures": {
@@ -131,7 +131,7 @@
    "likes": 2,
    "rating": 3.5,
    "ratings": 4,
-   "homes": 2
+   "homes": 3
   },
   "tap_sound": {
    "likes": 2,
@@ -149,12 +149,12 @@
    "likes": 2,
    "rating": 4.7,
    "ratings": 16,
-   "homes": 20
+   "homes": 19
   },
   "toothbrush": {
    "likes": 2,
-   "rating": 3.7,
-   "ratings": 3,
+   "rating": 4,
+   "ratings": 4,
    "homes": 5
   },
   "vinyl_deck": {
@@ -172,19 +172,19 @@
   "waste_collection": {
    "likes": 11,
    "rating": 4.5,
-   "ratings": 23,
+   "ratings": 24,
    "homes": 26
   },
   "waste_overview": {
    "likes": 5,
-   "rating": 3.9,
-   "ratings": 10,
+   "rating": 4,
+   "ratings": 11,
    "homes": 10
   },
   "waze_traveltime": {
    "likes": 4,
-   "rating": 4.3,
-   "ratings": 3,
+   "rating": 4.5,
+   "ratings": 4,
    "homes": 6
   },
   "weather_warnings": {
