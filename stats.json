@@ -51,8 +51,8 @@
   },
   "energy_flow": {
    "likes": 10,
-   "rating": 3.8,
-   "ratings": 6,
+   "rating": 3.9,
+   "ratings": 7,
    "homes": 9
   },
   "flip_clock": {
@@ -86,9 +86,9 @@
    "homes": 14
   },
   "photo_slideshow": {
-   "likes": 3,
-   "rating": 4.7,
-   "ratings": 3,
+   "likes": 4,
+   "rating": 4.5,
+   "ratings": 4,
    "homes": 9
   },
   "picture_frame": {
@@ -112,14 +112,14 @@
   "screen_camera": {
    "likes": 5,
    "rating": 4.7,
-   "ratings": 12,
+   "ratings": 13,
    "homes": 24
   },
   "status_tile": {
    "likes": 3,
    "rating": 4.4,
    "ratings": 19,
-   "homes": 26
+   "homes": 27
   },
   "sweden_public_transport": {
    "likes": 0,
@@ -143,13 +143,13 @@
    "likes": 2,
    "rating": 4.5,
    "ratings": 13,
-   "homes": 20
+   "homes": 21
   },
   "timers": {
    "likes": 2,
    "rating": 4.7,
    "ratings": 17,
-   "homes": 20
+   "homes": 21
   },
   "toothbrush": {
    "likes": 2,
@@ -161,13 +161,13 @@
    "likes": 1,
    "rating": 4.7,
    "ratings": 3,
-   "homes": 8
+   "homes": 9
   },
   "voice_assist": {
    "likes": 12,
    "rating": 4.7,
    "ratings": 20,
-   "homes": 28
+   "homes": 29
   },
   "waste_collection": {
    "likes": 11,
