@@ -1,6 +1,6 @@
 {
  "format": 1,
- "generated": "2026-11-17T04:03:26Z",
+ "generated": "2026-11-17T04:04:21Z",
  "plugin_api": "0.28",
  "blocked": [],
  "featured": [
@@ -2993,8 +2993,8 @@
    "status": "ok",
    "release": {
     "version": "0.6.17",
-    "sha": "71f7b468f16bb2cb4d340660d407919d0ba9aae9",
-    "date": "2026-11-03"
+    "sha": "9da41a6673fbe08e524bad3b5c97201d7b8f28c8",
+    "date": "2026-11-17"
    },
    "manifest": {
     "id": "screen_camera",
