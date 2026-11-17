@@ -2,6 +2,7 @@
 // access units the encoder left in its slots, RTCP sender reports.
 #include "screen_video.h"
 #include "screen_video_shared.h"
+#include "viewer_room.h"
 
 #include <algorithm>
 #include <cctype>
@@ -216,13 +217,20 @@ bool ScreenVideo::anyone_playing_() const {
 void ScreenVideo::accept_(int listener) {
   const int fd = accept(listener, nullptr, nullptr);
   if (fd < 0) return;
-  Viewer *free = nullptr;
-  for (auto &v : viewers_)
-    if (v.fd < 0 && free == nullptr) free = &v;
-  if (free == nullptr) {
+  // A free place, else the place of a connection that never played (viewer_room.h says why): only when every place
+  // plays is a newcomer refused.
+  viewer_room::Place places[MAX_VIEWERS];
+  for (int i = 0; i < MAX_VIEWERS; ++i) places[i] = {viewers_[i].fd >= 0, viewers_[i].playing, viewers_[i].silent_since};
+  const int at = viewer_room::place_for(places, MAX_VIEWERS, millis());
+  if (at == viewer_room::NONE) {
     ESP_LOGW(TAG, "A viewer was refused: %d watch already", MAX_VIEWERS);
     close(fd);
     return;
+  }
+  Viewer *free = &viewers_[at];
+  if (free->fd >= 0) {
+    ESP_LOGI(TAG, "A connection that never played made room for a new viewer");
+    drop_(*free);
   }
   timeval send_wait{2, 0};
   setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &send_wait, sizeof(send_wait));

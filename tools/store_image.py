@@ -13,6 +13,7 @@ the bench's pictures of the plugin's tiles, the way a person would fill it: the 
 example of preview.yaml once where there is room, and every cell used when the sizes allow it. A plugin with a card
 shows the card a tap on its first example opens on the small screen instead. A plugin with a screensaver and no tile
 shows its first screensaver on each screen that shows it, as the bench photographed it in standby (plugin API 0.14).
+A first example of the whole page (`sizes: [full]`) is the CYD's page as it is.
 The top bar of each page is the screen's own, from the bench.
 
 The words are the English ones: the picture is the same in every language of the app.
@@ -171,8 +172,15 @@ def arrange(pictures, columns, rows, budget=200_000):
 
 
 def compose_page(folder, screen, theme, first_only=False):
-    """A page of the screen in this theme: its top bar from the bench's first page, then the arranged tiles."""
+    """A page of the screen in this theme: its top bar from the bench's first page, then the arranged tiles. A plugin
+    whose first example is the whole page (`sizes: [full]`) shows that page as the bench drew it, on the small screens
+    that show its first example alone: one tile as large as the glass reads better there than two small ones."""
     page_file = folder / f'page-1-{theme}.png'
+    if first_only:
+        tiles = screen['views'][0]['tiles']
+        first = min((rank(t['example']) for t in tiles), default=None)
+        if any(t.get('span') == 'full' and rank(t['example']) == first for t in tiles) and page_file.is_file():
+            return Image.open(page_file).convert('RGB')
     geometry = page_geometry(folder, screen, page_file)
     if not page_file.is_file() or geometry is None:
         return None

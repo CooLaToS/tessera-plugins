@@ -72,7 +72,7 @@ tiles:
     name: tile_name                 # a key in translations/en.json, part "app"
     icon: bus
     sizes: { min: 1x1, max: 2x2 }   # the sizes the editor offers; add full: true for the whole page, or use only
-                                    # full: true for a tile that always fills it (plugin API 0.25, docs/MANIFEST.md)
+                                    # full: true for a tile that always fills it (since API 0.25, docs/MANIFEST.md)
     memory: 900                     # what one tile costs of the screen's layout memory
     data: departures                # the fetch whose answer the tile gets (leave out for none)
     options:                        # what the inspector shows
@@ -408,7 +408,7 @@ came along is offered to go as well.
 | What happens | Why | Fix |
 |---|---|---|
 | The build says "No tessera-plugin.yaml above ..." | The component is not in `components/<id>/` next to the manifest. | Keep the folder layout of the template. |
-| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.24 now (on Tessera's dev branch; the release has an older one until the next). Or update the screen's firmware. |
+| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.28 now (on Tessera's dev branch; the release has an older one until the next). Or update the screen's firmware. |
 | The build says a newer API "changed a name it may use" | `api:` is from before a minor that renamed something (0.4: `Plugin::on_tick` became `on_interval`). | Move the code to the new name and raise `api` ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
 | `check.py` says a key "belongs to the core" or "opens the screen" | `plugin.yaml` sets something a plugin never sets, such as `wifi:` or `http_request:`. | Leave it to the core; data comes through a `fetch` ([LIMITS.md](LIMITS.md), "plugin.yaml"). |
 | `check.py` says "provides speaker, so it makes a speaker: with id: ts_speaker" | The plugin promises a feature it does not make, or gives it another id. | Give the component the feature's id. |
@@ -420,5 +420,11 @@ came along is offered to go as well.
 | The screensaver shows Tessera's own face, not yours | The screen was not built with the plugin, the saver's id differs from `add_saver("...")`, or its step differs from the manifest's. | Build again; make the ids and the step match (the bench says so in its findings). |
 | The screen wakes when a key of the screensaver is tapped | The key was not made with `ui::takes_taps`, or not in a call of the saver. | Call `ui::takes_taps(key)` in `show()`, and say `taps: true` in the manifest. |
 | A key of the screensaver shows the old value for a moment, or flips back | The key was painted from the tap, or the action went out without `wish()`. | Call `tessera::wish()` and paint the key from `on_state` alone. |
+| A tap on a row, a marker or an item opens the card, or the card and that item | `on_tap` opens the card for every tap on the tile. | Read `tessera::tap_point()`, open what is under the finger, the card only for a tap elsewhere ([FIRMWARE_API.md](FIRMWARE_API.md), "A tile: `tessera::Tile`"). |
+| The tile says nothing is chosen while the fetch works, or a chosen entity is `{"wait": "too_large"}` | The tile's data and the entities its options chose share one message of about 2.6 KB. | Map fewer fields, lower the fetch's `limit`; since 0.27 the app gives a chosen entity up to half of it. Bench with an answer as long as the `limit`. |
+| The bench shows data, the screen shows none (no photos, no route) | `preview.yaml` holds a recorded error or a stand-in, so the bench never saw the service refuse. | Read the recorded answers; run the bench with `--live` once. |
+| A picture from a fetch never shows, while the bench draws one | Its address went as a text field, cut at 48 bytes into an address of nothing; the bench draws a stand-in whatever the address. | Map it with `as: url` (0.28), which keeps it whole ([FETCH.md](FETCH.md), "A field"). |
+| A part jumps to the top left when the tile moves it | `lv_obj_get_x`/`_y` read 0 before LVGL lays out. | Keep the coordinates you set in members and move from those. |
+| Something comes and goes every second | A choice by a threshold without a margin, with a value at the edge. | Keep what is shown until it is a little beyond the threshold. |
 | Text cut with dots | The label is wider than its room. | Take a smaller font from `tessera::Font`, or give the label more width. |
 | Squares instead of letters or icons | A character or icon the screen's fonts do not have. | Use plain text, and icons from Tessera's set only. |

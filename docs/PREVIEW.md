@@ -132,7 +132,7 @@ python3 tools/preview.py plugins/<id> --strict    # or from the plugin's folder:
   dark: 1 too faint to read on its ground: faint[Tomorrow]`), and are in `.preview/summary.json`.
 - **Then look.** `.preview/overview.png` has every tile at every size on every screen on one picture. Each picture is
   also its own file: `.preview/<screen>/tile-<example>-<size>-<light|dark>.png`, `card-<id>-<theme>.png`,
-  `tap-<example>-<size>.png`, `bar-<theme>.png`, `bar-icon-<theme>.png`, `saver-<example>-<theme>.png`,
+  `tap-<example>-<size>.png` (and `-2`, `-3` for a tap further), `bar-<theme>.png`, `bar-icon-<theme>.png`, `saver-<example>-<theme>.png`,
   `settings-<n>.png`, `page-<n>-<theme>.png`; a
   grid of `--grid` has a folder of its own under the screen (`.preview/guition/4x5/`). Look at the smallest screen
   (`cyd`) and the largest, light and dark: a finding only catches what can be measured, a picture shows what looks wrong.
@@ -164,7 +164,7 @@ tiles:                         # the tiles to show; each at every size it offers
   - tile: next                 # a tile id of the manifest
     name: Centraal Station     # the name a person gives it (default: the tile's name)
     options: { stop: "30005002", walk: 3 }   # its options, as the inspector sets them
-    sizes: [1x1, 3x2]          # optional
+    sizes: [1x1, 3x2]          # optional; `full` is the whole page, which many people give one large tile
   - tile: next
     name: No departures
     options: { stop: "30005002" }
@@ -178,6 +178,9 @@ answers:                       # the answer of each fetch, by its id, as the web
     "30005002":
       Passes:
         a: { LinePublicNumber: "2", DestinationName50: "Nieuwegein-Zuid", ExpectedDepartureTime: "{now+4m}" }
+  details:                     # a fetch the screen asks for (plugin API 0.27): one answer per value it is asked with
+    "row=A1": { title: First row, when: "{now+1h}" }
+    "row=B2": { title: Second row, when: "{now+2h}" }
 
 states:                        # entities, as Home Assistant has them
   sensor.energy_price:
@@ -214,12 +217,49 @@ time_zone: Europe/Amsterdam    # the zone of the moments below (default Europe/A
   five minutes as text (`2026-10-11T15:20:00`), `"{now-1d}"` a day ago, `"{epoch+2h}"` in two hours as seconds since
   1970 (a number when it is the whole value). Units: `s`, `m`, `h`, `d`.
 - A tile's `data:` gives what the screen gets as it is, past the map: `data: { wait: failed }` shows its failed state.
+- **A fetch that reads an entity's attribute** (plugin API 0.27, `{place.latitude}` in its URL, [FETCH.md](FETCH.md),
+  "An attribute of an entity a person chooses"): the bench fills it in from `states`, for the entity the tile example's
+  `options` choose for that option, or the option's `default` when they choose none (`zone.home`). An entity or an
+  attribute that `states` lacks makes the tile wait as `not_filled`, as in the app. The answer itself still comes from
+  `answers`, by the fetch's id, whatever the attribute says.
+- **A fetch the screen asks for** (plugin API 0.27, `asked`, [FETCH.md](FETCH.md), "A fetch the screen asks for"): the
+  bench answers the screen's `{"ask": "fetch:<id>", "data": {...}}` with the app's own code, so the values are checked,
+  the fetch's `map` applies and the answer is bounded as in the app, and it reaches the plugin's `on_message` as a
+  command's answer does. The web service's JSON is `answers.<id>`. When that is a mapping whose keys are all
+  `"<asked name>=<value>"` (`"row=A1"`), the bench takes the one whose value is the one the screen asked with, so each
+  row a finger taps can have details of its own; a value without a key gets `"failed"`, with a note. Any other answer is
+  the answer for every value. An ask the app would refuse (a fetch without `asked`, a name missing, a value that is no
+  text of 1 to 64 of the allowed characters) is a warning. The limit of 20 asks a minute is the app's and not the
+  bench's. With `--live` the bench asks the service.
+- **Pictures in a popup** (plugin API 0.27): a popup's places ask as a card's do, and the bench answers them the same
+  way, from `pictures` or a drawn picture. As in the app, a popup only shows pictures from a host of
+  `permissions.network`, never Home Assistant's own.
 - **Pictures** (plugin API 0.10, [FIRMWARE_API.md](FIRMWARE_API.md), "Pictures on a tile"): the bench answers a tile's
   question for its places as the app would, with the file `pictures` names for each address, relative to the plugin's
   folder (a small JPEG or PNG; nothing is fetched from the internet). An address without a file gets a drawn picture,
   with a note. The app's own checks hold here too: a tile without `pictures` in the manifest, or an address on a host
   `permissions.network` does not name, gets a warning and no picture.
 - Never put a secret here: the file is shared with your plugin.
+
+### A tap further
+
+The bench taps every tile once and photographs what opens. A tile's example can name taps that follow, to show a
+second step: a key on the card the tile opened, the popup that key shows, a row of a list.
+
+```yaml
+tiles:
+  - tile: room
+    name: Studio
+    sizes: [2x2]
+    then: [[0.44, 0.42]]        # after the tile's own tap: a tap at 44 % of the glass's width, 42 % of its height
+```
+
+Each point is `[x, y]` as a part of the glass, `0, 0` its top left and `1, 1` its bottom right, at most four. The bench
+taps them in order, waits for a question to Home Assistant to be answered, and keeps a picture of each tap that
+changed the glass: `tap-<example>-<size>-2.png` for the first of them, `-3` for the next. Then it taps the glass's
+corner, which closes a popup, and closes the card. A point is right for one shape of glass: the same part of a
+4-inch square is another spot on a 10-inch panel, so give such an example the size and run it with the `--board` it
+was made for. A tap that changed nothing is an `info`.
 
 ## Screensavers
 

@@ -91,6 +91,10 @@ def own_plugin(folder, own_id):
     date = git('log', '-1', '--format=%cs', '--', str(folder.relative_to(ROOT)))
     if not sha:
         raise SystemExit(f'{folder.name}: not committed yet; commit it, then build the index')
+    # The index names a commit, and the app builds that commit. With changes that are not committed the index would
+    # name the version of the folder on disk beside the commit of the one before it.
+    if git('status', '--porcelain', '--', str(folder.relative_to(ROOT))):
+        raise SystemExit(f'{folder.name}: has changes that are not committed; commit them, then build the index')
     return {
         'id': manifest['id'], 'repo': REPO, 'repo_id': own_id, 'path': normal_path(folder.relative_to(ROOT)),
         'label': 'tessera', 'status': 'ok', 'release': {'version': manifest['version'], 'sha': sha, 'date': date},

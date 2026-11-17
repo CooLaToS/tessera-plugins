@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.17 - 2026-11-17
+- **A viewer is not refused for connections that never watched.** The video has room for three viewers. Home Assistant
+  opens a connection each time it tries to get a picture or work out how to play the video, and one that never went on
+  to play kept its place for 30 seconds. A few of those in a row filled all three places, and the next viewer, someone
+  opening the video, was refused ("3 watch already" in the log). A new viewer now takes a free place, or else the place
+  of the connection that does not play and has been silent longest; only when all three really watch is a fourth
+  refused. Seen on a Guition 10.1 (ESP32-P4 v3.2) with four live camera tiles on its glass.
+
 ## 0.6.16 - 2026-11-01
 - **The OV5647's colours are right, also when the picture turns.** On a Waveshare ESP32-P4 7B with its OV5647 the
   picture was purple and orange showed as green: Espressif's driver sets one of the sensor's two mirror bits, and the

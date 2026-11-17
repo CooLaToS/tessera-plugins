@@ -463,18 +463,44 @@ def adds(entry, folder):
 # ---- the app's side, with one plugin and no Home Assistant
 
 class SampleFetcher:
-    """Stands in for plugin_fetch.Fetcher: the answer of a fetch is the one preview.yaml gives for its id."""
+    """Stands in for plugin_fetch.Fetcher: the answer of a fetch is the one preview.yaml gives for its id. For a fetch
+    the screen asks for (plugin API 0.27, `asked`), `answers.<id>` may hold one answer per value: a mapping whose keys
+    are all "<asked name>=<value>" (`row=KL1234`), of which the one for the value the screen gave is the answer. A fetch
+    that reads an attribute of a chosen entity (`{place.latitude}`, 0.27) waits as not filled in, as in the app, while
+    preview.yaml's `states` lack it."""
 
     def __init__(self):
         self.answers = {}
 
-    async def get(self, plugin, manifest, fetch, values, secrets):
+    async def get(self, plugin, manifest, fetch, values, secrets, **asked):
         return None, self.peek(plugin, fetch, values, secrets)
 
-    def peek(self, plugin, fetch, values, secrets):
+    def current(self, plugin, fetch, values, secrets, **asked):
+        return None, self.peek(plugin, fetch, values, secrets)
+
+    def peek(self, plugin, fetch, values, secrets, **asked):
+        word = getattr(plugin_fetch, 'attribute_word', None)
+        for read in fetch.get('reads') or ():
+            name = f'{read["option"]}.{read["attribute"]}'
+            if word and word(values.get(name), read['decimals']) is None:
+                raise plugin_fetch.FetchRefused(f'not filled in: {name}')
         if fetch['id'] not in self.answers:
             return None
-        return {'data': self.answers[fetch['id']], 'error': None, 'stale': False}
+        data = self.answers[fetch['id']]
+        names = fetch.get('asked') or ()
+        if names and per_value(data, names):
+            data = next((answer for key, answer in data.items()
+                         if str(values.get(key.split('=', 1)[0], '')) == key.split('=', 1)[1]), None)
+            if data is None:
+                return None
+        return {'data': data, 'error': None, 'stale': False}
+
+
+def per_value(data, names):
+    """Whether preview.yaml's answer of a fetch the screen asks for holds one answer per value: a mapping whose keys are
+    all "<a name of asked>=<value>"."""
+    return isinstance(data, dict) and bool(data) and all(
+        isinstance(key, str) and '=' in key and key.split('=', 1)[0] in names for key in data)
 
 
 class PreviewApp(app_plugins.Plugins):
@@ -533,6 +559,12 @@ def examples_of(entry, spec):
             raise SystemExit(f'preview.yaml tiles[{i}]: tile {example.get("tile")!r} is not in the manifest '
                              f'({", ".join(kinds) or "it has none"})')
         name = example.get('name') or entry.text(kind['name'])
+        then = example.get('then') or []
+        if not isinstance(then, list) or len(then) > 4 or any(
+                not isinstance(point, list) or len(point) != 2 or
+                any(isinstance(n, bool) or not isinstance(n, (int, float)) or not 0 <= n <= 1 for n in point) for point in then):
+            raise SystemExit(f'preview.yaml tiles[{i}].then: up to 4 points of the glass, each [x, y] from 0 to 1 '
+                             '(docs/PREVIEW.md, "A tap further")')
         out.append({**example, 'key': f'{i + 1}-{SHOWN.sub("-", name.lower()).strip("-") or kind["id"]}',
                     'name': name, 'kind': kind,
                     'spans': [s for s in (example.get('sizes') or spans(kind))] + (['full'] if kind.get('full') else [])})
@@ -645,6 +677,11 @@ class Bench(run.Run):
                        for entity, value in moments(spec.get('states') or {}, spec.get('time_zone') or ZONE, self.now).items()}
         self.read = set()
         self.saver_shown = None   # the example of preview.yaml's savers on the glass, for its picture
+        # What answers a fetch the screen asks for (plugin API 0.27): the app's own code (Plugins.fetch_reply) with its
+        # own stand-in for the service, so preview.yaml's answers map as in the app whatever the tiles are given.
+        self.asker = PreviewApp(entry, self.states, args.live, secrets_from_env(entry), spec.get('time_zone') or ZONE)
+        if isinstance(self.asker.fetcher, SampleFetcher):
+            self.asker.fetcher.answers = moments(spec.get('answers') or {}, spec.get('time_zone') or ZONE, self.now)
 
     def find(self, level, where, text):
         self.findings.append({'level': level, 'screen': self.screen.key, 'where': where, 'text': text})
@@ -707,6 +744,13 @@ class Bench(run.Run):
             # The step's own picture under a face of `backdrop: true` (plugin API 0.14): as the app makes it.
             asyncio.get_running_loop().create_task(self.answer_backdrop(dict(call.data)))
             self.last_ask = time.monotonic()
+        elif call.service == 'esphome.screen_camera' and 'q' in call.data:
+            # A question of the one picture system (picture_question): a plugin's tile, card, popup or screensaver.
+            job = asyncio.get_running_loop().create_task(self.answer_question(dict(call.data)))
+            self.picture_jobs = getattr(self, 'picture_jobs', set())
+            self.picture_jobs.add(job)
+            job.add_done_callback(self.picture_jobs.discard)
+            self.last_ask = time.monotonic()
         elif call.service == 'esphome.screen_camera' and core.plugin_tile(str(call.data.get('tiles') or '')):
             job = asyncio.get_running_loop().create_task(self.answer_pictures(dict(call.data)))
             self.picture_jobs = getattr(self, 'picture_jobs', set())
@@ -752,6 +796,72 @@ class Bench(run.Run):
         url = self.pictures.url(f'{self.screen.key}-backdrop-{view}.bmp', body)
         await self.send({'v': 1, 'op': 'camera', 't': 'saver', 'e': data.get('entity', ''), 'u': url, 'view': view})
 
+    async def answer_question(self, data):
+        """A plugin's question for its pictures in the one picture system (picture_question, as a screen with the plugin
+        API 0.17 and later asks): read and answered as the app does (Manager.answer_camera, plugin_place,
+        plugin_picture_refused, picture_service), with the files preview.yaml's `pictures` names for each address, a
+        drawn stand-in for an address it names none for, and the step's own picture for a screensaver's `step:`."""
+        import dataclasses
+        import media_art
+        import picture_paint
+        import picture_question as pq
+        import picture_service
+        import picture_sources
+        import plugin_pictures
+        try:
+            number = int(data.get('n'))
+        except (TypeError, ValueError):
+            return
+        question = pq.parse(data['q'], number, (self.screen.width, self.screen.height))
+        if not question or not str(question.owner.kind).startswith('plugin_'):
+            return
+        owner = question.owner
+        part = str(owner.key).split('.', 1)[1] if '.' in str(owner.key) else ''
+        if owner.kind == 'plugin_card':
+            # A card's, or a popup's (plugin API 0.27): a popup has only the hosts of permissions.network.
+            kind = self.entry.card(part) if hasattr(self.entry, 'card') else None
+            of = False if (kind or {}).get('popup') else bool(owner.of)
+        elif owner.kind == 'plugin_saver':
+            kind = self.entry.saver(part) if hasattr(self.entry, 'saver') else None
+            of = bool(owner.of)
+        else:
+            kind, of = self.entry.tile(part), None
+        named = self.spec.get('pictures') or {}
+        raws = []
+        for n, source in enumerate(question.sources):
+            url = getattr(source, 'text', '') or ''
+            problem = plugin_pictures.refused_source(source, len(question.sources), self.entry.manifest, kind, of)
+            if problem:
+                self.find('warning', 'pictures', f'{owner.key} asked for {url[:80]}, which the app refuses: {problem}')
+                raws.append(None)
+                continue
+            file = named.get(url) if isinstance(named, dict) else None
+            if url.startswith(SAVER_PICTURE):
+                shown = self.saver_shown or {}
+                raws.append((self.args.plugin.resolve() / str(shown['picture'])).read_bytes() if shown.get('picture')
+                            else sample_photo(self.screen.width, self.screen.height) if shown.get('step') == 'photos'
+                            else media_art.png(7, 640))
+            elif file:
+                raws.append((self.args.plugin.resolve() / str(file)).read_bytes())
+            else:
+                self.find('info', 'pictures', f'preview.yaml names no picture for {url[:80]}: a drawn one stands in')
+                raws.append(media_art.png(sum(map(ord, url)) + n, 320))
+        # As the app paints them: within the screen's cap, each place as its source says.
+        scaled = question.scaled(pq.scale_for(question.box, question.cap))
+        scaled = dataclasses.replace(scaled, places=tuple(
+            picture_service.Service._painted(None, scaled, place, picture_sources.Resolved()) for place in scaled.places))
+        body = picture_paint.paint(scaled, raws)
+        url = self.pictures.url(f'{self.screen.key}-question-{number}.bmp', body)
+        message = pq.answer(scaled, url, 'q', '', None)
+        for attempt in range(8):
+            try:
+                await self.send({**message, 'view': 0})
+                return
+            except Exception as error:
+                if attempt == 7:
+                    self.find('warning', 'pictures', f'the pictures of {owner.key} did not reach the screen: {error}')
+                await asyncio.sleep(0.5)
+
     async def answer_pictures(self, data):
         """The pictures of a plugin tile's, card's or screensaver's places (a card: plugin API 0.13, a screensaver: 0.14),
         as the app would answer (server.answer_plugin_pictures): the frames of
@@ -763,7 +873,7 @@ class Bench(run.Run):
         import tile_art
         import media_art
         question = plugin_pictures.parse(data, (self.screen.width, self.screen.height))
-        # A card over the page asks too (plugin API 0.13, `card`): the app answers it as "pcard".
+        # A card over the page asks too (plugin API 0.13, `card`), and a popup (0.27): the app answers both as "pcard".
         card = bool(getattr(question, 'card', False))
         # A screensaver asks too (plugin API 0.14, `saver`): the app answers it as "psaver".
         saver = bool(getattr(question, 'saver', False))
@@ -781,8 +891,11 @@ class Bench(run.Run):
         elif card:
             # The manifest's card; Home Assistant's own pictures when the card was opened for an entity (`for`), as the
             # app allows them for a card shown for an entity of the layout.
-            kind = next((c for c in self.entry.manifest.get('cards') or [] if c['id'] == question.tile), None)
-            problem = plugin_pictures.refused(question, self.entry.manifest, kind, bool(question.of))
+            # A popup's places (plugin API 0.27) ask as a card's do, and have only the hosts of permissions.network.
+            kind = (self.entry.card(question.tile) if hasattr(self.entry, 'card')
+                    else next((c for c in self.entry.manifest.get('cards') or [] if c['id'] == question.tile), None))
+            of = False if (kind or {}).get('popup') else bool(question.of)
+            problem = plugin_pictures.refused(question, self.entry.manifest, kind, of)
         else:
             kind = self.entry.tile(question.tile)
             problem = plugin_pictures.refused(question, self.entry.manifest, kind)
@@ -830,7 +943,9 @@ class Bench(run.Run):
         ask, reply = body.get('ask'), {'re': body.get('re') if isinstance(body.get('re'), int) else 0}
         commands = self.spec.get('commands') or {}
         self.asked.append(ask)
-        if ask not in self.entry.manifest['permissions']['ha_commands']:
+        if isinstance(ask, str) and ask.startswith('fetch:'):
+            await self.answer_fetch(ask, body.get('data'), reply)
+        elif ask not in self.entry.manifest['permissions']['ha_commands']:
             reply.update(ok=False, error='not_allowed')
             self.find('warning', 'questions', f'asked {ask!r}, which permissions.ha_commands does not name: the app refuses it')
         elif ask not in commands:
@@ -848,6 +963,27 @@ class Bench(run.Run):
                 if attempt == 7:
                     self.find('warning', 'questions', f'the answer to {ask!r} did not reach the screen: {error}')
                 await asyncio.sleep(0.5)
+
+    async def answer_fetch(self, ask, data, reply):
+        """A fetch the screen asks for (plugin API 0.27, `fetch:<id>`), answered as the app answers it
+        (Plugins.fetch_reply: the values checked, the map applied, bounded), from preview.yaml's `answers.<id>`, one
+        answer for every value or one per value (SampleFetcher); with --live from the service."""
+        fetch_id = ask[len('fetch:'):]
+        fetch = self.entry.fetch(fetch_id)
+        if not hasattr(self.asker, 'fetch_reply'):
+            reply.update(ok=False, error='refused')
+            self.find('warning', 'questions', f'asked {ask!r}, which this Tessera does not answer: it needs plugin API 0.27')
+            return
+        reply.update(await self.asker.fetch_reply(self.entry, fetch_id, data))
+        shown = json.dumps(data, ensure_ascii=False)[:120]
+        if not fetch or not fetch.get('asked'):
+            self.find('warning', 'questions', f'asked {ask!r}, which is no fetch of the manifest with "asked": the app refuses it')
+        elif reply.get('error') == 'refused':
+            self.find('warning', 'questions', f'asked {ask!r} with {shown}: the app refuses it (every name of asked, '
+                                              'each a text of 1 to 64 of A-Z a-z 0-9 _ . : + - and the space)')
+        elif reply.get('error') == 'failed' and not self.args.live:
+            self.find('info', 'questions', f'asked {ask!r} with {shown}; preview.yaml has no answer under answers.{fetch_id} '
+                                           'for it, so it got "failed"')
 
     async def dark(self, on):
         self.client.switch_command(self.dark_switch.key, on)
@@ -1069,6 +1205,26 @@ class Bench(run.Run):
                 view['taps'].append({'file': file, 'name': example['name'], 'span': span, 'actions': did})
                 if after.tobytes() != before.tobytes():
                     self.faults(await self.audit(card=True), f'the tap on {example["name"]} {span}')
+            # A tap further (preview.yaml `then`): each a point of the glass, tapped after the tile's own tap and
+            # photographed when the glass changed: a key on the card the tile opened, the popup that key shows.
+            for step, (x, y) in enumerate(example.get('then') or [], 2):
+                shown = await self.render('_before', keep=False)
+                heard = len(self.actions)
+                await self.tap(round(x * (self.screen.width - 1)), round(y * (self.screen.height - 1)))
+                await asyncio.sleep(1.5)   # a popup that asks Home Assistant first: the answer and its first tick
+                await self.pictures_settled()
+                now = await self.render('_after', keep=False)
+                if now.tobytes() != shown.tobytes():
+                    file = f'tap-{example["key"]}-{span}-{step}.png'
+                    now.save(out / file)
+                    view['taps'].append({'file': file, 'name': f'{example["name"]}, tap {step}', 'span': span,
+                                         'actions': self.actions[heard:]})
+                else:
+                    self.find('info', f'the tap on {example["name"]} {span}', f'tap {step} at {x}, {y} changed nothing on this glass')
+            if example.get('then'):
+                # A popup goes on a tap beside its card: the glass's own corner.
+                await self.tap(2, self.screen.height - 3)
+                await asyncio.sleep(0.4)
             await self.call('render_close_cards')
             await asyncio.sleep(0.4)
 

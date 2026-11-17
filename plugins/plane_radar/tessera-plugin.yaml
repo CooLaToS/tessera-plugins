@@ -1,0 +1,137 @@
+# Plane radar: the aircraft in the sky around a place right now, on a radar, with the nearest one's photo and route.
+# The place is an entity of Home Assistant (your home zone unless you choose another); its position, rounded to about a
+# kilometre, is what the position service gets. The details of one aircraft are asked when the screen shows it.
+id: plane_radar
+version: 0.4.0
+api: "0.28"
+icon: airplane
+maintainer: MaxGramser
+license: MIT
+stage: beta
+topics: [travel]
+requires:
+  esphome: 2026.6.2
+boards: any
+flash_kb: 48
+
+permissions:
+  network: [api.adsb.lol, api.planespotters.net, t.plnspttrs.net, api.adsbdb.com]
+  # The screen asks these itself, for the aircraft it shows (a fetch the screen asks for, plugin API 0.27).
+attributes: [cloud]
+privacy: https://github.com/MaxGramser/tessera-plugins/blob/main/plugins/plane_radar/README.md#what-leaves-your-home
+
+fetch:
+  # The aircraft within the range of the place, nearest first: adsb.lol's live ADS-B positions, the range in nautical
+  # miles. The place goes rounded to two decimals (about a kilometre).
+  - id: sky
+    url: "https://api.adsb.lol/v2/point/{place.latitude:2}/{place.longitude:2}/{range}"
+    every: 30s
+    map:
+      items: "$.ac[*]"
+      sort: dst
+      limit: 16
+      fields:
+        hex: hex
+        flight: flight
+        reg: r
+        type: t
+        lat: { path: lat, as: number }
+        lon: { path: lon, as: number }
+        alt: alt_baro
+        gs: { path: gs, as: number }
+        track: { path: track, as: number }
+        rate: { path: baro_rate, as: number }
+        dst: { path: dst, as: number }
+  # One aircraft's photo, its route and what it is: asked by the screen for the aircraft it shows.
+  - id: photo
+    url: "https://api.planespotters.net/pub/photos/hex/{hex}"
+    asked: [hex]
+    every: 1d
+    map:
+      fields:
+        photo: { path: "photos[0].thumbnail_large.src", as: url }   # whole: a text stops at 48 bytes
+        by: "photos[0].photographer"
+  - id: route
+    url: "https://api.adsbdb.com/v0/callsign/{callsign}"
+    asked: [callsign]
+    every: 1h
+    map:
+      fields:
+        airline: response.flightroute.airline.name
+        from: response.flightroute.origin.iata_code
+        from_city: response.flightroute.origin.municipality
+        to: response.flightroute.destination.iata_code
+        to_city: response.flightroute.destination.municipality
+  - id: aircraft
+    url: "https://api.adsbdb.com/v0/aircraft/{hex}"
+    asked: [hex]
+    every: 1d
+    map:
+      fields:
+        maker: response.aircraft.manufacturer
+        model: response.aircraft.type
+        owner: response.aircraft.registered_owner
+
+tiles:
+  - id: radar
+    name: tile_name
+    icon: airplane
+    sizes: { min: 1x1, max: 4x4 }
+    memory: 600
+    data: sky
+    pictures: 1
+    example: tile_example
+    options:
+      - id: view
+        kind: choice
+        label: opt_view
+        hint: opt_view_hint
+        default: full
+        choices:
+          - { value: full, label: view_full }
+          - { value: details, label: view_details }
+      - id: place
+        kind: entity
+        domains: [zone, person, device_tracker]
+        attributes: [latitude, longitude]
+        default: zone.home
+        label: opt_place
+        hint: opt_place_hint
+      - id: range
+        kind: choice
+        label: opt_range
+        default: "13"
+        choices:
+          - { value: "6", label: range_10 }
+          - { value: "13", label: range_25 }
+          - { value: "27", label: range_50 }
+      - id: units
+        kind: choice
+        label: opt_units
+        default: metric
+        choices:
+          - { value: metric, label: units_metric }
+          - { value: aviation, label: units_aviation }
+      - id: overhead
+        kind: toggle
+        label: opt_overhead
+        hint: opt_overhead_hint
+        default: true
+      - id: within
+        kind: choice
+        label: opt_within
+        hint: opt_within_hint
+        default: "3"
+        choices:
+          - { value: "1", label: within_1 }
+          - { value: "2", label: within_2 }
+          - { value: "3", label: within_3 }
+          - { value: "5", label: within_5 }
+          - { value: "10", label: within_10 }
+          - { value: "0", label: within_any }
+
+cards:
+  - { id: sky, name: card_name, wide: true }
+
+popups:
+  - { id: plane, pictures: 1 }

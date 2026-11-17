@@ -1,5 +1,14 @@
 # Wijzigingen
 
+## 0.6.17 - 2026-11-17
+- **Een kijker wordt niet geweigerd om verbindingen die nooit keken.** De video heeft plek voor drie kijkers. Home
+  Assistant opent een verbinding telkens als het een beeld wil ophalen of uitzoekt hoe het de video afspeelt, en een
+  verbinding die daarna niet ging afspelen hield haar plek 30 seconden bezet. Een paar daarvan achter elkaar vulden alle
+  drie de plekken, en de volgende kijker, iemand die de video opent, werd geweigerd ("3 watch already" in de log). Een
+  nieuwe kijker krijgt nu een vrije plek, of anders de plek van de verbinding die niet afspeelt en het langst stil is;
+  alleen als alle drie echt kijken wordt een vierde geweigerd. Gezien op een Guition 10.1 (ESP32-P4 v3.2) met vier
+  live cameratiles op het scherm.
+
 ## 0.6.16 - 2026-11-01
 - **De kleuren van de OV5647 kloppen, ook als het beeld draait.** Op een Waveshare ESP32-P4 7B met zijn OV5647 was het
   beeld paars en kwam oranje als groen: Espressifs driver zet een van de twee spiegelbits van de sensor, en de

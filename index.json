@@ -1,13 +1,18 @@
 {
  "format": 1,
- "generated": "2026-11-13T23:40:19Z",
- "plugin_api": "0.24",
+ "generated": "2026-11-17T04:04:21Z",
+ "plugin_api": "0.28",
  "blocked": [],
  "featured": [
   "ov_departures",
   "waste_collection"
  ],
  "claims": {
+  "air_quality": {
+   "repo": "https://github.com/maxgramser/tessera-plugins",
+   "repo_id": 1408945265,
+   "path": "plugins/air_quality"
+  },
   "av_wall_panel_controls": {
    "repo": "https://github.com/mrecosse/tessera-plugin-av-wall-panel-controls",
    "repo_id": 1428153427,
@@ -103,6 +108,11 @@
    "repo_id": 1408945265,
    "path": "plugins/picture_frame"
   },
+  "plane_radar": {
+   "repo": "https://github.com/maxgramser/tessera-plugins",
+   "repo_id": 1408945265,
+   "path": "plugins/plane_radar"
+  },
   "pollen": {
    "repo": "https://github.com/hflocki/tessera-pollenprognos",
    "repo_id": 1424507029,
@@ -195,6 +205,706 @@
   }
  },
  "plugins": [
+  {
+   "id": "air_quality",
+   "repo": "https://github.com/maxgramser/tessera-plugins",
+   "repo_id": 1408945265,
+   "path": "plugins/air_quality",
+   "label": "tessera",
+   "status": "ok",
+   "release": {
+    "version": "0.1.1",
+    "sha": "37c3f2ef63375315dd9ef41ae1e70690f179f06c",
+    "date": "2026-11-14"
+   },
+   "manifest": {
+    "id": "air_quality",
+    "version": "0.1.1",
+    "api": "0.26",
+    "icon": "air-purifier",
+    "maintainer": "MaxGramser",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "home",
+     "weather"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 40,
+    "permissions": {
+     "ha_commands": [
+      "recorder/statistics_during_period"
+     ]
+    },
+    "answers": [
+     {
+      "command": "recorder/statistics_during_period",
+      "fields": {
+       "mean": {
+        "path": "[*][*].mean",
+        "as": "numbers"
+       },
+       "min": {
+        "path": "[*][*].min",
+        "as": "numbers"
+       },
+       "max": {
+        "path": "[*][*].max",
+        "as": "numbers"
+       }
+      }
+     }
+    ],
+    "tiles": [
+     {
+      "id": "room",
+      "name": "tile_name",
+      "icon": "air-purifier",
+      "sizes": {
+       "min": "1x1",
+       "max": "4x4"
+      },
+      "memory": 600,
+      "example": "tile_example",
+      "from_device": true,
+      "options": [
+       {
+        "id": "room",
+        "kind": "choice",
+        "label": "opt_room",
+        "hint": "opt_room_hint",
+        "default": "living",
+        "choices": [
+         {
+          "value": "living",
+          "label": "room_living"
+         },
+         {
+          "value": "bedroom",
+          "label": "room_bedroom"
+         },
+         {
+          "value": "office",
+          "label": "room_office"
+         },
+         {
+          "value": "studio",
+          "label": "room_studio"
+         },
+         {
+          "value": "gallery",
+          "label": "room_gallery"
+         },
+         {
+          "value": "workshop",
+          "label": "room_workshop"
+         },
+         {
+          "value": "nursery",
+          "label": "room_nursery"
+         },
+         {
+          "value": "kitchen",
+          "label": "room_kitchen"
+         }
+        ]
+       },
+       {
+        "id": "co2",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "carbon_dioxide"
+        ],
+        "label": "opt_co2"
+       },
+       {
+        "id": "pm25",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "pm25"
+        ],
+        "label": "opt_pm25"
+       },
+       {
+        "id": "pm10",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "pm10"
+        ],
+        "label": "opt_pm10"
+       },
+       {
+        "id": "voc",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "volatile_organic_compounds",
+         "volatile_organic_compounds_parts"
+        ],
+        "matches": [
+         "voc_index",
+         "total_volatile_organic_component_index",
+         "voc",
+         "tvoc"
+        ],
+        "label": "opt_voc"
+       },
+       {
+        "id": "nox",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "matches": [
+         "nox_index",
+         "nitrogen_index",
+         "nox"
+        ],
+        "label": "opt_nox"
+       },
+       {
+        "id": "temperature",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "temperature"
+        ],
+        "label": "opt_temperature"
+       },
+       {
+        "id": "humidity",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "humidity"
+        ],
+        "label": "opt_humidity"
+       },
+       {
+        "id": "co2_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 450,
+        "max": 5000,
+        "step": 50,
+        "unit": "ppm",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 1000,
+          "bedroom": 800,
+          "office": 800,
+          "studio": 800,
+          "gallery": 1000,
+          "workshop": 1000,
+          "nursery": 800,
+          "kitchen": 1000
+         }
+        },
+        "label": "opt_co2_max"
+       },
+       {
+        "id": "pm25_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 1,
+        "max": 150,
+        "step": 1,
+        "unit": "µg/m³",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 10,
+          "bedroom": 10,
+          "office": 10,
+          "studio": 10,
+          "gallery": 5,
+          "workshop": 10,
+          "nursery": 10,
+          "kitchen": 15
+         }
+        },
+        "label": "opt_pm25_max"
+       },
+       {
+        "id": "pm10_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 1,
+        "max": 300,
+        "step": 1,
+        "unit": "µg/m³",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 20,
+          "bedroom": 20,
+          "office": 20,
+          "studio": 20,
+          "gallery": 10,
+          "workshop": 20,
+          "nursery": 20,
+          "kitchen": 30
+         }
+        },
+        "label": "opt_pm10_max"
+       },
+       {
+        "id": "voc_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 1,
+        "max": 5000,
+        "step": 10,
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 150,
+          "bedroom": 150,
+          "office": 150,
+          "studio": 150,
+          "gallery": 150,
+          "workshop": 150,
+          "nursery": 150,
+          "kitchen": 150
+         }
+        },
+        "label": "opt_voc_max"
+       },
+       {
+        "id": "nox_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 2,
+        "max": 500,
+        "step": 1,
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 20,
+          "bedroom": 20,
+          "office": 20,
+          "studio": 20,
+          "gallery": 20,
+          "workshop": 20,
+          "nursery": 20,
+          "kitchen": 20
+         }
+        },
+        "label": "opt_nox_max"
+       },
+       {
+        "id": "temperature_min",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 0,
+        "max": 40,
+        "step": 0.5,
+        "unit": "°C",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 19,
+          "bedroom": 16,
+          "office": 20,
+          "studio": 20,
+          "gallery": 16,
+          "workshop": 15,
+          "nursery": 16,
+          "kitchen": 18
+         }
+        },
+        "label": "opt_temperature_min"
+       },
+       {
+        "id": "temperature_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 0,
+        "max": 40,
+        "step": 0.5,
+        "unit": "°C",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 24,
+          "bedroom": 20,
+          "office": 24,
+          "studio": 24,
+          "gallery": 25,
+          "workshop": 25,
+          "nursery": 20,
+          "kitchen": 25
+         }
+        },
+        "label": "opt_temperature_max"
+       },
+       {
+        "id": "humidity_min",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 40,
+          "bedroom": 40,
+          "office": 40,
+          "studio": 45,
+          "gallery": 40,
+          "workshop": 35,
+          "nursery": 40,
+          "kitchen": 40
+         }
+        },
+        "label": "opt_humidity_min"
+       },
+       {
+        "id": "humidity_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 60,
+          "bedroom": 60,
+          "office": 60,
+          "studio": 55,
+          "gallery": 60,
+          "workshop": 65,
+          "nursery": 60,
+          "kitchen": 65
+         }
+        },
+        "label": "opt_humidity_max"
+       },
+       {
+        "id": "swing_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "unit": "%",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "studio": 15,
+          "gallery": 10
+         }
+        },
+        "label": "opt_swing_max"
+       }
+      ]
+     }
+    ],
+    "cards": [
+     {
+      "id": "detail",
+      "name": "card_name",
+      "wide": true
+     }
+    ]
+   },
+   "translations": {
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor",
+      "choose": "Choose sensors",
+      "no_data": "No data",
+      "all_fine": "All in range",
+      "n_fine": "1 value in range | {n} values in range",
+      "more": "+{n} more",
+      "co2": "CO₂",
+      "co2_plain": "CO2",
+      "pm25": "PM2.5",
+      "pm10": "PM10",
+      "voc": "VOC",
+      "nox": "NOx",
+      "temperature": "Temperature",
+      "temperature_short": "Temp",
+      "humidity": "Humidity",
+      "humidity_short": "Humid.",
+      "swing": "Humidity swing",
+      "swing_short": "Swing",
+      "co2_high": "CO₂ high",
+      "co2_high_plain": "CO2 high",
+      "pm25_high": "Fine dust high",
+      "pm10_high": "Dust high",
+      "voc_high": "VOC high",
+      "nox_high": "NOx high",
+      "temperature_high": "Too warm",
+      "temperature_low": "Too cold",
+      "humidity_high": "Too humid",
+      "humidity_low": "Too dry",
+      "swing_high": "Humidity swings",
+      "advice_co2": "Open a window, or turn the ventilation up.",
+      "advice_pm25": "Switch on the cooker hood, put out candles, or run an air purifier.",
+      "advice_pm10": "Let the dust settle, then air the room.",
+      "advice_voc": "Air the room, and put away what smells.",
+      "advice_nox": "Switch on the cooker hood and air the room.",
+      "advice_temperature_high": "Shade the windows, or cool the room.",
+      "advice_temperature_low": "Turn the heating up a little.",
+      "advice_humidity_high": "Air the room, or run a dehumidifier.",
+      "advice_humidity_low": "Run a humidifier, or set the heating a little lower.",
+      "advice_swing": "Keep it even: air briefly, and let a humidifier hold one level.",
+      "advice_fine": "Nothing to do: the air is fine for this room.",
+      "cause_co2": "People breathing in a closed room. A lot of it makes you tired and less sharp.",
+      "cause_pm25": "Fine dust: mostly cooking, candles, a wood stove or smoke from outside.",
+      "cause_pm10": "Coarser dust that was stirred up: vacuuming, sanding, pollen.",
+      "cause_voc": "Fumes of everyday things: cleaning products, paint, glue, new furniture, cooking.",
+      "cause_nox": "Gases of burning: a gas hob, a stove, candles, or traffic outside.",
+      "cause_temperature_high": "Sun on the windows, the heating, or many people in the room.",
+      "cause_temperature_low": "The heating is low, or a window is open.",
+      "cause_humidity_high": "Showering, cooking, drying laundry, or too little fresh air.",
+      "cause_humidity_low": "Heating dries the air, most of all in winter.",
+      "cause_swing": "How far the humidity moved in 24 hours. Heating that cycles, airing and a humidifier that switches make it move.",
+      "word_high": "High",
+      "word_low": "Low",
+      "what_to_do": "What to do",
+      "tap_hint": "tap a value for more",
+      "lead_from": "Where it comes from",
+      "lead_do": "First step",
+      "lead_now": "Now",
+      "lead_day": "Last 24 hours",
+      "in_range": "In range for this room. Nothing to do.",
+      "room_living": "Living room",
+      "room_bedroom": "Bedroom",
+      "room_office": "Office",
+      "room_studio": "Studio",
+      "room_gallery": "Gallery",
+      "room_workshop": "Workshop",
+      "room_nursery": "Nursery",
+      "room_kitchen": "Kitchen",
+      "judged_as": "Judged as: {room}"
+     },
+     "app": {
+      "name": "Air quality",
+      "summary": "One verdict for the air of a room, from the sensors you choose, judged for the kind of room it is.",
+      "tile_name": "Air quality",
+      "tile_example": "Good · 92",
+      "card_name": "Air quality",
+      "opt_room": "Kind of room",
+      "opt_room_hint": "Sets what counts as good here: a bedroom wants cooler, fresher air than a workshop.",
+      "room_living": "Living room",
+      "room_bedroom": "Bedroom",
+      "room_office": "Office",
+      "room_studio": "Music studio",
+      "room_gallery": "Gallery or collection",
+      "room_workshop": "Workshop",
+      "room_nursery": "Nursery",
+      "room_kitchen": "Kitchen",
+      "opt_co2": "CO₂ sensor",
+      "opt_pm25": "PM2.5 sensor",
+      "opt_pm10": "PM10 sensor",
+      "opt_voc": "VOC sensor",
+      "opt_nox": "NOx sensor",
+      "opt_temperature": "Temperature sensor",
+      "opt_humidity": "Humidity sensor",
+      "group_limits": "Limits of your own",
+      "opt_co2_max": "CO₂ fine up to",
+      "opt_pm25_max": "PM2.5 fine up to",
+      "opt_pm10_max": "PM10 fine up to",
+      "opt_voc_max": "VOC fine up to",
+      "opt_nox_max": "NOx fine up to",
+      "opt_temperature_min": "Temperature fine from",
+      "opt_temperature_max": "Temperature fine up to",
+      "opt_humidity_min": "Humidity fine from",
+      "opt_humidity_max": "Humidity fine up to",
+      "opt_swing_max": "Humidity may move in 24 hours"
+     }
+    },
+    "nl": {
+     "_meta": {
+      "name": "Nederlands"
+     },
+     "screen": {
+      "good": "Goed",
+      "fair": "Matig",
+      "poor": "Slecht",
+      "choose": "Kies sensoren",
+      "no_data": "Geen gegevens",
+      "all_fine": "Alles in orde",
+      "n_fine": "1 waarde in orde | {n} waarden in orde",
+      "more": "+{n} meer",
+      "co2": "CO₂",
+      "co2_plain": "CO2",
+      "pm25": "PM2.5",
+      "pm10": "PM10",
+      "voc": "VOC",
+      "nox": "NOx",
+      "temperature": "Temperatuur",
+      "temperature_short": "Temp",
+      "humidity": "Luchtvochtigheid",
+      "humidity_short": "Vocht",
+      "swing": "Vochtschommeling",
+      "swing_short": "Schommel.",
+      "co2_high": "CO₂ hoog",
+      "co2_high_plain": "CO2 hoog",
+      "pm25_high": "Fijnstof hoog",
+      "pm10_high": "Stof hoog",
+      "voc_high": "VOC hoog",
+      "nox_high": "NOx hoog",
+      "temperature_high": "Te warm",
+      "temperature_low": "Te koud",
+      "humidity_high": "Te vochtig",
+      "humidity_low": "Te droog",
+      "swing_high": "Vocht schommelt",
+      "advice_co2": "Zet een raam open, of de ventilatie hoger.",
+      "advice_pm25": "Zet de afzuigkap aan, doe kaarsen uit, of zet een luchtreiniger aan.",
+      "advice_pm10": "Laat het stof neerdalen en lucht daarna de ruimte.",
+      "advice_voc": "Lucht de ruimte en berg op wat ruikt.",
+      "advice_nox": "Zet de afzuigkap aan en lucht de ruimte.",
+      "advice_temperature_high": "Doe de zonwering dicht, of koel de ruimte.",
+      "advice_temperature_low": "Zet de verwarming iets hoger.",
+      "advice_humidity_high": "Lucht de ruimte, of zet een ontvochtiger aan.",
+      "advice_humidity_low": "Zet een luchtbevochtiger aan, of de verwarming iets lager.",
+      "advice_swing": "Houd het gelijk: lucht kort, en laat een bevochtiger één stand vasthouden.",
+      "advice_fine": "Niets te doen: de lucht is goed voor deze ruimte.",
+      "cause_co2": "Mensen die ademen in een dichte ruimte. Veel ervan maakt je moe en minder scherp.",
+      "cause_pm25": "Fijnstof: vooral koken, kaarsen, een houtkachel of rook van buiten.",
+      "cause_pm10": "Grover stof dat is opgewaaid: stofzuigen, schuren, pollen.",
+      "cause_voc": "Dampen van alledaagse dingen: schoonmaakmiddel, verf, lijm, nieuwe meubels, koken.",
+      "cause_nox": "Gassen van verbranding: een gasfornuis, een kachel, kaarsen of verkeer buiten.",
+      "cause_temperature_high": "Zon op de ramen, de verwarming, of veel mensen in de ruimte.",
+      "cause_temperature_low": "De verwarming staat laag, of er staat een raam open.",
+      "cause_humidity_high": "Douchen, koken, was drogen, of te weinig frisse lucht.",
+      "cause_humidity_low": "Verwarming droogt de lucht uit, vooral in de winter.",
+      "cause_swing": "Hoe ver de luchtvochtigheid in 24 uur bewoog. Verwarming die aan- en afslaat, luchten en een bevochtiger die schakelt laten hem bewegen.",
+      "word_high": "Hoog",
+      "word_low": "Laag",
+      "what_to_do": "Wat te doen",
+      "tap_hint": "tik op een waarde voor meer",
+      "lead_from": "Waar het vandaan komt",
+      "lead_do": "Eerste stap",
+      "lead_now": "Nu",
+      "lead_day": "Laatste 24 uur",
+      "in_range": "Binnen de grenzen van deze ruimte. Niets te doen.",
+      "room_living": "Woonkamer",
+      "room_bedroom": "Slaapkamer",
+      "room_office": "Kantoor",
+      "room_studio": "Studio",
+      "room_gallery": "Galerie",
+      "room_workshop": "Werkplaats",
+      "room_nursery": "Babykamer",
+      "room_kitchen": "Keuken",
+      "judged_as": "Beoordeeld als: {room}"
+     },
+     "app": {
+      "name": "Luchtkwaliteit",
+      "summary": "Eén oordeel over de lucht in een ruimte, uit de sensoren die je kiest, beoordeeld naar het soort ruimte.",
+      "tile_name": "Luchtkwaliteit",
+      "tile_example": "Goed · 92",
+      "card_name": "Luchtkwaliteit",
+      "opt_room": "Soort ruimte",
+      "opt_room_hint": "Bepaalt wat hier goed is: een slaapkamer wil koelere, frissere lucht dan een werkplaats.",
+      "room_living": "Woonkamer",
+      "room_bedroom": "Slaapkamer",
+      "room_office": "Kantoor",
+      "room_studio": "Muziekstudio",
+      "room_gallery": "Galerie of collectie",
+      "room_workshop": "Werkplaats",
+      "room_nursery": "Babykamer",
+      "room_kitchen": "Keuken",
+      "opt_co2": "CO₂-sensor",
+      "opt_pm25": "PM2.5-sensor",
+      "opt_pm10": "PM10-sensor",
+      "opt_voc": "VOC-sensor",
+      "opt_nox": "NOx-sensor",
+      "opt_temperature": "Temperatuursensor",
+      "opt_humidity": "Vochtsensor",
+      "group_limits": "Eigen grenzen",
+      "opt_co2_max": "CO₂ goed tot",
+      "opt_pm25_max": "PM2.5 goed tot",
+      "opt_pm10_max": "PM10 goed tot",
+      "opt_voc_max": "VOC goed tot",
+      "opt_nox_max": "NOx goed tot",
+      "opt_temperature_min": "Temperatuur goed vanaf",
+      "opt_temperature_max": "Temperatuur goed tot",
+      "opt_humidity_min": "Vocht goed vanaf",
+      "opt_humidity_max": "Vocht goed tot",
+      "opt_swing_max": "Vocht mag in 24 uur bewegen"
+     }
+    }
+   },
+   "readme": {
+    "en": "# Air quality\n\nOne tile that says how the air of a room is. You choose the room's sensors (an AirGradient ONE, or any CO2, particle,\nVOC, NOx, temperature and humidity sensors Home Assistant has) and the kind of room it is. The tile gives one verdict,\nshows which value is off, and tells you a first step.\n\n- **The card is the verdict.** Green while everything is fine, yellow when a value is fair, red when one is poor.\n- **A ring with one arc for every sensor.** An arc is whole while its value is ideal and gets shorter as it goes off.\n  The number in the middle is the score of the worst value, from 100 (ideal) down to 0.\n- **The larger the tile, the more it shows.** One cell holds the verdict and the reason. Larger tiles add a cell for\n  each sensor with its value and a small scale: the mark is the value, the lit part the zone it is in.\n- **A tap opens the card** with every value. When something is off it has a key, What to do. That key, or a tap on any\n  value, opens an explanation: where it comes from, a first step, and its last 24 hours.\n\n## Set up\n\n1. Add the plugin to a screen in the Tessera app, and let the screen update.\n2. Put the Air quality tile on a page.\n3. In the tile's settings, choose the **Kind of room**. It sets what counts as good: a bedroom wants cooler, fresher\n   air than a workshop.\n4. Choose the sensors. With **Fill from a device** you pick one device (an AirGradient ONE, for example) and every\n   sensor it has is filled in. Or choose each sensor yourself: a field you leave empty does not count. One CO2 sensor\n   alone is enough.\n5. Optional: under **Limits of your own** you set where \"fine\" ends for a value. An empty field keeps the room's\n   limit, which the field shows.\n\n## How it judges\n\nEvery value gets a score: 100 is ideal, 80 is where fine ends, 60 where poor starts. The tile's verdict is that of\nthe worst value, so one poor value never hides behind five good ones. The official air quality indexes work the same\nway.\n\nWhat counts as fine, per kind of room:\n\n| Room | CO2 fine up to | CO2 poor from | PM2.5 fine / poor | Temperature fine | Humidity fine |\n|---|---|---|---|---|---|\n| Living room | 1000 ppm | 1500 ppm | 10 / 25 µg/m³ | 19 to 24 °C | 40 to 60 % |\n| Bedroom | 800 | 1000 | 10 / 25 | 16 to 20 °C | 40 to 60 % |\n| Office | 800 | 1000 | 10 / 25 | 20 to 24 °C | 40 to 60 % |\n| Music studio | 800 | 1200 | 10 / 25 | 20 to 24 °C | 45 to 55 % |\n| Gallery or collection | 1000 | 1500 | 5 / 10 | 16 to 25 °C | 40 to 60 % |\n| Workshop | 1000 | 1500 | 10 / 25 | 15 to 25 °C | 35 to 65 % |\n| Nursery | 800 | 1000 | 10 / 25 | 16 to 20 °C | 40 to 60 % |\n| Kitchen | 1000 | 1500 | 15 / 35 | 18 to 25 °C | 40 to 65 % |\n\n- **PM10** is fine up to twice the PM2.5 limit.\n- **VOC as an index** (Sensirion's, as an AirGradient gives it) is fine up to 150 and poor from 250. The index is\n  relative to the room itself: 100 is its average of the last day, so it says \"more than usual\", not how much. A VOC\n  sensor in ppb is fine up to 220, one in µg/m³ up to 300.\n- **NOx as an index** is fine up to 20.\n- **A music studio and a gallery also judge how even the humidity stayed**: how far it moved in the last 24 hours.\n  A studio is fine up to 15 points and poor from 30, a gallery fine up to 10 and poor from 20. Wood and paper suffer\n  more from humidity that moves than from one that is a little off. It needs a humidity sensor with statistics in\n  Home Assistant (every sensor with a state class has them).\n\nThe numbers follow what the World Health Organization (particles), Germany's Umweltbundesamt (CO2 below 1000 ppm,\nVOC), the WELL standard and studies of sleep and of work (CO2 below 800 ppm), the Bizot Green Protocol of museums\n(16 to 25 °C, 40 to 60 %, at most 10 points of humidity in 24 hours) and the makers of guitars and pianos (45 to\n55 %) say. Where they disagree, the tile takes the middle.\n\n## The tips\n\nThe explanation says where a value usually comes from and what to try first: open a window for CO2, the cooker hood\nfor fine dust and NOx, a humidifier for dry air. They are rules of thumb for a first step, written for a home. They\nare not medical or professional advice, and the tile is no alarm: a smoke or carbon monoxide detector stays what it\nis.\n\n## What it asks of Home Assistant\n\nThe tile reads the sensors you choose. For the last 24 hours it asks Home Assistant for the statistics of one sensor\n(`recorder/statistics_during_period`): when you open an explanation, and every ten minutes for the humidity of a\nstudio or a gallery. Nothing leaves your home.\n",
+    "nl": "# Luchtkwaliteit\n\nEén tegel die zegt hoe de lucht in een ruimte is. Je kiest de sensoren van de ruimte (een AirGradient ONE, of elke\nCO2-, fijnstof-, VOC-, NOx-, temperatuur- en vochtsensor die Home Assistant heeft) en wat voor ruimte het is. De tegel\ngeeft één oordeel, laat zien welke waarde afwijkt en noemt een eerste stap.\n\n- **De kaart is het oordeel.** Groen zolang alles goed is, geel als een waarde matig is, rood als er een slecht is.\n- **Een ring met een boog voor elke sensor.** Een boog is heel zolang zijn waarde ideaal is en wordt korter naarmate\n  hij afwijkt. Het getal in het midden is de score van de slechtste waarde, van 100 (ideaal) tot 0.\n- **Hoe groter de tegel, hoe meer hij toont.** Eén cel toont het oordeel en de reden. Grotere tegels krijgen een cel\n  per sensor met de waarde en een kleine schaal: het streepje is de waarde, het gekleurde deel de zone waarin hij valt.\n- **Een tik opent de kaart** met alle waarden. Wijkt er iets af, dan staat er een knop Wat te doen. Die knop, of een tik\n  op een waarde, opent de uitleg: waar het vandaan komt, een eerste stap, en de laatste 24 uur.\n\n## Instellen\n\n1. Voeg de plugin toe aan een scherm in de Tessera-app en laat het scherm bijwerken.\n2. Zet de tegel Luchtkwaliteit op een pagina.\n3. Kies in de instellingen van de tegel de **Soort ruimte**. Die bepaalt wat goed is: een slaapkamer wil koelere,\n   frissere lucht dan een werkplaats.\n4. Kies de sensoren. Met **Vul vanuit een apparaat** kies je één apparaat (een AirGradient ONE bijvoorbeeld) en elke\n   sensor die het heeft wordt ingevuld. Of kies elke sensor zelf: een veld dat je leeg laat telt niet mee. Eén\n   CO2-sensor is al genoeg.\n5. Als je wilt: onder **Eigen grenzen** stel je in waar \"goed\" ophoudt voor een waarde. Een leeg veld houdt de grens\n   van de ruimte, die het veld toont.\n\n## Hoe hij oordeelt\n\nElke waarde krijgt een score: 100 is ideaal, bij 80 houdt goed op, bij 60 begint slecht. Het oordeel van de tegel is\ndat van de slechtste waarde, zodat één slechte waarde nooit wegvalt tegen vijf goede. De officiële luchtindexen werken\nnet zo.\n\nWat goed is, per soort ruimte:\n\n| Ruimte | CO2 goed tot | CO2 slecht vanaf | PM2.5 goed / slecht | Temperatuur goed | Vocht goed |\n|---|---|---|---|---|---|\n| Woonkamer | 1000 ppm | 1500 ppm | 10 / 25 µg/m³ | 19 tot 24 °C | 40 tot 60 % |\n| Slaapkamer | 800 | 1000 | 10 / 25 | 16 tot 20 °C | 40 tot 60 % |\n| Kantoor | 800 | 1000 | 10 / 25 | 20 tot 24 °C | 40 tot 60 % |\n| Muziekstudio | 800 | 1200 | 10 / 25 | 20 tot 24 °C | 45 tot 55 % |\n| Galerie of collectie | 1000 | 1500 | 5 / 10 | 16 tot 25 °C | 40 tot 60 % |\n| Werkplaats | 1000 | 1500 | 10 / 25 | 15 tot 25 °C | 35 tot 65 % |\n| Babykamer | 800 | 1000 | 10 / 25 | 16 tot 20 °C | 40 tot 60 % |\n| Keuken | 1000 | 1500 | 15 / 35 | 18 tot 25 °C | 40 tot 65 % |\n\n- **PM10** is goed tot twee keer de grens van PM2.5.\n- **VOC als index** (die van Sensirion, zoals een AirGradient hem geeft) is goed tot 150 en slecht vanaf 250. De index\n  is relatief aan de ruimte zelf: 100 is het gemiddelde van de laatste dag, dus hij zegt \"meer dan normaal\", niet\n  hoeveel. Een VOC-sensor in ppb is goed tot 220, een in µg/m³ tot 300.\n- **NOx als index** is goed tot 20.\n- **Een muziekstudio en een galerie beoordelen ook hoe gelijk het vocht bleef**: hoe ver het in 24 uur bewoog. Een\n  studio is goed tot 15 punten en slecht vanaf 30, een galerie goed tot 10 en slecht vanaf 20. Hout en papier lijden\n  meer van vocht dat beweegt dan van vocht dat er net naast zit. Het heeft een vochtsensor met statistieken in Home\n  Assistant nodig (elke sensor met een state class heeft die).\n\nDe getallen volgen wat de Wereldgezondheidsorganisatie (fijnstof), het Duitse Umweltbundesamt (CO2 onder 1000 ppm,\nVOC), de WELL-standaard en onderzoek naar slaap en werk (CO2 onder 800 ppm), het Bizot Green Protocol van musea (16 tot\n25 °C, 40 tot 60 %, hooguit 10 punten vocht in 24 uur) en de bouwers van gitaren en piano's (45 tot 55 %) zeggen. Waar\nze het oneens zijn, neemt de tegel het midden.\n\n## De tips\n\nDe uitleg zegt waar een waarde meestal vandaan komt en wat je eerst kunt proberen: een raam open bij CO2, de afzuigkap\nbij fijnstof en NOx, een bevochtiger bij droge lucht. Het zijn vuistregels voor een eerste stap, geschreven voor thuis.\nHet is geen medisch of professioneel advies, en de tegel is geen alarm: een rook- of koolmonoxidemelder blijft wat hij\nis.\n\n## Wat hij aan Home Assistant vraagt\n\nDe tegel leest de sensoren die je kiest. Voor de laatste 24 uur vraagt hij Home Assistant om de statistieken van één\nsensor (`recorder/statistics_during_period`): als je een uitleg opent, en elke tien minuten voor het vocht van een\nstudio of een galerie. Niets verlaat je huis.\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 0.1.1 - 2026-11-14\n\n- The tile said it keeps 12 KB inside the chip, so a screen with a few other tiles refused it. It keeps next to nothing there: its parts live in the larger memory beside the chip. A screen now takes it as any other tile.\n\n## 0.1.0 - 2026-11-14\n\n- The first version. One tile for the air of a room: a verdict in the colour of the card, a ring with an arc for\n  every sensor, a cell for each value on larger tiles, a card with all of them, and an explanation of each value\n  with where it comes from, a first step and its last 24 hours. Eight kinds of room, limits of your own, and the\n  sensors of one device filled in at once. Needs plugin API 0.26.\n",
+    "nl": "# Changelog\n\n## 0.1.1 - 2026-11-14\n\n- De tegel gaf op dat hij 12 KB in de chip houdt, waardoor een scherm met een paar andere tegels hem weigerde. Hij houdt daar bijna niets: zijn onderdelen staan in het grotere geheugen naast de chip. Een scherm neemt hem nu als elke andere tegel.\n\n## 0.1.0 - 2026-11-14\n\n- De eerste versie. Eén tegel voor de lucht in een ruimte: een oordeel in de kleur van de kaart, een ring met een boog\n  per sensor, een cel per waarde op grotere tegels, een kaart met alle waarden, en uitleg per waarde met waar het\n  vandaan komt, een eerste stap en de laatste 24 uur. Acht soorten ruimtes, eigen grenzen, en de sensoren van één\n  apparaat in één keer ingevuld. Heeft plugin-API 0.26 nodig.\n"
+   },
+   "image": "store.png"
+  },
   {
    "id": "bt_proxy",
    "repo": "https://github.com/maxgramser/tessera-plugins",
@@ -1869,6 +2579,412 @@
    }
   },
   {
+   "id": "plane_radar",
+   "repo": "https://github.com/maxgramser/tessera-plugins",
+   "repo_id": 1408945265,
+   "path": "plugins/plane_radar",
+   "label": "tessera",
+   "status": "ok",
+   "release": {
+    "version": "0.4.0",
+    "sha": "009ebb98f0a189ed2569d796a0bdefbc1447ed2e",
+    "date": "2026-11-15"
+   },
+   "manifest": {
+    "id": "plane_radar",
+    "version": "0.4.0",
+    "api": "0.28",
+    "icon": "airplane",
+    "maintainer": "MaxGramser",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "travel"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 48,
+    "permissions": {
+     "network": [
+      "api.adsb.lol",
+      "api.planespotters.net",
+      "t.plnspttrs.net",
+      "api.adsbdb.com"
+     ]
+    },
+    "attributes": [
+     "cloud"
+    ],
+    "privacy": "https://github.com/MaxGramser/tessera-plugins/blob/main/plugins/plane_radar/README.md#what-leaves-your-home",
+    "fetch": [
+     {
+      "id": "sky",
+      "url": "https://api.adsb.lol/v2/point/{place.latitude:2}/{place.longitude:2}/{range}",
+      "every": "30s",
+      "map": {
+       "items": "$.ac[*]",
+       "sort": "dst",
+       "limit": 16,
+       "fields": {
+        "hex": "hex",
+        "flight": "flight",
+        "reg": "r",
+        "type": "t",
+        "lat": {
+         "path": "lat",
+         "as": "number"
+        },
+        "lon": {
+         "path": "lon",
+         "as": "number"
+        },
+        "alt": "alt_baro",
+        "gs": {
+         "path": "gs",
+         "as": "number"
+        },
+        "track": {
+         "path": "track",
+         "as": "number"
+        },
+        "rate": {
+         "path": "baro_rate",
+         "as": "number"
+        },
+        "dst": {
+         "path": "dst",
+         "as": "number"
+        }
+       }
+      }
+     },
+     {
+      "id": "photo",
+      "url": "https://api.planespotters.net/pub/photos/hex/{hex}",
+      "asked": [
+       "hex"
+      ],
+      "every": "1d",
+      "map": {
+       "fields": {
+        "photo": {
+         "path": "photos[0].thumbnail_large.src",
+         "as": "url"
+        },
+        "by": "photos[0].photographer"
+       }
+      }
+     },
+     {
+      "id": "route",
+      "url": "https://api.adsbdb.com/v0/callsign/{callsign}",
+      "asked": [
+       "callsign"
+      ],
+      "every": "1h",
+      "map": {
+       "fields": {
+        "airline": "response.flightroute.airline.name",
+        "from": "response.flightroute.origin.iata_code",
+        "from_city": "response.flightroute.origin.municipality",
+        "to": "response.flightroute.destination.iata_code",
+        "to_city": "response.flightroute.destination.municipality"
+       }
+      }
+     },
+     {
+      "id": "aircraft",
+      "url": "https://api.adsbdb.com/v0/aircraft/{hex}",
+      "asked": [
+       "hex"
+      ],
+      "every": "1d",
+      "map": {
+       "fields": {
+        "maker": "response.aircraft.manufacturer",
+        "model": "response.aircraft.type",
+        "owner": "response.aircraft.registered_owner"
+       }
+      }
+     }
+    ],
+    "tiles": [
+     {
+      "id": "radar",
+      "name": "tile_name",
+      "icon": "airplane",
+      "sizes": {
+       "min": "1x1",
+       "max": "4x4"
+      },
+      "memory": 600,
+      "data": "sky",
+      "pictures": 1,
+      "example": "tile_example",
+      "options": [
+       {
+        "id": "view",
+        "kind": "choice",
+        "label": "opt_view",
+        "hint": "opt_view_hint",
+        "default": "full",
+        "choices": [
+         {
+          "value": "full",
+          "label": "view_full"
+         },
+         {
+          "value": "details",
+          "label": "view_details"
+         }
+        ]
+       },
+       {
+        "id": "place",
+        "kind": "entity",
+        "domains": [
+         "zone",
+         "person",
+         "device_tracker"
+        ],
+        "attributes": [
+         "latitude",
+         "longitude"
+        ],
+        "default": "zone.home",
+        "label": "opt_place",
+        "hint": "opt_place_hint"
+       },
+       {
+        "id": "range",
+        "kind": "choice",
+        "label": "opt_range",
+        "default": "13",
+        "choices": [
+         {
+          "value": "6",
+          "label": "range_10"
+         },
+         {
+          "value": "13",
+          "label": "range_25"
+         },
+         {
+          "value": "27",
+          "label": "range_50"
+         }
+        ]
+       },
+       {
+        "id": "units",
+        "kind": "choice",
+        "label": "opt_units",
+        "default": "metric",
+        "choices": [
+         {
+          "value": "metric",
+          "label": "units_metric"
+         },
+         {
+          "value": "aviation",
+          "label": "units_aviation"
+         }
+        ]
+       },
+       {
+        "id": "overhead",
+        "kind": "toggle",
+        "label": "opt_overhead",
+        "hint": "opt_overhead_hint",
+        "default": true
+       },
+       {
+        "id": "within",
+        "kind": "choice",
+        "label": "opt_within",
+        "hint": "opt_within_hint",
+        "default": "3",
+        "choices": [
+         {
+          "value": "1",
+          "label": "within_1"
+         },
+         {
+          "value": "2",
+          "label": "within_2"
+         },
+         {
+          "value": "3",
+          "label": "within_3"
+         },
+         {
+          "value": "5",
+          "label": "within_5"
+         },
+         {
+          "value": "10",
+          "label": "within_10"
+         },
+         {
+          "value": "0",
+          "label": "within_any"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "cards": [
+     {
+      "id": "sky",
+      "name": "card_name",
+      "wide": true
+     }
+    ],
+    "popups": [
+     {
+      "id": "plane",
+      "pictures": 1
+     }
+    ]
+   },
+   "translations": {
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "nearby": "1 aircraft | {n} aircraft",
+      "nearest": "Nearest",
+      "clear": "Clear sky",
+      "clear_hint": "Nothing within {range}",
+      "waiting": "Looking up",
+      "no_place": "Choose a place",
+      "stale": "Not updated",
+      "ground": "On the ground",
+      "altitude": "Altitude",
+      "speed": "Speed",
+      "distance": "Distance",
+      "climb": "Climb",
+      "type": "Type",
+      "registration": "Registration",
+      "heading": "Heading",
+      "level": "Level",
+      "from_to": "{from} to {to}",
+      "photo_by": "Photo {name} · planespotters.net",
+      "no_photo": "No photo of this aircraft",
+      "tap_plane": "Tap an aircraft for its details",
+      "toward": "to {to}",
+      "photo_by_short": "Photo {name}",
+      "none_over": "Nothing over you",
+      "nearest_at": "Nearest {distance} away"
+     },
+     "app": {
+      "name": "Plane radar",
+      "summary": "The aircraft in the sky around your home right now, on a radar, with the nearest one's photo and route.",
+      "tile_name": "Plane radar",
+      "tile_example": "KLM919 · 6 km · 5800 m",
+      "card_name": "Plane radar",
+      "opt_place": "Place",
+      "opt_place_hint": "Where the radar stands: your home, or a person or tracker that moves.",
+      "opt_range": "Range",
+      "range_10": "10 km",
+      "range_25": "25 km",
+      "range_50": "50 km",
+      "opt_units": "Units",
+      "units_metric": "Metric (km, m, km/h)",
+      "units_aviation": "Aviation (nm, ft, kt)",
+      "opt_overhead": "Show what flies over",
+      "opt_overhead_hint": "Under or beside the radar, where the tile has room: the nearest aircraft with its route, photo and numbers. Off, the radar has the tile to itself.",
+      "opt_within": "Over you is within",
+      "opt_within_hint": "How close an aircraft comes before the tile shows it. Farther away, the radar alone shows it.",
+      "within_1": "1 km",
+      "within_2": "2 km",
+      "within_3": "3 km",
+      "within_5": "5 km",
+      "within_10": "10 km",
+      "within_any": "The whole range",
+      "opt_view": "View",
+      "opt_view_hint": "The radar as the whole tile, with what flies over on a card at the bottom; or the radar with its details, numbers and photo beside or under it.",
+      "view_full": "Radar fills the tile",
+      "view_details": "Radar and details"
+     }
+    },
+    "nl": {
+     "_meta": {
+      "name": "Nederlands"
+     },
+     "screen": {
+      "nearby": "1 toestel | {n} toestellen",
+      "nearest": "Dichtstbij",
+      "clear": "Lege lucht",
+      "clear_hint": "Niets binnen {range}",
+      "waiting": "Zoeken",
+      "no_place": "Kies een plek",
+      "stale": "Niet bijgewerkt",
+      "ground": "Op de grond",
+      "altitude": "Hoogte",
+      "speed": "Snelheid",
+      "distance": "Afstand",
+      "climb": "Stijgen",
+      "type": "Type",
+      "registration": "Registratie",
+      "heading": "Koers",
+      "level": "Vlak",
+      "from_to": "{from} naar {to}",
+      "photo_by": "Foto {name} · planespotters.net",
+      "no_photo": "Geen foto van dit toestel",
+      "tap_plane": "Tik op een toestel voor details",
+      "toward": "naar {to}",
+      "photo_by_short": "Foto {name}",
+      "none_over": "Niets boven je",
+      "nearest_at": "Dichtstbij op {distance}"
+     },
+     "app": {
+      "name": "Vliegtuigradar",
+      "summary": "De vliegtuigen nu in de lucht rond je huis, op een radar, met foto en route van het dichtstbijzijnde.",
+      "tile_name": "Vliegtuigradar",
+      "tile_example": "KLM919 · 6 km · 5800 m",
+      "card_name": "Vliegtuigradar",
+      "opt_place": "Plek",
+      "opt_place_hint": "Waar de radar staat: je huis, of een persoon of tracker die beweegt.",
+      "opt_range": "Bereik",
+      "range_10": "10 km",
+      "range_25": "25 km",
+      "range_50": "50 km",
+      "opt_units": "Eenheden",
+      "units_metric": "Metrisch (km, m, km/h)",
+      "units_aviation": "Luchtvaart (nm, ft, kt)",
+      "opt_overhead": "Laat zien wat overvliegt",
+      "opt_overhead_hint": "Onder of naast de radar, waar de tegel ruimte heeft: het dichtstbijzijnde toestel met route, foto en getallen. Uit heeft de radar de tegel voor zich alleen.",
+      "opt_within": "Boven je is binnen",
+      "opt_within_hint": "Hoe dichtbij een toestel komt voordat de tegel het laat zien. Verder weg toont alleen de radar het.",
+      "within_1": "1 km",
+      "within_2": "2 km",
+      "within_3": "3 km",
+      "within_5": "5 km",
+      "within_10": "10 km",
+      "within_any": "Het hele bereik",
+      "opt_view": "Weergave",
+      "opt_view_hint": "De radar als de hele tegel, met wat overvliegt op een kaartje onderaan; of de radar met details, getallen en foto ernaast of eronder.",
+      "view_full": "Radar vult de tegel",
+      "view_details": "Radar met details"
+     }
+    }
+   },
+   "readme": {
+    "en": "# Plane radar\n\nThe aircraft in the sky around your home right now, on a radar, with the nearest one's photo and route.\n\n- **A radar that stays dark** in the light look and the dark one, with a ring at a third and two thirds of the range,\n  north at the top and your home in the middle. Every aircraft is an airplane turned along its course; the nearest\n  glows, with its name beside it.\n- **They move.** Positions come every 30 seconds, and in between the screen moves each aircraft along its course at its\n  own speed, every second.\n- **The larger the tile, the more it says.** One cell shows the radar and the nearest aircraft. Larger tiles add its\n  route, its distance, altitude and speed, and its photo where there is room.\n- **A tap opens the sky.** The card shows the radar large and a list of the aircraft, nearest first. A tap on one, on\n  the radar or in the list, opens it: its photo, its airline and type, where it flies from and to, and its numbers.\n\n## Set up\n\n1. Add the plugin to a screen in the Tessera app.\n2. Put the Plane radar tile on a page.\n3. It stands at your home (Home Assistant's Home zone) unless you choose another **Place** in the tile's settings: a\n   zone, or a person or tracker that moves, so the radar goes with them.\n4. Choose the **Range** (10, 25 or 50 km) and the **Units**: metric (km, m, km/h) or aviation (nm, ft, kt).\n\n## Where the data comes from\n\n| What | From | Terms |\n|---|---|---|\n| Positions | [adsb.lol](https://adsb.lol), live ADS-B from volunteers' receivers | Open data (ODbL) |\n| Photos | [planespotters.net](https://www.planespotters.net) | Each photo shows its photographer and planespotters.net |\n| Routes and types | [adsbdb](https://www.adsbdb.com) | Free |\n\nAircraft on the ground, and an airport's own cars, are left out: the radar shows what flies. An aircraft whose\ntransponder sends no position, as some military ones, does not show. A route is what the airline's flight number\nusually flies; on a special day it can be another.\n\n## What leaves your home\n\n- To adsb.lol, every 30 seconds while a tile shows: your place's position rounded to two decimals, about a kilometre,\n  and the range. Nothing else.\n- To planespotters.net and adsbdb, for the aircraft a tile, the card or a popup shows: its transponder code and its\n  flight number. Your place does not go there.\n\nThe Tessera app asks these services; the screen itself reaches none of them.\n",
+    "nl": "# Vliegtuigradar\n\nDe vliegtuigen die nu rond je huis in de lucht zijn, op een radar, met foto en route van het dichtstbijzijnde.\n\n- **Een radar die donker blijft**, in de lichte en de donkere stand, met een ring op een derde en twee derde van het\n  bereik, het noorden boven en je huis in het midden. Elk toestel is een vliegtuigje in zijn vliegrichting; het\n  dichtstbijzijnde licht op, met zijn naam ernaast.\n- **Ze bewegen.** Elke 30 seconden komen de posities binnen, en daartussen schuift het scherm elk toestel elke seconde\n  langs zijn koers op, met zijn eigen snelheid.\n- **Hoe groter de tegel, hoe meer hij zegt.** Eén vak toont de radar en het dichtstbijzijnde toestel. Grotere tegels\n  geven zijn route, afstand, hoogte en snelheid, en zijn foto als er plek is.\n- **Tik voor de hele lucht.** De kaart toont de radar groot en een lijst van de toestellen, dichtstbij eerst. Tik op\n  een toestel, op de radar of in de lijst, en je ziet zijn foto, maatschappij en type, waar het vandaan komt en\n  naartoe gaat, en zijn getallen.\n\n## Instellen\n\n1. Voeg de plugin toe aan een scherm in de Tessera-app.\n2. Zet de tegel Vliegtuigradar op een pagina.\n3. Hij staat bij je huis (de zone Thuis van Home Assistant), tenzij je in de instellingen van de tegel een andere\n   **Plek** kiest: een zone, of een persoon of tracker die beweegt, zodat de radar meegaat.\n4. Kies het **Bereik** (10, 25 of 50 km) en de **Eenheden**: metrisch (km, m, km/h) of luchtvaart (nm, ft, kt).\n\n## Waar de gegevens vandaan komen\n\n| Wat | Van | Voorwaarden |\n|---|---|---|\n| Posities | [adsb.lol](https://adsb.lol), live ADS-B van ontvangers van vrijwilligers | Open data (ODbL) |\n| Foto's | [planespotters.net](https://www.planespotters.net) | Elke foto toont zijn fotograaf en planespotters.net |\n| Routes en types | [adsbdb](https://www.adsbdb.com) | Gratis |\n\nToestellen aan de grond, en de auto's van een vliegveld, laat de radar weg: hij toont wat vliegt. Een toestel waarvan\nde transponder geen positie stuurt, zoals sommige militaire, verschijnt niet. Een route is wat het vluchtnummer meestal\nvliegt; op een bijzondere dag kan het een andere zijn.\n\n## Wat je huis verlaat\n\n- Naar adsb.lol, elke 30 seconden zolang een tegel in beeld is: de positie van je plek afgerond op twee decimalen,\n  ongeveer een kilometer, en het bereik. Verder niets.\n- Naar planespotters.net en adsbdb, voor het toestel dat een tegel, de kaart of een pop-up toont: zijn\n  transpondercode en vluchtnummer. Je plek gaat daar niet heen.\n\nDe Tessera-app vraagt deze diensten; het scherm zelf bereikt geen van alle.\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 0.4.0 - 2026-11-15\n\n- The radar can be the whole tile, and is at first: its face reaches every edge, dark in both looks, and what flies over you lies on a card at the bottom, as a map's card does (where it flies, its flight, how far and how high), where the tile is large enough. A tap on an aircraft or on the card opens it, anywhere else the card with the whole sky. The radar with its details, as before, is the other choice of the new View setting. Needs plugin API 0.28. The photo comes at last: its address reached the screen cut at 48 characters, so planespotters answered \"not found\".\n\n## 0.3.0 - 2026-11-15\n\n- What flies over you: under or beside the radar, where the tile has room, the nearest aircraft within a reach you choose (1, 2, 3, 5 or 10 km, or the whole range; 3 km at first), with its route, photo and numbers; farther away, the tile says how far the nearest is. Two new settings: Show what flies over (off: the radar alone, as large as the tile) and Over you is within. A tap on an aircraft of the tile, or on the words and photo of the one shown, opens that aircraft at once; anywhere else the card with the whole sky.\n\n## 0.2.0 - 2026-11-15\n\n- Where an aircraft flies comes first: the tile, the card's list and the popup lead with its route (\"Milan to Chicago\", or its airports' codes where the cities do not fit), with its flight and airline under it, and the radar says where the nearest one goes. The photo comes higher: above the words wherever a tile has room for it, and right under the route in the popup. The count of aircraft moved to the end.\n\n## 0.1.1 - 2026-11-15\n\n- The count says how many aircraft the radar shows, within its range of the place, not how many the service sent.\n\n## 0.1.0 - 2026-11-15\n\n- The first version: a radar of the aircraft around your home, with the nearest one's photo and route, a card with\n  every aircraft and a popup for each. Needs plugin API 0.27.\n",
+    "nl": "# Changelog\n\n## 0.4.0 - 2026-11-15\n\n- De radar kan de hele tegel zijn, en is dat eerst: het vlak loopt tot elke rand, donker in beide standen, en wat boven je vliegt ligt op een kaartje onderaan, zoals bij een kaart (waar het heen gaat, de vlucht, hoe ver en hoe hoog), waar de tegel groot genoeg is. Een tik op een toestel of op het kaartje opent het, elders de kaart met de hele lucht. De radar met details, zoals eerst, is de andere keuze van de nieuwe instelling Weergave. Vraagt plugin-API 0.28. De foto komt nu echt: het adres kwam afgekapt op 48 tekens bij het scherm, waardoor planespotters \"niet gevonden\" antwoordde.\n\n## 0.3.0 - 2026-11-15\n\n- Wat er boven je vliegt: onder of naast de radar, waar de tegel ruimte heeft, het dichtstbijzijnde toestel binnen een afstand die je kiest (1, 2, 3, 5 of 10 km, of het hele bereik; eerst 3 km), met route, foto en getallen; verder weg zegt de tegel hoe ver het dichtstbijzijnde is. Twee nieuwe instellingen: Laat zien wat overvliegt (uit: alleen de radar, zo groot als de tegel) en Boven je is binnen. Een tik op een toestel op de tegel, of op de tekst en foto van het getoonde, opent dat toestel meteen; elders de kaart met de hele lucht.\n\n## 0.2.0 - 2026-11-15\n\n- Waar een toestel vandaan komt en heen gaat staat voorop: de tegel, de lijst op de kaart en de pop-up beginnen met de route (\"Milaan naar Chicago\", of de codes van de luchthavens waar de steden niet passen), met vlucht en maatschappij eronder, en de radar zegt waar het dichtstbijzijnde heen gaat. De foto staat hoger: boven de tekst waar een tegel er plek voor heeft, en direct onder de route in de pop-up. Het aantal toestellen staat nu onderaan.\n\n## 0.1.1 - 2026-11-15\n\n- Het getal zegt hoeveel toestellen de radar toont, binnen zijn bereik van de plek, niet hoeveel de dienst stuurde.\n\n## 0.1.0 - 2026-11-15\n\n- De eerste versie: een radar van de vliegtuigen rond je huis, met foto en route van het dichtstbijzijnde, een kaart met\n  alle toestellen en een pop-up per toestel. Heeft plugin-API 0.27 nodig.\n"
+   },
+   "image": "store.png"
+  },
+  {
    "id": "screen_camera",
    "repo": "https://github.com/maxgramser/tessera-plugins",
    "repo_id": 1408945265,
@@ -1876,13 +2992,13 @@
    "label": "tessera",
    "status": "ok",
    "release": {
-    "version": "0.6.16",
-    "sha": "71f7b468f16bb2cb4d340660d407919d0ba9aae9",
-    "date": "2026-11-03"
+    "version": "0.6.17",
+    "sha": "9da41a6673fbe08e524bad3b5c97201d7b8f28c8",
+    "date": "2026-11-17"
    },
    "manifest": {
     "id": "screen_camera",
-    "version": "0.6.16",
+    "version": "0.6.17",
     "api": "0.23",
     "icon": "cctv",
     "maintainer": "MaxGramser",
@@ -1999,8 +3115,8 @@
     "nl": "# Schermcamera\n\nBekijk de eigen camera van het scherm in Home Assistant. Het scherm wordt daar een camera van zijn apparaat: een beeld\nop een dashboard, een stream als je hem opent, en alles wat Home Assistant met een camera doet (een momentopname in een\nautomatisering, een opname).\n\nHet beeld wordt op het scherm zelf in hardware gemaakt, alleen zolang Home Assistant erom vraagt. Zolang de camera in\ngebruik is, toont Tessera een stip in de rechterbovenhoek van het scherm, zodat wie ervoor staat het weet; geen\ninstelling haalt hem weg.\n\n## Wat je nodig hebt\n\n- Een scherm waarvan het bord een camera heeft die Tessera kan aanzetten en bereiken: de reTerminal D1001, de M5Stack\n  Tab5, of een Guition ESP32-P4-scherm in de cameraversie (\"C\" in de modelnaam): de JC8012P4A1 (ook de V2 en V3), de\n  JC1060P470 V2 en de JC4880P443. De Guition-schermen zijn nieuw en alleen op de JC8012P4A1 V3 geprobeerd.\n- Verder niets in Home Assistant: de camera hoort bij het apparaat van het scherm in de ESPHome-integratie.\n\n## Instellen\n\n1. Open in Tessera **Plugins**, kies **Schermcamera** en vink je schermen aan. Elk scherm wordt een keer gebouwd.\n2. Open in Home Assistant het apparaat van het scherm (Instellingen, Apparaten): de camera staat er als **Camera**.\n   Zet hem op een dashboard met een kaart die camerabeeld toont (Picture entity of Picture glance).\n3. De camera staat vanzelf rechtop, ook op een scherm dat een halve slag gedraaid is. Hangt het scherm andersom, zet\n   dan **Camera omgekeerd** aan bij de instellingen van de plugin.\n4. Optioneel: zet **Lichtniveau en beweging** aan bij de instellingen van de plugin (het tabblad Plugins van het scherm\n   in Tessera, of **Camera light level and motion** bij het apparaat in Home Assistant). Dan volgen **Light level** en\n   **Motion** de kamer.\n\n## Video\n\nHet onderdeel **Video** (aan als je de plugin toevoegt, in de details van de plugin op het tabblad Plugins van het\nscherm) maakt van de camera live video met geluid in Home Assistant: H.264 uit de eigen video-encoder van het scherm,\nde maat van de camera (1280 x 720 op de meeste borden) met 15 beelden per seconde, en de microfoon als Opus, in sync, ongeveer een derde seconde later. Het speelt in\nde browserpagina en de app van Home Assistant zoals elke camera.\n\n1. Bouw het scherm met het onderdeel aan.\n2. Open in Tessera **Instellingen, Video in Home Assistant**, druk op **Installeren in Home Assistant** en daarna op\n   **Home Assistant herstarten**. Dat is één keer voor je hele huis.\n3. Vanaf dan heeft elk scherm met het onderdeel een camera **Video** bij zijn apparaat in Home Assistant. Tessera voegt\n   hem zelf toe, en niemand typt een wachtwoord: dat wordt aan beide kanten uit de API-sleutel van het scherm berekend.\n\nMet het onderdeel loopt de camera vanaf de start van het scherm, en zijn foto's komen uit de video: de camera **Camera**\nverdwijnt van het apparaat van het scherm, en **Video** geeft de stilstaande beelden. Lichtniveau en beweging blijven\nwerken. De stip is dicht zolang iemand kijkt, en de microfoon luistert alleen dan. De video heeft een ESP32-P4 met een\nmicrofoon nodig; hij is geprobeerd op de reTerminal D1001 en de Guition 10.1-inch.\n\nOp de Guition-schermen kiest de instelling **Camera field of view** hoeveel van de kamer de camera toont: **Full**, de\nstandaard, alles wat hij ziet op de halve resolutie en 15 beelden per seconde; **Sharp** het midden ervan op volle\nresolutie.\n\ndocs/CAMERA.md van Tessera, \"The screen's own camera as video in Home Assistant\", zegt hoe het werkt en wat het vraagt.\n\n## Lichtniveau en beweging\n\nUit tot je het aanzet. Zolang het aan staat blijft de camera draaien en bepaalt het scherm er twee dingen uit:\n\n- **Light level**, een schatting in lux uit de helderheid van het beeld, de belichtingstijd en de versterking van de\n  sensor. Hij klopt in verhouding (twee keer zoveel licht is ongeveer twee keer zoveel lux), niet precies: kies de\n  drempels van je automatiseringen door te kijken wat hij in jouw kamer meet. Hij wordt elke tien seconden bijgewerkt, en\n  meteen als er een lamp aan- of uitgaat.\n- **Motion**, uit het beeld dat een paar keer per seconde in een grof raster wordt vergeleken; aan als een deel ervan\n  verandert, en daarna nog **Beweging blijft aan** lang (eerst tien seconden, van vijf seconden tot tien minuten). Een lamp die aan- of uitgaat (het grootste deel van het beeld tegelijk lichter of\n  donkerder) is geen beweging: drie seconden daarna, terwijl de camera zich aanpast, wordt beweging niet beoordeeld.\n\nHiervoor wordt geen beeld gemaakt of verstuurd: alleen de twee waarden verlaten het scherm. De stip in de\nrechterbovenhoek is een ring zolang het draait, en dicht zodra iemand kijkt. Zolang niemand kijkt maakt de camera 5\nbeelden per seconde, genoeg voor allebei, en hij gaat meteen terug naar volle snelheid voor de video of een foto. Met\n**Beweging wekt het scherm** aan (eerst uit) wekt iemand die voor het scherm beweegt het scherm, zoals een aanraking.\n\n## Privacy\n\nEr verlaat niets het scherm tot Home Assistant om een beeld vraagt, en elk beeld gaat alleen naar je eigen Home\nAssistant. Met lichtniveau en beweging aan kijkt de camera steeds, maar wat hij ziet blijft op het scherm. Iedereen die het apparaat van het scherm of een dashboard met de camera kan openen, kan erdoor kijken. Om dat\neven te stoppen schakel je de camera-entiteit in Home Assistant uit; voorgoed haal je de plugin van het scherm.\n\n## Voor makers\n\nDe camera is ESPHome's camera met id `ts_camera` (de feature `camera`), zodat een andere plugin erop kan bouwen. Het\ncamerastuurprogramma is `esp_video_camera` (github.com/n-IA-hane/esphome-esp-video-camera, uit ESPHome pull request\nesphome/esphome#16944), ongewijzigd overgenomen in `components/esp_video_camera` onder de ESPHome-licentie, met zijn\nNOTICE. De OmniVision OV02C10 van de Guition-schermen, waarvoor Espressifs camerabibliotheek geen stuurprogramma heeft,\nis een eigen component ernaast, `components/ov02c10`: de sensordriver en zijn beeldafstemming (een voor rev3-chips, een\nvoor oudere), met een NOTICE die zegt waar ze vandaan komen. De SmartSens SC202CS (SC2356) van de Tab5 en de reTerminal\nheeft ook een kleine eigen component, `components/sc202cs`: Espressifs driver start hem met een zwartniveau van 16 van\n255 dat de ISP eraf moet halen, wat een ESP32-P4 van voor rev3 niet kan, dus verlaagt de component het eigen\nzwartniveau van de sensor nadat de camera hem heeft gestart. De OmniVision OV5647 (de camerakit van de Waveshare\nESP32-P4 7B, de Raspberry Pi-camera's met die sensor) heeft er ook een, `components/ov5647`: Espressifs formaten zetten\neen van zijn twee spiegelbits en zijn flips verschuiven zijn kleuren, dus zet de component het andere bit en schuift hij\nhet venster van de sensor een pixel op voor elke flip, telkens als de camera de sensor zijn instellingen heeft gegeven;\nzonder dat was het beeld paars, met oranje als groen, en half omgedraaid wisselden rood en blauw. De beelden van de camera gaan naar een verdeler van Screen\ncamera (`components/screen_camera/frame_hub.h`) die ze doorgeeft aan lichtniveau en beweging en aan de video, en de\nsensoren die de camera zelf vindt staan in de tabel `components/screen_camera/sensors.py`. Wat de driver van een\nsensor kan naast zijn formaat, een lager beeldtempo als de camera alleen meet en een stand over zijn hele beeldveld,\nvertelt hij de camera via `components/esp_video_camera/camera_sensor.h`, op welk bord hij ook zit.\n"
    },
    "changelog": {
-    "en": "# Changelog\n\n## 0.6.16 - 2026-11-01\n- **The OV5647's colours are right, also when the picture turns.** On a Waveshare ESP32-P4 7B with its OV5647 the\n  picture was purple and orange showed as green: Espressif's driver sets one of the sensor's two mirror bits, and the\n  colour order it declares holds only with both. Turned half way round (a screen hung upside down), red and blue swapped\n  as well, since the sensor's flips move its colours. A small component for this sensor now sets the second bit and\n  moves the sensor's window by a pixel for each flip, every time the camera has started or turned it; the picture's\n  orientation is as before. Tried on a 7B with an ESP32-P4 v1.3, upright and turned.\n\n## 0.6.15 - 2026-10-29\n- **A sound packet goes whenever the connection has room for it.** 0.6.14 held it back whenever the connection was not\n  \"writable\", which lwIP says only with half of the send buffer free: a fifth of a second of video in flight, normal\n  on Wi-Fi, so one to three packets of 20 ms a second were left out and the sound broke into snippets (heard on both\n  a reTerminal D1001 and a Guition 10.1 hearing each other). It is now sent without waiting; only a packet the\n  connection takes no part of is left out, and a part it did take goes first next time, so the stream stays whole.\n\n## 0.6.14 - 2026-10-29\n- **A viewer whose connection is full misses a moment of sound instead of holding everyone up.** The video already left\n  such a viewer's pictures behind until a key frame found room (0.6.10); its sound packets still went into send(), which\n  waited for the Wi-Fi up to two seconds and held the whole sender with it: every viewer's pictures and sound stopped,\n  then came in one burst. Heard as chopped, doubled words on a reTerminal D1001 streaming to a Guition 10.1 while it\n  showed the 10.1 full screen (the add-on: sound 0.8 s behind on average, 2.4 s at most). The report counts the packets\n  left behind.\n\n## 0.6.13 - 2026-10-29\n- **The video's quantiser is capped at 42 again.** 0.6.11 let the encoder use H.264's whole range to stay near its\n  1 Mbit/s in a busy picture. Measured, it already does at 42: on a Guition 10.1 with fresh noise over half of every\n  frame it sent 983 to 1006 kbit/s at 42 and 1001 to 1002 at 51, and as many pictures were left behind on the\n  connection either way. So the setting goes back to what it was.\n\n## 0.6.12 - 2026-10-29\n- **The screen slows its own live tiles while someone hears its microphone** (needs Tessera's dev firmware, plugin API\n  0.23). Four live tiles on a reTerminal D1001 crowded its Wi-Fi so much that its video's sound reached the viewer in\n  bursts a second late; while a viewer has the sound, the screen now keeps its live camera tiles at a quarter of their\n  pictures a second, so the conversation goes first.\n\n## 0.6.11 - 2026-10-29\n- **The video keeps to its bitrate in a busy picture.** The encoder could make a frame only so coarse (quantiser 42 at\n  most), so a picture with much detail or movement came out larger than the 1 Mbit/s the video is meant to send: a\n  reTerminal D1001 sent 1.6 to 2.1 Mbit/s, and 30 to 70 frames a minute did not arrive. It may now use H.264's\n  whole range (up to 51), so it stays near 1 Mbit/s and a busy moment looks a little softer instead of stalling.\n\n## 0.6.10 - 2026-10-29\n- **The sound no longer waits for the picture on a slow connection.** Picture and sound leave the screen over one\n  connection, and when the screen's Wi-Fi uplink stalled (a reTerminal D1001 showing four live tiles while its camera\n  was watched) a picture waited in the connection for seconds and the sound behind it: it reached Home Assistant in\n  bursts a second late, 2.4 s at most, and the screen that played it cut more than half of it away (words gone, bits\n  doubled). After 2 s of waiting the viewer was dropped and go2rtc connected anew. Now a picture that finds the\n  connection full (more than half of its send buffer waiting) is left behind, the viewer gets a key frame first when\n  there is room again, and the sound goes between the packets of a long picture. On the bench, a viewer that stopped\n  reading for 3 s of every 6: 0 bytes of sound lost, the viewer kept, 232 pictures left behind in 40 s; before, the\n  same viewer was dropped at 2 s. The log's line every minute counts the pictures left behind for a full connection.\n\n## 0.6.9 - 2026-10-28\n- **Watching the video no longer trips the wake word.** While someone watched the screen's video in Home Assistant, the\n  wake word could lose its place many times an hour (217 an hour on a Guition 10.1 with one viewer). The video's sound\n  now steps aside for the wake word: 0 in the same test, the video still at 15 frames a second. The log's Sound line also\n  says how long each piece of sound takes to encode.\n\n## 0.6.8 - 2026-10-28\n- **The screen's own camera on a tile of its own is drawn on the screen itself** (needs Tessera's dev firmware and app,\n  plugin API 0.22): a live camera tile that shows this screen's own camera gets its pictures straight from the camera,\n  without the video, Home Assistant or the network in between. The picture is as new as the camera's, and while nobody\n  watches the video in Home Assistant the screen's video encoder stays off. Nothing to do; the camera's dot shows while\n  the tile is on the glass, as it does while someone watches the video.\n\n## 0.6.7 - 2026-10-28\n- **Gives way on a busy screen** (needs Tessera's dev firmware, plugin API 0.21): while a finger is on the glass or\n  the screen shows signs of trouble, the video sends every other frame or one in four, and light level and motion are\n  sampled half or a quarter as often. Back to full by itself a moment later. Nothing to do.\n\n## 0.6.6 - 2026-10-28\n- **Less work while nobody watches** on the Guition screens' camera with Full field of view: the screen halves a\n  picture's lines only while someone watches the video. Light level and motion read the picture as the camera makes\n  it, so the screen's picture engine and memory are free for the live tiles the rest of the time. Nothing to do.\n\n## 0.6.5 - 2026-10-27\n- **Full is the default field of view** on the Guition screens' camera (OV02C10): the whole of what it sees, at half\n  the resolution, 15 pictures a second. The two Full modes are one now: the sensor averages each two columns and the\n  screen halves the lines, which runs where the sensor's own halving of the lines stopped after one frame. Sharp, the\n  middle at full resolution and 30 a second, is still there. A screen whose setting shows Sharp keeps it: choose Full\n  once to see the whole room.\n- **A brighter picture in a dim room**: auto exposure can now use the sensor's digital gain too, up to 63x instead of\n  15.5x. And since 0.6.0 a change of field of view put exposure and gain back to their start while auto exposure kept\n  its choice, so the picture could stay dark; they now stay where auto exposure set them.\n- **Guition's own image tuning** for the OV02C10 (colours, white balance, black level), for both chip revisions of the\n  ESP32-P4.\n- **The camera rests while nobody watches**: for the light level and motion, or with the part Video and nothing at\n  all, it makes 5 pictures a second (the OV02C10 of the Guition screens and the SC202CS of the reTerminal D1001), and\n  goes back to full speed at once when someone opens the video or Home Assistant asks for a picture, slowing down\n  again ten seconds after the last of those.\n- **The camera dot tells the two apart**: solid while the camera's picture goes somewhere, a ring while it only senses\n  the light and motion. This needs Tessera's dev firmware (plugin API 0.20), so this version is on the dev branch until\n  Tessera's next release.\n- The video keeps 15 pictures a second when the camera makes 15; before, it could skip every other one.\n\n## 0.6.4 - 2026-10-26\n- Camera field of view on the Guition: with the lines halved the sensor still stopped after one frame at 960 x 544,\n  and the P4 said why: a frame the sensor started and never ended. How many halved lines the sensor's own image\n  processor closes a frame with is not in its datasheet, so a Full mode now finds out by itself: it tries a row of\n  windows (the height and its offsets) one after the other, each until it runs or stops, keeps the first that runs,\n  and starts from it the next time. If none runs, it goes back to Sharp as before. The log says each window it\n  tried and which one ran, and the P4's report comes in two lines that are no longer cut off. Testers: switch to\n  each Full mode once, wait about a minute, and send all log lines with \"Field of view\" and a screenshot.\n\n## 0.6.3 - 2026-10-26\n- Camera field of view on the Guition 10.1-inch: Jeroen Peters found with his test builds that the Full modes stall\n  after one frame whenever the lines are halved, while the columns halved alone keep running. Both Full modes now\n  ask for every halved line (960 x 544 instead of 960 x 528). When a Full mode still stalls, the log says what the\n  P4's camera input saw (from his test build). Testers: try both Full modes again and send the log lines with\n  \"Field of view\" and a screenshot.\n\n## 0.6.2 - 2026-10-25\n- Camera field of view on the Guition 4.3-inch (GitHub issue #326): both Full modes gave no picture there. They now\n  start from the table Sharp uses, which leaves starting the camera to the screen; the one before turned the\n  camera on halfway through being set up. Same lane rate and timing as before.\n- A Full mode whose picture stops in its first ten seconds, or that the camera does not recover from, goes back to\n  Sharp by itself now, whatever takes the pictures (the video, a still, light level and motion); before, it could\n  stay on Full with no picture until a restart. The log then says what the sensor made of the mode.\n\n## 0.6.1 - 2026-10-25\n- Camera field of view on the Guition: the first test showed more of the room, but moved towards the top right\n  and with stripes. Both Full modes now keep their window's offsets even and where they are when the picture is\n  mirrored or flipped, and ten seconds after a change the log says what the sensor makes of it: its binning, flip\n  and mirror, the part of the array it reads, and the size and place of its output. Testers: try both Full modes\n  again, and send that log line with a screenshot of each.\n\n## 0.6.0 - 2026-10-25\n- A new setting, **Camera field of view**, for the Guition ESP32-P4 screens' camera (OV02C10), to try. **Sharp** is\n  the old behaviour, the middle of the camera's picture, and the default. **Full (binning)** and **Full (skip)** show\n  the whole of what the camera sees at half the resolution (960 x 528), as OmniVision's datasheet for the sensor\n  describes it: binning averages each two pixels and lines, skip reads every other one, so fine patterns (blinds,\n  tiles) may shimmer with skip. Neither is proven on a Guition yet. Guition owners with a camera and the part Video:\n  switch back to Sharp if anything looks odd, and say for Full which of the two worked, how much of the room you see\n  compared with Sharp, the colours, the frames a second (the log says it ten seconds after the change, and whether the\n  sensor took the binning), and whether it stays stable over a few minutes. A mode that gives no picture goes back to\n  Sharp by itself. Every other camera keeps Sharp (the M5Stack Tab5's and the reTerminal D1001's sensor has no such\n  mode we know of). Changing it restarts the camera and the video's encoder at the new size.\n\n## 0.5.1 - 2026-10-25\n- The video's server counts its connections (its listener and its three viewers) into the ones the screen's firmware\n  allows. With four live camera tiles on the glass beside the video's viewers the screen ran out of them, and a fifth\n  camera tile's picture found no connection. Update when it is offered; the screen builds again.\n\n## 0.5.0 - 2026-10-25\n- The camera stands upright by itself: on a screen whose board mounts it upside down (the M5Stack Tab5) and on a\n  screen turned half way round. The sensor turns its own picture, so the pictures in Home Assistant, the video and the\n  light level and motion all follow, at no cost. A new setting, **Camera upside down**, turns it once more for a screen\n  mounted the other way round. Needs Tessera's firmware with plugin API 0.19 (dev); update the screen with it.\n- The video's line in the log says how long the encoder takes a frame and how much internal RAM it holds.\n- Tab5 owners: check that the camera stands upright in Home Assistant, and say so.\n\n## 0.4.3 - 2026-10-24\n- Nothing changes on the screen or in Home Assistant: the camera's code is laid out anew for what comes next. The\n  camera's frames reach light level and motion and the video through one hub of their own instead of through the\n  video, the sensors the camera finds by itself are a table of the plugin's own, and the video's encoder, server and\n  sound are each a file. Update when it is offered; the screen builds again.\n\n## 0.4.2 - 2026-10-22\n- Builds on an ESPHome build server on Windows. The camera's colour tuning was handed to the build as a Windows path,\n  which lost its backslashes on the way, so the build stopped at a file `sc202cs_ipa.json` it could not find.\n\n## 0.4.1 - 2026-10-22\n- Video on the Guition ESP32-P4 screens. It asked for exactly 1280 x 720, which their camera (OV02C10) did not give\n  (1288 x 728), so Video showed nothing there. That camera now has a 1280 x 720 mode, its first, and Video takes the\n  camera's own size on every board: a size that is not in whole macroblocks of 16 is cut to its middle on the way\n  (at a cost in frames a second, the log says so), and a camera above 1280 x 800 asks for a smaller mode in the part's\n  YAML. No board names a size. Not yet tried on a Guition screen: please say what you see.\n\n## 0.4.0 - 2026-10-21\n- **Video**, a part that is on when you add the plugin: the camera as live video with sound in Home Assistant, a camera\n  **Video** on the screen's device that plays in the browser and the app, about a third of a second behind. H.264 from\n  the screen's video encoder (1280 x 720, 15 frames a second) and the microphone as Opus, in sync. Install Video in\n  Home Assistant once under Tessera's Settings (needs Tessera with that card); Tessera then adds each screen by itself.\n  With the part the camera runs from the start and **Camera** leaves the device: **Video** gives the stills. Light level\n  and motion keep working. A screen that has the plugin already keeps it as it is until you tick Video.\n\n## 0.3.2 - 2026-10-20\n- Truer colours on the M5Stack Tab5 and the reTerminal D1001: black is black again. Their camera sent black as a dark\n  grey that the screen's chip could not take off, so dark parts of the picture looked pink and the whole picture\n  looked faded. The plugin now sets the sensor's own black level.\n\n## 0.3.1 - 2026-10-20\n- **Motion wakes the screen** (off to start with) and **Motion time-out** (5 seconds to 10 minutes, 10 to start\n  with) are settings now.\n- Tessera's own dot in the top right corner of the screen now shows while the camera is in use, also while it senses\n  light and motion; the plugin's top bar items **Camera in use** and **Camera senses motion** are gone. Needs Tessera\n  with plugin API 0.17.\n\n## 0.3.0 - 2026-10-20\n- Sharper pictures: they were compressed far too much (JPEG quality 12 of 100, now 80). Each picture is larger,\n  about 150 to 300 KB.\n- Also the camera of the Guition ESP32-P4 screens (the OmniVision OV02C10 of the JC8012P4A1, JC1060P470 V2 and\n  JC4880P443 in their camera version), on a Tessera whose board names it. Tried on the JC8012P4A1 V3.\n- New, off until you switch it on: **Light level** (lux, an estimate) and **Motion** on the screen's device in Home\n  Assistant, worked out from the camera on the screen itself: no picture leaves the screen for them. Switch on\n  **Light level and motion** in the plugin's settings; the camera then keeps running. Switched off, the light level\n  reads unknown.\n\n## 0.2.0 - 2026-10-10\n- Also on a board that clocks its camera from a pin, such as the M5Stack Tab5.\n\n## 0.1.0 - 2026-10-10\n- First version: the screen's own camera as a camera in Home Assistant, and a camera in the top bar while it is watched.\n",
-    "nl": "# Wijzigingen\n\n## 0.6.16 - 2026-11-01\n- **De kleuren van de OV5647 kloppen, ook als het beeld draait.** Op een Waveshare ESP32-P4 7B met zijn OV5647 was het\n  beeld paars en kwam oranje als groen: Espressifs driver zet een van de twee spiegelbits van de sensor, en de\n  kleurvolgorde die hij opgeeft klopt alleen met allebei. Half omgedraaid (een scherm dat ondersteboven hangt) wisselden\n  ook rood en blauw, omdat de flips van de sensor zijn kleuren verschuiven. Een kleine component voor deze sensor zet nu\n  het tweede bit en schuift het venster van de sensor een pixel op voor elke flip, telkens als de camera hem heeft\n  gestart of gedraaid; de stand van het beeld blijft zoals hij was. Geprobeerd op een 7B met een ESP32-P4 v1.3, rechtop\n  en gedraaid.\n\n## 0.6.15 - 2026-10-29\n- **Een geluidspakket gaat zodra de verbinding er ruimte voor heeft.** 0.6.14 hield het tegen zolang de verbinding niet\n  \"writable\" was, en dat zegt lwIP pas met de helft van de zendbuffer vrij: een vijfde seconde video onderweg, normaal\n  op Wi-Fi, dus bleven één tot drie pakketten van 20 ms per seconde achter en brak het geluid in snippets (gehoord op\n  een reTerminal D1001 en een Guition 10.1 die elkaar horen). Het wordt nu zonder wachten verstuurd; alleen een pakket\n  waar de verbinding niets van neemt blijft achter, en een deel dat hij wel nam gaat de volgende keer eerst, zodat de\n  stroom heel blijft.\n\n## 0.6.14 - 2026-10-29\n- **Een kijker met een volle verbinding mist even geluid in plaats van iedereen op te houden.** De video liet de beelden\n  van zo'n kijker al achter tot een sleutelframe ruimte vond (0.6.10); zijn geluidspakketten gingen nog in send(), dat\n  tot twee seconden op de Wi-Fi wachtte en de hele zender meenam: beeld en geluid van elke kijker stonden stil en kwamen\n  daarna in een klap. Gehoord als gehakte, dubbele woorden op een reTerminal D1001 die naar een Guition 10.1 streamde\n  terwijl hij de 10.1 full screen toonde (de add-on: geluid 0,8 s achter gemiddeld, 2,4 s max). Het rapport telt de\n  achtergebleven pakketten.\n\n## 0.6.13 - 2026-10-29\n- **De quantiser van de video staat weer op hoogstens 42.** 0.6.11 liet de encoder het hele bereik van H.264 gebruiken\n  om in een druk beeld rond zijn 1 Mbit/s te blijven. Gemeten doet hij dat bij 42 al: op een Guition 10.1 met verse\n  ruis over de helft van elk beeld stuurde hij 983 tot 1006 kbit/s bij 42 en 1001 tot 1002 bij 51, en er bleven in\n  beide gevallen evenveel beelden achter op de verbinding. Dus de instelling gaat terug naar wat hij was.\n\n## 0.6.12 - 2026-10-29\n- **Het scherm vertraagt zijn eigen live tegels zolang iemand zijn microfoon hoort** (vereist Tessera's dev-firmware,\n  plugin API 0.23). Vier live tegels op een reTerminal D1001 maakten zijn Wi-Fi zo druk dat het geluid van zijn video in\n  bursts een seconde te laat bij de kijker aankwam; zolang een kijker het geluid heeft, houdt het scherm zijn live\n  camerategels nu op een kwart van hun beelden per seconde, zodat het gesprek voorgaat.\n\n## 0.6.11 - 2026-10-29\n- **De video houdt zich aan zijn bitrate in een druk beeld.** De encoder kon een beeld maar tot een bepaalde grofheid\n  maken (quantiser hoogstens 42), dus een beeld met veel detail of beweging werd groter dan de 1 Mbit/s die de video\n  hoort te sturen: een reTerminal D1001 stuurde 1,6 tot 2,1 Mbit/s, en 30 tot 70 beelden per minuut kwamen niet aan.\n  Hij mag nu het hele bereik van H.264 gebruiken (tot 51), zodat hij rond 1 Mbit/s blijft en een druk moment\n  iets zachter oogt in plaats van te haperen.\n\n## 0.6.10 - 2026-10-29\n- **Het geluid wacht op een trage verbinding niet meer op het beeld.** Beeld en geluid verlaten het scherm over één\n  verbinding, en als de Wi-Fi-uplink van het scherm stokte (een reTerminal D1001 met vier live tegels terwijl zijn camera\n  bekeken werd) wachtte een beeld seconden in de verbinding en het geluid erachter: het kwam in bursts een seconde te\n  laat bij Home Assistant aan, hoogstens 2,4 s, en het scherm dat het afspeelde knipte er meer dan de helft van weg\n  (woorden weg, stukjes dubbel). Na 2 s wachten werd de kijker weggegooid en verbond go2rtc opnieuw. Nu blijft een beeld\n  dat de verbinding vol vindt (meer dan de helft van de zendbuffer wacht nog) achter, de kijker krijgt eerst een\n  keyframe als er weer ruimte is, en het geluid gaat tussen de pakketten van een lang beeld door. Op de bench, met een\n  kijker die elke 6 s 3 s niet las: 0 bytes geluid verloren, de kijker bleef, 232 beelden achtergebleven in 40 s;\n  daarvoor werd dezelfde kijker na 2 s weggegooid. De logregel per minuut telt de beelden die achterbleven voor een\n  volle verbinding.\n\n## 0.6.9 - 2026-10-28\n- **Naar de video kijken laat het wake word niet meer struikelen.** Terwijl iemand de video van het scherm in Home\n  Assistant bekeek, kon het wake word vaak per uur de draad kwijtraken (217 keer per uur op een Guition 10.1 met één\n  kijker). Het geluid van de video gaat nu voor het wake word opzij: 0 keer in dezelfde test, de video nog steeds op 15\n  beelden per seconde. De Sound-regel in het log zegt ook hoe lang het coderen van elk stukje geluid duurt.\n\n## 0.6.8 - 2026-10-28\n- **De eigen camera van het scherm op een tegel van dat scherm wordt op het scherm zelf getekend** (vraagt de dev-firmware\n  en -app van Tessera, plugin-API 0.22): een live cameratile met de eigen camera van dit scherm krijgt zijn beelden\n  rechtstreeks van de camera, zonder de video, Home Assistant of het netwerk ertussen. Het beeld is zo vers als dat van\n  de camera, en zolang niemand de video in Home Assistant bekijkt, blijft de video-encoder van het scherm uit. Er is\n  niets te doen; de camerastip brandt zolang de tegel op het scherm staat, net als wanneer iemand de video bekijkt.\n\n## 0.6.7 - 2026-10-28\n- **Geeft mee op een druk scherm** (vraagt de dev-firmware van Tessera, plugin-API 0.21): zolang een vinger op het\n  scherm ligt of het scherm tekenen van drukte geeft, stuurt de video om het andere beeld of één op de vier, en worden\n  lichtniveau en beweging half of een kwart zo vaak gemeten. Daarna vanzelf weer volledig. Er is niets te doen.\n\n## 0.6.6 - 2026-10-28\n- **Minder werk terwijl niemand kijkt** op de camera van de Guition-schermen met het beeldveld Full: het scherm halveert\n  de regels van een beeld alleen nog terwijl iemand de video bekijkt. Lichtniveau en beweging lezen het beeld zoals de\n  camera het maakt.\n\n## 0.6.5 - 2026-10-27\n- **Full is het standaard beeldveld** van de camera van de Guition-schermen (OV02C10): alles wat hij ziet, op de halve\n  resolutie, 15 beelden per seconde. De twee Full-standen zijn er nu één: de sensor middelt telkens twee kolommen en\n  het scherm halveert de regels, wat loopt waar het halveren van de regels door de sensor zelf na één beeld stopte.\n  Sharp, het midden op volle resolutie en 30 per seconde, blijft beschikbaar. Een scherm waarvan de instelling Sharp\n  toont, houdt die: kies één keer Full om de hele kamer te zien.\n- **Een helderder beeld in een schemerige kamer**: de automatische belichting kan nu ook de digitale versterking van\n  de sensor gebruiken, tot 63x in plaats van 15,5x. En sinds 0.6.0 zette een wissel van beeldveld de belichting en\n  versterking terug naar hun begin terwijl de automatische belichting haar keuze hield, zodat het beeld donker kon\n  blijven; nu blijven ze waar de automatische belichting ze zette.\n- **De eigen beeldafstelling van Guition** voor de OV02C10 (kleuren, witbalans, zwartniveau), voor beide\n  chiprevisies van de ESP32-P4.\n- **De camera rust als niemand kijkt**: voor het lichtniveau en beweging, of met het onderdeel Video en verder niets,\n  maakt hij 5 beelden per seconde (de OV02C10 van de Guition-schermen en de SC202CS van de reTerminal D1001), en hij\n  gaat meteen terug naar volle snelheid als iemand de video opent of Home Assistant om een beeld vraagt, en tien\n  seconden na de laatste daarvan weer langzamer.\n- **De camerastip maakt het verschil zichtbaar**: dicht zolang het beeld van de camera ergens heen gaat, een ring als\n  hij alleen licht en beweging meet. Dit vraagt de dev-firmware van Tessera (plugin-API 0.20), dus deze versie staat\n  op de dev-branch tot de volgende release van Tessera.\n- De video houdt 15 beelden per seconde als de camera er 15 maakt; eerder kon hij er telkens één overslaan.\n\n## 0.6.4 - 2026-10-26\n- Beeldveld camera op de Guition: met de regels gehalveerd stopte de sensor ook bij 960 x 544 na één beeld, en de P4\n  zei waarom: een beeld dat de sensor begon en nooit afsloot. Met hoeveel gehalveerde regels de beeldverwerking van\n  de sensor een beeld afsluit staat niet in de datasheet, dus een Full-stand zoekt het nu zelf uit: hij probeert een\n  rij vensters (de hoogte en de offsets) na elkaar, elk tot het loopt of stopt, houdt het eerste dat loopt en begint\n  er de volgende keer mee. Loopt er geen, dan gaat hij terug naar Sharp zoals voorheen. De log noemt elk geprobeerd\n  venster en welk liep, en het rapport van de P4 komt in twee regels die niet meer worden afgekapt. Testers: zet elke\n  Full-stand één keer aan, wacht ongeveer een minuut, en stuur alle logregels met \"Field of view\" en een screenshot.\n\n## 0.6.3 - 2026-10-26\n- Beeldveld camera op de Guition 10.1-inch: Jeroen Peters vond met zijn testbuilds dat de Full-standen na één beeld\n  stilvallen zodra de regels gehalveerd worden, terwijl alleen de kolommen halveren gewoon blijft lopen. Beide\n  Full-standen vragen nu om elke gehalveerde regel (960 x 544 in plaats van 960 x 528). Valt een Full-stand toch\n  stil, dan zegt de log wat de camera-ingang van de P4 zag (uit zijn testbuild). Testers: probeer beide Full-standen\n  opnieuw en stuur de logregels met \"Field of view\" en een screenshot.\n\n## 0.6.2 - 2026-10-25\n- Beeldveld camera op de Guition 4.3-inch (GitHub issue #326): beide Full-standen gaven daar geen beeld. Ze beginnen\n  nu vanuit de tabel die Sharp gebruikt, die het starten van de camera aan het scherm laat; de vorige zette de\n  camera halverwege het instellen al aan. Dezelfde lanesnelheid en timing als voorheen.\n- Een Full-stand waarvan het beeld in de eerste tien seconden stopt, of waar de camera niet van herstelt, gaat nu\n  vanzelf terug naar Sharp, wat de beelden ook afneemt (de video, een foto, lichtniveau en beweging); eerder kon hij\n  zonder beeld op Full blijven staan tot een herstart. De log zegt dan wat de sensor van de stand maakte.\n\n## 0.6.1 - 2026-10-25\n- Beeldveld camera op de Guition: de eerste test toonde meer van de kamer, maar naar rechtsboven verschoven en met\n  strepen. Beide Full-standen houden de offsets van hun venster nu even, en op hun plek als het beeld gespiegeld of\n  gedraaid wordt, en tien seconden na een wissel zegt de log wat de sensor ervan maakt: zijn binning, draaien en\n  spiegelen, het deel van de sensor dat hij leest, en de maat en plek van zijn uitvoer. Testers: probeer beide\n  Full-standen opnieuw, en stuur die logregel met een screenshot van elk.\n\n## 0.6.0 - 2026-10-25\n- Een nieuwe instelling, **Beeldveld camera**, voor de camera van de Guition ESP32-P4-schermen (OV02C10), om te\n  proberen. **Sharp** is het oude gedrag, het midden van het camerabeeld, en de standaard. **Full (binning)** en\n  **Full (skip)** tonen alles wat de camera ziet op de halve resolutie (960 x 528), zoals de datasheet van\n  OmniVision het beschrijft: binning middelt telkens twee pixels en regels, skip leest er één op de twee, dus\n  fijne patronen (jaloezieën, tegels) kunnen bij skip trillen. Geen van beide is al bewezen op een Guition.\n  Guition-eigenaren met een camera en het onderdeel Video: schakel terug naar Sharp als iets vreemd is, en meld bij\n  Full welke van de twee werkte, hoeveel van de kamer je ziet vergeleken met Sharp, de kleuren, de beelden per\n  seconde (de log zegt het tien seconden na de wissel, en of de sensor de binning aannam), en of het een paar minuten\n  stabiel blijft. Een stand die geen beeld geeft, gaat vanzelf terug naar Sharp. Elke andere camera blijft op Sharp\n  (de sensor van de M5Stack Tab5 en de reTerminal D1001 heeft voor zover we weten zo'n stand niet). Een wissel start\n  de camera en de encoder van de video opnieuw op de nieuwe maat.\n\n## 0.5.1 - 2026-10-25\n- De server van de video telt zijn verbindingen (zijn luisterpoort en zijn drie kijkers) mee in wat de firmware van het\n  scherm toestaat. Met vier live camerategels op het scherm naast de kijkers van de video raakten ze op, en vond het\n  plaatje van een vijfde camerategel geen verbinding. Werk bij als het wordt aangeboden; het scherm wordt opnieuw gebouwd.\n\n## 0.5.0 - 2026-10-25\n- De camera staat vanzelf rechtop: op een scherm waarvan het bord hem op zijn kop monteert (de M5Stack Tab5) en op\n  een scherm dat een halve slag gedraaid is. De sensor draait zijn eigen beeld, dus de plaatjes in Home Assistant, de\n  video en de lichtsterkte en beweging volgen allemaal, zonder kosten. Een nieuwe instelling, **Camera omgekeerd**,\n  draait hem nog een keer voor een scherm dat andersom hangt. Vraagt Tessera's firmware met plugin-API 0.19 (dev);\n  werk het scherm daarmee bij.\n- De regel van de video in het log zegt hoe lang de encoder over een beeld doet en hoeveel intern geheugen hij vasthoudt.\n- Tab5-bezitters: kijk of de camera rechtop staat in Home Assistant, en meld het.\n\n## 0.4.3 - 2026-10-24\n- Er verandert niets op het scherm of in Home Assistant: de code van de camera is anders ingedeeld voor wat komt. De\n  beelden van de camera gaan via een eigen verdeler naar lichtniveau en beweging en naar de video, in plaats van via\n  de video, de sensoren die de camera zelf vindt staan in een tabel van de plugin, en de encoder, de server en het\n  geluid van de video hebben elk een eigen bestand. Werk bij als het wordt aangeboden; het scherm bouwt opnieuw.\n\n## 0.4.2 - 2026-10-22\n- Bouwt op een ESPHome-bouwserver onder Windows. De kleurafstelling van de camera ging als Windows-pad naar de bouw,\n  dat onderweg zijn backslashes kwijtraakte, dus de bouw stopte bij een bestand `sc202cs_ipa.json` dat niet te vinden\n  was.\n\n## 0.4.1 - 2026-10-22\n- Video op de Guition ESP32-P4-schermen. Het vroeg precies 1280 x 720, en hun camera (OV02C10) gaf dat niet\n  (1288 x 728), dus daar liet Video niets zien. Die camera heeft nu een modus van 1280 x 720, zijn eerste, en Video\n  neemt op elk bord de maat van de camera zelf: een maat die niet in hele macroblokken van 16 past wordt onderweg tot\n  zijn midden geknipt (dat kost beelden per seconde, het log zegt het), en een camera boven 1280 x 800 vraagt om een\n  kleinere modus in de YAML van het onderdeel. Geen bord noemt een maat. Nog niet geprobeerd op een Guition-scherm:\n  zeg wat je ziet.\n\n## 0.4.0 - 2026-10-21\n- **Video**, een onderdeel dat aan staat als je de plugin toevoegt: de camera als live video met geluid in Home\n  Assistant, een camera **Video** bij het apparaat van het scherm die speelt in de browser en de app, ongeveer een derde\n  seconde later. H.264 uit de video-encoder van het scherm (1280 x 720, 15 beelden per seconde) en de microfoon als Opus,\n  in sync. Installeer eenmalig Video in Home Assistant onder Instellingen van Tessera (Tessera met die kaart nodig);\n  Tessera voegt daarna elk scherm zelf toe. Met het onderdeel loopt de camera vanaf de start en verdwijnt **Camera** van\n  het apparaat: **Video** geeft de stilstaande beelden. Lichtniveau en beweging blijven werken. Een scherm dat de plugin\n  al heeft houdt hem zoals hij is tot je Video aanvinkt.\n\n## 0.3.2 - 2026-10-20\n- Echtere kleuren op de M5Stack Tab5 en de reTerminal D1001: zwart is weer zwart. Hun camera gaf zwart door als een\n  donkergrijs dat de chip van het scherm er niet af kon halen, zodat donkere delen van het beeld roze waren en het hele\n  beeld flets. De plugin zet nu het zwartniveau van de sensor zelf.\n\n## 0.3.1 - 2026-10-20\n- **Beweging wekt het scherm** (eerst uit) en **Beweging blijft aan** (5 seconden tot 10 minuten, eerst 10) zijn ook\n  instellingen.\n- De eigen stip van Tessera in de rechterbovenhoek van het scherm staat er nu zolang de camera in gebruik is, ook bij\n  het meten van licht en beweging; de bovenbalk-items **Camera in gebruik** en **Camera ziet beweging** van de plugin\n  zijn weg. Werkt met Tessera met plugin-API 0.17.\n\n## 0.3.0 - 2026-10-20\n- Scherpere beelden: ze werden veel te sterk gecomprimeerd (JPEG-kwaliteit 12 van 100, nu 80). Elk beeld is groter,\n  ongeveer 150 tot 300 KB.\n- Ook de camera van de Guition ESP32-P4-schermen (de OmniVision OV02C10 van de JC8012P4A1, JC1060P470 V2 en\n  JC4880P443 in hun cameraversie), op een Tessera waarvan het bord hem noemt. Geprobeerd op de JC8012P4A1 V3.\n- Nieuw, uit tot je het aanzet: **Light level** (lux, een schatting) en **Motion** bij het apparaat van het scherm in\n  Home Assistant, bepaald door de camera op het scherm zelf: hiervoor gaat geen beeld van het scherm af. Zet\n  **Lichtniveau en beweging** aan bij de instellingen van de plugin; de camera blijft dan draaien. Uitgezet is het\n  lichtniveau onbekend.\n\n## 0.2.0 - 2026-10-10\n- Ook op een bord dat zijn camera vanaf een pin van klok voorziet, zoals de M5Stack Tab5.\n\n## 0.1.0 - 2026-10-10\n- Eerste versie: de eigen camera van het scherm als camera in Home Assistant, en een camera in de bovenbalk zolang er iemand kijkt.\n"
+    "en": "# Changelog\n\n## 0.6.17 - 2026-11-17\n- **A viewer is not refused for connections that never watched.** The video has room for three viewers. Home Assistant\n  opens a connection each time it tries to get a picture or work out how to play the video, and one that never went on\n  to play kept its place for 30 seconds. A few of those in a row filled all three places, and the next viewer, someone\n  opening the video, was refused (\"3 watch already\" in the log). A new viewer now takes a free place, or else the place\n  of the connection that does not play and has been silent longest; only when all three really watch is a fourth\n  refused. Seen on a Guition 10.1 (ESP32-P4 v3.2) with four live camera tiles on its glass.\n\n## 0.6.16 - 2026-11-01\n- **The OV5647's colours are right, also when the picture turns.** On a Waveshare ESP32-P4 7B with its OV5647 the\n  picture was purple and orange showed as green: Espressif's driver sets one of the sensor's two mirror bits, and the\n  colour order it declares holds only with both. Turned half way round (a screen hung upside down), red and blue swapped\n  as well, since the sensor's flips move its colours. A small component for this sensor now sets the second bit and\n  moves the sensor's window by a pixel for each flip, every time the camera has started or turned it; the picture's\n  orientation is as before. Tried on a 7B with an ESP32-P4 v1.3, upright and turned.\n\n## 0.6.15 - 2026-10-29\n- **A sound packet goes whenever the connection has room for it.** 0.6.14 held it back whenever the connection was not\n  \"writable\", which lwIP says only with half of the send buffer free: a fifth of a second of video in flight, normal\n  on Wi-Fi, so one to three packets of 20 ms a second were left out and the sound broke into snippets (heard on both\n  a reTerminal D1001 and a Guition 10.1 hearing each other). It is now sent without waiting; only a packet the\n  connection takes no part of is left out, and a part it did take goes first next time, so the stream stays whole.\n\n## 0.6.14 - 2026-10-29\n- **A viewer whose connection is full misses a moment of sound instead of holding everyone up.** The video already left\n  such a viewer's pictures behind until a key frame found room (0.6.10); its sound packets still went into send(), which\n  waited for the Wi-Fi up to two seconds and held the whole sender with it: every viewer's pictures and sound stopped,\n  then came in one burst. Heard as chopped, doubled words on a reTerminal D1001 streaming to a Guition 10.1 while it\n  showed the 10.1 full screen (the add-on: sound 0.8 s behind on average, 2.4 s at most). The report counts the packets\n  left behind.\n\n## 0.6.13 - 2026-10-29\n- **The video's quantiser is capped at 42 again.** 0.6.11 let the encoder use H.264's whole range to stay near its\n  1 Mbit/s in a busy picture. Measured, it already does at 42: on a Guition 10.1 with fresh noise over half of every\n  frame it sent 983 to 1006 kbit/s at 42 and 1001 to 1002 at 51, and as many pictures were left behind on the\n  connection either way. So the setting goes back to what it was.\n\n## 0.6.12 - 2026-10-29\n- **The screen slows its own live tiles while someone hears its microphone** (needs Tessera's dev firmware, plugin API\n  0.23). Four live tiles on a reTerminal D1001 crowded its Wi-Fi so much that its video's sound reached the viewer in\n  bursts a second late; while a viewer has the sound, the screen now keeps its live camera tiles at a quarter of their\n  pictures a second, so the conversation goes first.\n\n## 0.6.11 - 2026-10-29\n- **The video keeps to its bitrate in a busy picture.** The encoder could make a frame only so coarse (quantiser 42 at\n  most), so a picture with much detail or movement came out larger than the 1 Mbit/s the video is meant to send: a\n  reTerminal D1001 sent 1.6 to 2.1 Mbit/s, and 30 to 70 frames a minute did not arrive. It may now use H.264's\n  whole range (up to 51), so it stays near 1 Mbit/s and a busy moment looks a little softer instead of stalling.\n\n## 0.6.10 - 2026-10-29\n- **The sound no longer waits for the picture on a slow connection.** Picture and sound leave the screen over one\n  connection, and when the screen's Wi-Fi uplink stalled (a reTerminal D1001 showing four live tiles while its camera\n  was watched) a picture waited in the connection for seconds and the sound behind it: it reached Home Assistant in\n  bursts a second late, 2.4 s at most, and the screen that played it cut more than half of it away (words gone, bits\n  doubled). After 2 s of waiting the viewer was dropped and go2rtc connected anew. Now a picture that finds the\n  connection full (more than half of its send buffer waiting) is left behind, the viewer gets a key frame first when\n  there is room again, and the sound goes between the packets of a long picture. On the bench, a viewer that stopped\n  reading for 3 s of every 6: 0 bytes of sound lost, the viewer kept, 232 pictures left behind in 40 s; before, the\n  same viewer was dropped at 2 s. The log's line every minute counts the pictures left behind for a full connection.\n\n## 0.6.9 - 2026-10-28\n- **Watching the video no longer trips the wake word.** While someone watched the screen's video in Home Assistant, the\n  wake word could lose its place many times an hour (217 an hour on a Guition 10.1 with one viewer). The video's sound\n  now steps aside for the wake word: 0 in the same test, the video still at 15 frames a second. The log's Sound line also\n  says how long each piece of sound takes to encode.\n\n## 0.6.8 - 2026-10-28\n- **The screen's own camera on a tile of its own is drawn on the screen itself** (needs Tessera's dev firmware and app,\n  plugin API 0.22): a live camera tile that shows this screen's own camera gets its pictures straight from the camera,\n  without the video, Home Assistant or the network in between. The picture is as new as the camera's, and while nobody\n  watches the video in Home Assistant the screen's video encoder stays off. Nothing to do; the camera's dot shows while\n  the tile is on the glass, as it does while someone watches the video.\n\n## 0.6.7 - 2026-10-28\n- **Gives way on a busy screen** (needs Tessera's dev firmware, plugin API 0.21): while a finger is on the glass or\n  the screen shows signs of trouble, the video sends every other frame or one in four, and light level and motion are\n  sampled half or a quarter as often. Back to full by itself a moment later. Nothing to do.\n\n## 0.6.6 - 2026-10-28\n- **Less work while nobody watches** on the Guition screens' camera with Full field of view: the screen halves a\n  picture's lines only while someone watches the video. Light level and motion read the picture as the camera makes\n  it, so the screen's picture engine and memory are free for the live tiles the rest of the time. Nothing to do.\n\n## 0.6.5 - 2026-10-27\n- **Full is the default field of view** on the Guition screens' camera (OV02C10): the whole of what it sees, at half\n  the resolution, 15 pictures a second. The two Full modes are one now: the sensor averages each two columns and the\n  screen halves the lines, which runs where the sensor's own halving of the lines stopped after one frame. Sharp, the\n  middle at full resolution and 30 a second, is still there. A screen whose setting shows Sharp keeps it: choose Full\n  once to see the whole room.\n- **A brighter picture in a dim room**: auto exposure can now use the sensor's digital gain too, up to 63x instead of\n  15.5x. And since 0.6.0 a change of field of view put exposure and gain back to their start while auto exposure kept\n  its choice, so the picture could stay dark; they now stay where auto exposure set them.\n- **Guition's own image tuning** for the OV02C10 (colours, white balance, black level), for both chip revisions of the\n  ESP32-P4.\n- **The camera rests while nobody watches**: for the light level and motion, or with the part Video and nothing at\n  all, it makes 5 pictures a second (the OV02C10 of the Guition screens and the SC202CS of the reTerminal D1001), and\n  goes back to full speed at once when someone opens the video or Home Assistant asks for a picture, slowing down\n  again ten seconds after the last of those.\n- **The camera dot tells the two apart**: solid while the camera's picture goes somewhere, a ring while it only senses\n  the light and motion. This needs Tessera's dev firmware (plugin API 0.20), so this version is on the dev branch until\n  Tessera's next release.\n- The video keeps 15 pictures a second when the camera makes 15; before, it could skip every other one.\n\n## 0.6.4 - 2026-10-26\n- Camera field of view on the Guition: with the lines halved the sensor still stopped after one frame at 960 x 544,\n  and the P4 said why: a frame the sensor started and never ended. How many halved lines the sensor's own image\n  processor closes a frame with is not in its datasheet, so a Full mode now finds out by itself: it tries a row of\n  windows (the height and its offsets) one after the other, each until it runs or stops, keeps the first that runs,\n  and starts from it the next time. If none runs, it goes back to Sharp as before. The log says each window it\n  tried and which one ran, and the P4's report comes in two lines that are no longer cut off. Testers: switch to\n  each Full mode once, wait about a minute, and send all log lines with \"Field of view\" and a screenshot.\n\n## 0.6.3 - 2026-10-26\n- Camera field of view on the Guition 10.1-inch: Jeroen Peters found with his test builds that the Full modes stall\n  after one frame whenever the lines are halved, while the columns halved alone keep running. Both Full modes now\n  ask for every halved line (960 x 544 instead of 960 x 528). When a Full mode still stalls, the log says what the\n  P4's camera input saw (from his test build). Testers: try both Full modes again and send the log lines with\n  \"Field of view\" and a screenshot.\n\n## 0.6.2 - 2026-10-25\n- Camera field of view on the Guition 4.3-inch (GitHub issue #326): both Full modes gave no picture there. They now\n  start from the table Sharp uses, which leaves starting the camera to the screen; the one before turned the\n  camera on halfway through being set up. Same lane rate and timing as before.\n- A Full mode whose picture stops in its first ten seconds, or that the camera does not recover from, goes back to\n  Sharp by itself now, whatever takes the pictures (the video, a still, light level and motion); before, it could\n  stay on Full with no picture until a restart. The log then says what the sensor made of the mode.\n\n## 0.6.1 - 2026-10-25\n- Camera field of view on the Guition: the first test showed more of the room, but moved towards the top right\n  and with stripes. Both Full modes now keep their window's offsets even and where they are when the picture is\n  mirrored or flipped, and ten seconds after a change the log says what the sensor makes of it: its binning, flip\n  and mirror, the part of the array it reads, and the size and place of its output. Testers: try both Full modes\n  again, and send that log line with a screenshot of each.\n\n## 0.6.0 - 2026-10-25\n- A new setting, **Camera field of view**, for the Guition ESP32-P4 screens' camera (OV02C10), to try. **Sharp** is\n  the old behaviour, the middle of the camera's picture, and the default. **Full (binning)** and **Full (skip)** show\n  the whole of what the camera sees at half the resolution (960 x 528), as OmniVision's datasheet for the sensor\n  describes it: binning averages each two pixels and lines, skip reads every other one, so fine patterns (blinds,\n  tiles) may shimmer with skip. Neither is proven on a Guition yet. Guition owners with a camera and the part Video:\n  switch back to Sharp if anything looks odd, and say for Full which of the two worked, how much of the room you see\n  compared with Sharp, the colours, the frames a second (the log says it ten seconds after the change, and whether the\n  sensor took the binning), and whether it stays stable over a few minutes. A mode that gives no picture goes back to\n  Sharp by itself. Every other camera keeps Sharp (the M5Stack Tab5's and the reTerminal D1001's sensor has no such\n  mode we know of). Changing it restarts the camera and the video's encoder at the new size.\n\n## 0.5.1 - 2026-10-25\n- The video's server counts its connections (its listener and its three viewers) into the ones the screen's firmware\n  allows. With four live camera tiles on the glass beside the video's viewers the screen ran out of them, and a fifth\n  camera tile's picture found no connection. Update when it is offered; the screen builds again.\n\n## 0.5.0 - 2026-10-25\n- The camera stands upright by itself: on a screen whose board mounts it upside down (the M5Stack Tab5) and on a\n  screen turned half way round. The sensor turns its own picture, so the pictures in Home Assistant, the video and the\n  light level and motion all follow, at no cost. A new setting, **Camera upside down**, turns it once more for a screen\n  mounted the other way round. Needs Tessera's firmware with plugin API 0.19 (dev); update the screen with it.\n- The video's line in the log says how long the encoder takes a frame and how much internal RAM it holds.\n- Tab5 owners: check that the camera stands upright in Home Assistant, and say so.\n\n## 0.4.3 - 2026-10-24\n- Nothing changes on the screen or in Home Assistant: the camera's code is laid out anew for what comes next. The\n  camera's frames reach light level and motion and the video through one hub of their own instead of through the\n  video, the sensors the camera finds by itself are a table of the plugin's own, and the video's encoder, server and\n  sound are each a file. Update when it is offered; the screen builds again.\n\n## 0.4.2 - 2026-10-22\n- Builds on an ESPHome build server on Windows. The camera's colour tuning was handed to the build as a Windows path,\n  which lost its backslashes on the way, so the build stopped at a file `sc202cs_ipa.json` it could not find.\n\n## 0.4.1 - 2026-10-22\n- Video on the Guition ESP32-P4 screens. It asked for exactly 1280 x 720, which their camera (OV02C10) did not give\n  (1288 x 728), so Video showed nothing there. That camera now has a 1280 x 720 mode, its first, and Video takes the\n  camera's own size on every board: a size that is not in whole macroblocks of 16 is cut to its middle on the way\n  (at a cost in frames a second, the log says so), and a camera above 1280 x 800 asks for a smaller mode in the part's\n  YAML. No board names a size. Not yet tried on a Guition screen: please say what you see.\n\n## 0.4.0 - 2026-10-21\n- **Video**, a part that is on when you add the plugin: the camera as live video with sound in Home Assistant, a camera\n  **Video** on the screen's device that plays in the browser and the app, about a third of a second behind. H.264 from\n  the screen's video encoder (1280 x 720, 15 frames a second) and the microphone as Opus, in sync. Install Video in\n  Home Assistant once under Tessera's Settings (needs Tessera with that card); Tessera then adds each screen by itself.\n  With the part the camera runs from the start and **Camera** leaves the device: **Video** gives the stills. Light level\n  and motion keep working. A screen that has the plugin already keeps it as it is until you tick Video.\n\n## 0.3.2 - 2026-10-20\n- Truer colours on the M5Stack Tab5 and the reTerminal D1001: black is black again. Their camera sent black as a dark\n  grey that the screen's chip could not take off, so dark parts of the picture looked pink and the whole picture\n  looked faded. The plugin now sets the sensor's own black level.\n\n## 0.3.1 - 2026-10-20\n- **Motion wakes the screen** (off to start with) and **Motion time-out** (5 seconds to 10 minutes, 10 to start\n  with) are settings now.\n- Tessera's own dot in the top right corner of the screen now shows while the camera is in use, also while it senses\n  light and motion; the plugin's top bar items **Camera in use** and **Camera senses motion** are gone. Needs Tessera\n  with plugin API 0.17.\n\n## 0.3.0 - 2026-10-20\n- Sharper pictures: they were compressed far too much (JPEG quality 12 of 100, now 80). Each picture is larger,\n  about 150 to 300 KB.\n- Also the camera of the Guition ESP32-P4 screens (the OmniVision OV02C10 of the JC8012P4A1, JC1060P470 V2 and\n  JC4880P443 in their camera version), on a Tessera whose board names it. Tried on the JC8012P4A1 V3.\n- New, off until you switch it on: **Light level** (lux, an estimate) and **Motion** on the screen's device in Home\n  Assistant, worked out from the camera on the screen itself: no picture leaves the screen for them. Switch on\n  **Light level and motion** in the plugin's settings; the camera then keeps running. Switched off, the light level\n  reads unknown.\n\n## 0.2.0 - 2026-10-10\n- Also on a board that clocks its camera from a pin, such as the M5Stack Tab5.\n\n## 0.1.0 - 2026-10-10\n- First version: the screen's own camera as a camera in Home Assistant, and a camera in the top bar while it is watched.\n",
+    "nl": "# Wijzigingen\n\n## 0.6.17 - 2026-11-17\n- **Een kijker wordt niet geweigerd om verbindingen die nooit keken.** De video heeft plek voor drie kijkers. Home\n  Assistant opent een verbinding telkens als het een beeld wil ophalen of uitzoekt hoe het de video afspeelt, en een\n  verbinding die daarna niet ging afspelen hield haar plek 30 seconden bezet. Een paar daarvan achter elkaar vulden alle\n  drie de plekken, en de volgende kijker, iemand die de video opent, werd geweigerd (\"3 watch already\" in de log). Een\n  nieuwe kijker krijgt nu een vrije plek, of anders de plek van de verbinding die niet afspeelt en het langst stil is;\n  alleen als alle drie echt kijken wordt een vierde geweigerd. Gezien op een Guition 10.1 (ESP32-P4 v3.2) met vier\n  live cameratiles op het scherm.\n\n## 0.6.16 - 2026-11-01\n- **De kleuren van de OV5647 kloppen, ook als het beeld draait.** Op een Waveshare ESP32-P4 7B met zijn OV5647 was het\n  beeld paars en kwam oranje als groen: Espressifs driver zet een van de twee spiegelbits van de sensor, en de\n  kleurvolgorde die hij opgeeft klopt alleen met allebei. Half omgedraaid (een scherm dat ondersteboven hangt) wisselden\n  ook rood en blauw, omdat de flips van de sensor zijn kleuren verschuiven. Een kleine component voor deze sensor zet nu\n  het tweede bit en schuift het venster van de sensor een pixel op voor elke flip, telkens als de camera hem heeft\n  gestart of gedraaid; de stand van het beeld blijft zoals hij was. Geprobeerd op een 7B met een ESP32-P4 v1.3, rechtop\n  en gedraaid.\n\n## 0.6.15 - 2026-10-29\n- **Een geluidspakket gaat zodra de verbinding er ruimte voor heeft.** 0.6.14 hield het tegen zolang de verbinding niet\n  \"writable\" was, en dat zegt lwIP pas met de helft van de zendbuffer vrij: een vijfde seconde video onderweg, normaal\n  op Wi-Fi, dus bleven één tot drie pakketten van 20 ms per seconde achter en brak het geluid in snippets (gehoord op\n  een reTerminal D1001 en een Guition 10.1 die elkaar horen). Het wordt nu zonder wachten verstuurd; alleen een pakket\n  waar de verbinding niets van neemt blijft achter, en een deel dat hij wel nam gaat de volgende keer eerst, zodat de\n  stroom heel blijft.\n\n## 0.6.14 - 2026-10-29\n- **Een kijker met een volle verbinding mist even geluid in plaats van iedereen op te houden.** De video liet de beelden\n  van zo'n kijker al achter tot een sleutelframe ruimte vond (0.6.10); zijn geluidspakketten gingen nog in send(), dat\n  tot twee seconden op de Wi-Fi wachtte en de hele zender meenam: beeld en geluid van elke kijker stonden stil en kwamen\n  daarna in een klap. Gehoord als gehakte, dubbele woorden op een reTerminal D1001 die naar een Guition 10.1 streamde\n  terwijl hij de 10.1 full screen toonde (de add-on: geluid 0,8 s achter gemiddeld, 2,4 s max). Het rapport telt de\n  achtergebleven pakketten.\n\n## 0.6.13 - 2026-10-29\n- **De quantiser van de video staat weer op hoogstens 42.** 0.6.11 liet de encoder het hele bereik van H.264 gebruiken\n  om in een druk beeld rond zijn 1 Mbit/s te blijven. Gemeten doet hij dat bij 42 al: op een Guition 10.1 met verse\n  ruis over de helft van elk beeld stuurde hij 983 tot 1006 kbit/s bij 42 en 1001 tot 1002 bij 51, en er bleven in\n  beide gevallen evenveel beelden achter op de verbinding. Dus de instelling gaat terug naar wat hij was.\n\n## 0.6.12 - 2026-10-29\n- **Het scherm vertraagt zijn eigen live tegels zolang iemand zijn microfoon hoort** (vereist Tessera's dev-firmware,\n  plugin API 0.23). Vier live tegels op een reTerminal D1001 maakten zijn Wi-Fi zo druk dat het geluid van zijn video in\n  bursts een seconde te laat bij de kijker aankwam; zolang een kijker het geluid heeft, houdt het scherm zijn live\n  camerategels nu op een kwart van hun beelden per seconde, zodat het gesprek voorgaat.\n\n## 0.6.11 - 2026-10-29\n- **De video houdt zich aan zijn bitrate in een druk beeld.** De encoder kon een beeld maar tot een bepaalde grofheid\n  maken (quantiser hoogstens 42), dus een beeld met veel detail of beweging werd groter dan de 1 Mbit/s die de video\n  hoort te sturen: een reTerminal D1001 stuurde 1,6 tot 2,1 Mbit/s, en 30 tot 70 beelden per minuut kwamen niet aan.\n  Hij mag nu het hele bereik van H.264 gebruiken (tot 51), zodat hij rond 1 Mbit/s blijft en een druk moment\n  iets zachter oogt in plaats van te haperen.\n\n## 0.6.10 - 2026-10-29\n- **Het geluid wacht op een trage verbinding niet meer op het beeld.** Beeld en geluid verlaten het scherm over één\n  verbinding, en als de Wi-Fi-uplink van het scherm stokte (een reTerminal D1001 met vier live tegels terwijl zijn camera\n  bekeken werd) wachtte een beeld seconden in de verbinding en het geluid erachter: het kwam in bursts een seconde te\n  laat bij Home Assistant aan, hoogstens 2,4 s, en het scherm dat het afspeelde knipte er meer dan de helft van weg\n  (woorden weg, stukjes dubbel). Na 2 s wachten werd de kijker weggegooid en verbond go2rtc opnieuw. Nu blijft een beeld\n  dat de verbinding vol vindt (meer dan de helft van de zendbuffer wacht nog) achter, de kijker krijgt eerst een\n  keyframe als er weer ruimte is, en het geluid gaat tussen de pakketten van een lang beeld door. Op de bench, met een\n  kijker die elke 6 s 3 s niet las: 0 bytes geluid verloren, de kijker bleef, 232 beelden achtergebleven in 40 s;\n  daarvoor werd dezelfde kijker na 2 s weggegooid. De logregel per minuut telt de beelden die achterbleven voor een\n  volle verbinding.\n\n## 0.6.9 - 2026-10-28\n- **Naar de video kijken laat het wake word niet meer struikelen.** Terwijl iemand de video van het scherm in Home\n  Assistant bekeek, kon het wake word vaak per uur de draad kwijtraken (217 keer per uur op een Guition 10.1 met één\n  kijker). Het geluid van de video gaat nu voor het wake word opzij: 0 keer in dezelfde test, de video nog steeds op 15\n  beelden per seconde. De Sound-regel in het log zegt ook hoe lang het coderen van elk stukje geluid duurt.\n\n## 0.6.8 - 2026-10-28\n- **De eigen camera van het scherm op een tegel van dat scherm wordt op het scherm zelf getekend** (vraagt de dev-firmware\n  en -app van Tessera, plugin-API 0.22): een live cameratile met de eigen camera van dit scherm krijgt zijn beelden\n  rechtstreeks van de camera, zonder de video, Home Assistant of het netwerk ertussen. Het beeld is zo vers als dat van\n  de camera, en zolang niemand de video in Home Assistant bekijkt, blijft de video-encoder van het scherm uit. Er is\n  niets te doen; de camerastip brandt zolang de tegel op het scherm staat, net als wanneer iemand de video bekijkt.\n\n## 0.6.7 - 2026-10-28\n- **Geeft mee op een druk scherm** (vraagt de dev-firmware van Tessera, plugin-API 0.21): zolang een vinger op het\n  scherm ligt of het scherm tekenen van drukte geeft, stuurt de video om het andere beeld of één op de vier, en worden\n  lichtniveau en beweging half of een kwart zo vaak gemeten. Daarna vanzelf weer volledig. Er is niets te doen.\n\n## 0.6.6 - 2026-10-28\n- **Minder werk terwijl niemand kijkt** op de camera van de Guition-schermen met het beeldveld Full: het scherm halveert\n  de regels van een beeld alleen nog terwijl iemand de video bekijkt. Lichtniveau en beweging lezen het beeld zoals de\n  camera het maakt.\n\n## 0.6.5 - 2026-10-27\n- **Full is het standaard beeldveld** van de camera van de Guition-schermen (OV02C10): alles wat hij ziet, op de halve\n  resolutie, 15 beelden per seconde. De twee Full-standen zijn er nu één: de sensor middelt telkens twee kolommen en\n  het scherm halveert de regels, wat loopt waar het halveren van de regels door de sensor zelf na één beeld stopte.\n  Sharp, het midden op volle resolutie en 30 per seconde, blijft beschikbaar. Een scherm waarvan de instelling Sharp\n  toont, houdt die: kies één keer Full om de hele kamer te zien.\n- **Een helderder beeld in een schemerige kamer**: de automatische belichting kan nu ook de digitale versterking van\n  de sensor gebruiken, tot 63x in plaats van 15,5x. En sinds 0.6.0 zette een wissel van beeldveld de belichting en\n  versterking terug naar hun begin terwijl de automatische belichting haar keuze hield, zodat het beeld donker kon\n  blijven; nu blijven ze waar de automatische belichting ze zette.\n- **De eigen beeldafstelling van Guition** voor de OV02C10 (kleuren, witbalans, zwartniveau), voor beide\n  chiprevisies van de ESP32-P4.\n- **De camera rust als niemand kijkt**: voor het lichtniveau en beweging, of met het onderdeel Video en verder niets,\n  maakt hij 5 beelden per seconde (de OV02C10 van de Guition-schermen en de SC202CS van de reTerminal D1001), en hij\n  gaat meteen terug naar volle snelheid als iemand de video opent of Home Assistant om een beeld vraagt, en tien\n  seconden na de laatste daarvan weer langzamer.\n- **De camerastip maakt het verschil zichtbaar**: dicht zolang het beeld van de camera ergens heen gaat, een ring als\n  hij alleen licht en beweging meet. Dit vraagt de dev-firmware van Tessera (plugin-API 0.20), dus deze versie staat\n  op de dev-branch tot de volgende release van Tessera.\n- De video houdt 15 beelden per seconde als de camera er 15 maakt; eerder kon hij er telkens één overslaan.\n\n## 0.6.4 - 2026-10-26\n- Beeldveld camera op de Guition: met de regels gehalveerd stopte de sensor ook bij 960 x 544 na één beeld, en de P4\n  zei waarom: een beeld dat de sensor begon en nooit afsloot. Met hoeveel gehalveerde regels de beeldverwerking van\n  de sensor een beeld afsluit staat niet in de datasheet, dus een Full-stand zoekt het nu zelf uit: hij probeert een\n  rij vensters (de hoogte en de offsets) na elkaar, elk tot het loopt of stopt, houdt het eerste dat loopt en begint\n  er de volgende keer mee. Loopt er geen, dan gaat hij terug naar Sharp zoals voorheen. De log noemt elk geprobeerd\n  venster en welk liep, en het rapport van de P4 komt in twee regels die niet meer worden afgekapt. Testers: zet elke\n  Full-stand één keer aan, wacht ongeveer een minuut, en stuur alle logregels met \"Field of view\" en een screenshot.\n\n## 0.6.3 - 2026-10-26\n- Beeldveld camera op de Guition 10.1-inch: Jeroen Peters vond met zijn testbuilds dat de Full-standen na één beeld\n  stilvallen zodra de regels gehalveerd worden, terwijl alleen de kolommen halveren gewoon blijft lopen. Beide\n  Full-standen vragen nu om elke gehalveerde regel (960 x 544 in plaats van 960 x 528). Valt een Full-stand toch\n  stil, dan zegt de log wat de camera-ingang van de P4 zag (uit zijn testbuild). Testers: probeer beide Full-standen\n  opnieuw en stuur de logregels met \"Field of view\" en een screenshot.\n\n## 0.6.2 - 2026-10-25\n- Beeldveld camera op de Guition 4.3-inch (GitHub issue #326): beide Full-standen gaven daar geen beeld. Ze beginnen\n  nu vanuit de tabel die Sharp gebruikt, die het starten van de camera aan het scherm laat; de vorige zette de\n  camera halverwege het instellen al aan. Dezelfde lanesnelheid en timing als voorheen.\n- Een Full-stand waarvan het beeld in de eerste tien seconden stopt, of waar de camera niet van herstelt, gaat nu\n  vanzelf terug naar Sharp, wat de beelden ook afneemt (de video, een foto, lichtniveau en beweging); eerder kon hij\n  zonder beeld op Full blijven staan tot een herstart. De log zegt dan wat de sensor van de stand maakte.\n\n## 0.6.1 - 2026-10-25\n- Beeldveld camera op de Guition: de eerste test toonde meer van de kamer, maar naar rechtsboven verschoven en met\n  strepen. Beide Full-standen houden de offsets van hun venster nu even, en op hun plek als het beeld gespiegeld of\n  gedraaid wordt, en tien seconden na een wissel zegt de log wat de sensor ervan maakt: zijn binning, draaien en\n  spiegelen, het deel van de sensor dat hij leest, en de maat en plek van zijn uitvoer. Testers: probeer beide\n  Full-standen opnieuw, en stuur die logregel met een screenshot van elk.\n\n## 0.6.0 - 2026-10-25\n- Een nieuwe instelling, **Beeldveld camera**, voor de camera van de Guition ESP32-P4-schermen (OV02C10), om te\n  proberen. **Sharp** is het oude gedrag, het midden van het camerabeeld, en de standaard. **Full (binning)** en\n  **Full (skip)** tonen alles wat de camera ziet op de halve resolutie (960 x 528), zoals de datasheet van\n  OmniVision het beschrijft: binning middelt telkens twee pixels en regels, skip leest er één op de twee, dus\n  fijne patronen (jaloezieën, tegels) kunnen bij skip trillen. Geen van beide is al bewezen op een Guition.\n  Guition-eigenaren met een camera en het onderdeel Video: schakel terug naar Sharp als iets vreemd is, en meld bij\n  Full welke van de twee werkte, hoeveel van de kamer je ziet vergeleken met Sharp, de kleuren, de beelden per\n  seconde (de log zegt het tien seconden na de wissel, en of de sensor de binning aannam), en of het een paar minuten\n  stabiel blijft. Een stand die geen beeld geeft, gaat vanzelf terug naar Sharp. Elke andere camera blijft op Sharp\n  (de sensor van de M5Stack Tab5 en de reTerminal D1001 heeft voor zover we weten zo'n stand niet). Een wissel start\n  de camera en de encoder van de video opnieuw op de nieuwe maat.\n\n## 0.5.1 - 2026-10-25\n- De server van de video telt zijn verbindingen (zijn luisterpoort en zijn drie kijkers) mee in wat de firmware van het\n  scherm toestaat. Met vier live camerategels op het scherm naast de kijkers van de video raakten ze op, en vond het\n  plaatje van een vijfde camerategel geen verbinding. Werk bij als het wordt aangeboden; het scherm wordt opnieuw gebouwd.\n\n## 0.5.0 - 2026-10-25\n- De camera staat vanzelf rechtop: op een scherm waarvan het bord hem op zijn kop monteert (de M5Stack Tab5) en op\n  een scherm dat een halve slag gedraaid is. De sensor draait zijn eigen beeld, dus de plaatjes in Home Assistant, de\n  video en de lichtsterkte en beweging volgen allemaal, zonder kosten. Een nieuwe instelling, **Camera omgekeerd**,\n  draait hem nog een keer voor een scherm dat andersom hangt. Vraagt Tessera's firmware met plugin-API 0.19 (dev);\n  werk het scherm daarmee bij.\n- De regel van de video in het log zegt hoe lang de encoder over een beeld doet en hoeveel intern geheugen hij vasthoudt.\n- Tab5-bezitters: kijk of de camera rechtop staat in Home Assistant, en meld het.\n\n## 0.4.3 - 2026-10-24\n- Er verandert niets op het scherm of in Home Assistant: de code van de camera is anders ingedeeld voor wat komt. De\n  beelden van de camera gaan via een eigen verdeler naar lichtniveau en beweging en naar de video, in plaats van via\n  de video, de sensoren die de camera zelf vindt staan in een tabel van de plugin, en de encoder, de server en het\n  geluid van de video hebben elk een eigen bestand. Werk bij als het wordt aangeboden; het scherm bouwt opnieuw.\n\n## 0.4.2 - 2026-10-22\n- Bouwt op een ESPHome-bouwserver onder Windows. De kleurafstelling van de camera ging als Windows-pad naar de bouw,\n  dat onderweg zijn backslashes kwijtraakte, dus de bouw stopte bij een bestand `sc202cs_ipa.json` dat niet te vinden\n  was.\n\n## 0.4.1 - 2026-10-22\n- Video op de Guition ESP32-P4-schermen. Het vroeg precies 1280 x 720, en hun camera (OV02C10) gaf dat niet\n  (1288 x 728), dus daar liet Video niets zien. Die camera heeft nu een modus van 1280 x 720, zijn eerste, en Video\n  neemt op elk bord de maat van de camera zelf: een maat die niet in hele macroblokken van 16 past wordt onderweg tot\n  zijn midden geknipt (dat kost beelden per seconde, het log zegt het), en een camera boven 1280 x 800 vraagt om een\n  kleinere modus in de YAML van het onderdeel. Geen bord noemt een maat. Nog niet geprobeerd op een Guition-scherm:\n  zeg wat je ziet.\n\n## 0.4.0 - 2026-10-21\n- **Video**, een onderdeel dat aan staat als je de plugin toevoegt: de camera als live video met geluid in Home\n  Assistant, een camera **Video** bij het apparaat van het scherm die speelt in de browser en de app, ongeveer een derde\n  seconde later. H.264 uit de video-encoder van het scherm (1280 x 720, 15 beelden per seconde) en de microfoon als Opus,\n  in sync. Installeer eenmalig Video in Home Assistant onder Instellingen van Tessera (Tessera met die kaart nodig);\n  Tessera voegt daarna elk scherm zelf toe. Met het onderdeel loopt de camera vanaf de start en verdwijnt **Camera** van\n  het apparaat: **Video** geeft de stilstaande beelden. Lichtniveau en beweging blijven werken. Een scherm dat de plugin\n  al heeft houdt hem zoals hij is tot je Video aanvinkt.\n\n## 0.3.2 - 2026-10-20\n- Echtere kleuren op de M5Stack Tab5 en de reTerminal D1001: zwart is weer zwart. Hun camera gaf zwart door als een\n  donkergrijs dat de chip van het scherm er niet af kon halen, zodat donkere delen van het beeld roze waren en het hele\n  beeld flets. De plugin zet nu het zwartniveau van de sensor zelf.\n\n## 0.3.1 - 2026-10-20\n- **Beweging wekt het scherm** (eerst uit) en **Beweging blijft aan** (5 seconden tot 10 minuten, eerst 10) zijn ook\n  instellingen.\n- De eigen stip van Tessera in de rechterbovenhoek van het scherm staat er nu zolang de camera in gebruik is, ook bij\n  het meten van licht en beweging; de bovenbalk-items **Camera in gebruik** en **Camera ziet beweging** van de plugin\n  zijn weg. Werkt met Tessera met plugin-API 0.17.\n\n## 0.3.0 - 2026-10-20\n- Scherpere beelden: ze werden veel te sterk gecomprimeerd (JPEG-kwaliteit 12 van 100, nu 80). Elk beeld is groter,\n  ongeveer 150 tot 300 KB.\n- Ook de camera van de Guition ESP32-P4-schermen (de OmniVision OV02C10 van de JC8012P4A1, JC1060P470 V2 en\n  JC4880P443 in hun cameraversie), op een Tessera waarvan het bord hem noemt. Geprobeerd op de JC8012P4A1 V3.\n- Nieuw, uit tot je het aanzet: **Light level** (lux, een schatting) en **Motion** bij het apparaat van het scherm in\n  Home Assistant, bepaald door de camera op het scherm zelf: hiervoor gaat geen beeld van het scherm af. Zet\n  **Lichtniveau en beweging** aan bij de instellingen van de plugin; de camera blijft dan draaien. Uitgezet is het\n  lichtniveau onbekend.\n\n## 0.2.0 - 2026-10-10\n- Ook op een bord dat zijn camera vanaf een pin van klok voorziet, zoals de M5Stack Tab5.\n\n## 0.1.0 - 2026-10-10\n- Eerste versie: de eigen camera van het scherm als camera in Home Assistant, en een camera in de bovenbalk zolang er iemand kijkt.\n"
    },
    "image": "store.png"
   },
