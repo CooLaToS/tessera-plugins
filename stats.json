@@ -1,6 +1,12 @@
 {
  "format": 1,
  "plugins": {
+  "air_quality": {
+   "likes": 0,
+   "rating": null,
+   "ratings": 0,
+   "homes": 1
+  },
   "av_wall_panel_controls": {
    "likes": 0,
    "rating": null,
@@ -29,7 +35,7 @@
    "likes": 22,
    "rating": 4.7,
    "ratings": 46,
-   "homes": 54
+   "homes": 55
   },
   "dwd_rain": {
    "likes": 2,
@@ -38,7 +44,7 @@
    "homes": 13
   },
   "electricity_price": {
-   "likes": 3,
+   "likes": 4,
    "rating": 4.4,
    "ratings": 8,
    "homes": 8
@@ -59,7 +65,7 @@
    "likes": 18,
    "rating": 4.4,
    "ratings": 67,
-   "homes": 55
+   "homes": 54
   },
   "guition_relays": {
    "likes": 3,
@@ -81,9 +87,9 @@
   },
   "photo_clock": {
    "likes": 2,
-   "rating": 4.2,
-   "ratings": 5,
-   "homes": 15
+   "rating": 4.3,
+   "ratings": 6,
+   "homes": 14
   },
   "photo_slideshow": {
    "likes": 4,
@@ -95,7 +101,7 @@
    "likes": 3,
    "rating": 4.5,
    "ratings": 10,
-   "homes": 20
+   "homes": 18
   },
   "pollen": {
    "likes": 1,
@@ -113,12 +119,12 @@
    "likes": 6,
    "rating": 4.7,
    "ratings": 13,
-   "homes": 25
+   "homes": 26
   },
   "status_tile": {
    "likes": 3,
    "rating": 4.5,
-   "ratings": 20,
+   "ratings": 21,
    "homes": 30
   },
   "sweden_public_transport": {
@@ -135,8 +141,8 @@
   },
   "tap_sound": {
    "likes": 2,
-   "rating": 4.4,
-   "ratings": 9,
+   "rating": 4.5,
+   "ratings": 11,
    "homes": 14
   },
   "thermo_dial": {
@@ -149,13 +155,13 @@
    "likes": 2,
    "rating": 4.7,
    "ratings": 18,
-   "homes": 23
+   "homes": 24
   },
   "toothbrush": {
    "likes": 2,
-   "rating": 4,
-   "ratings": 4,
-   "homes": 5
+   "rating": 4.2,
+   "ratings": 5,
+   "homes": 4
   },
   "vinyl_deck": {
    "likes": 1,
@@ -172,19 +178,19 @@
   "waste_collection": {
    "likes": 12,
    "rating": 4.5,
-   "ratings": 27,
+   "ratings": 29,
    "homes": 27
   },
   "waste_overview": {
    "likes": 5,
    "rating": 3.8,
    "ratings": 12,
-   "homes": 10
+   "homes": 11
   },
   "waze_traveltime": {
    "likes": 4,
-   "rating": 4.4,
-   "ratings": 5,
+   "rating": 4.5,
+   "ratings": 6,
    "homes": 6
   },
   "weather_warnings": {
