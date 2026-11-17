@@ -17,7 +17,7 @@
    "likes": 2,
    "rating": 4.1,
    "ratings": 11,
-   "homes": 16
+   "homes": 17
   },
   "cinema": {
    "likes": 2,
@@ -59,7 +59,7 @@
    "likes": 18,
    "rating": 4.4,
    "ratings": 64,
-   "homes": 53
+   "homes": 54
   },
   "guition_relays": {
    "likes": 3,
@@ -71,7 +71,7 @@
    "likes": 5,
    "rating": 4.8,
    "ratings": 6,
-   "homes": 17
+   "homes": 16
   },
   "ov_departures": {
    "likes": 3,
@@ -83,7 +83,7 @@
    "likes": 2,
    "rating": 4.2,
    "ratings": 5,
-   "homes": 14
+   "homes": 15
   },
   "photo_slideshow": {
    "likes": 4,
@@ -95,7 +95,7 @@
    "likes": 3,
    "rating": 4.5,
    "ratings": 10,
-   "homes": 18
+   "homes": 20
   },
   "pollen": {
    "likes": 1,
@@ -143,7 +143,7 @@
    "likes": 2,
    "rating": 4.5,
    "ratings": 15,
-   "homes": 20
+   "homes": 19
   },
   "timers": {
    "likes": 2,
@@ -166,7 +166,7 @@
   "voice_assist": {
    "likes": 13,
    "rating": 4.7,
-   "ratings": 22,
+   "ratings": 23,
    "homes": 30
   },
   "waste_collection": {
