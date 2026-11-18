@@ -5,7 +5,7 @@
    "likes": 0,
    "rating": null,
    "ratings": 0,
-   "homes": 2
+   "homes": 3
   },
   "av_wall_panel_controls": {
    "likes": 0,
@@ -23,7 +23,7 @@
    "likes": 2,
    "rating": 3.9,
    "ratings": 14,
-   "homes": 19
+   "homes": 20
   },
   "cinema": {
    "likes": 2,
@@ -34,8 +34,8 @@
   "custom_card": {
    "likes": 22,
    "rating": 4.7,
-   "ratings": 48,
-   "homes": 58
+   "ratings": 51,
+   "homes": 59
   },
   "dwd_rain": {
    "likes": 2,
@@ -56,27 +56,27 @@
    "homes": 4
   },
   "energy_flow": {
-   "likes": 10,
+   "likes": 11,
    "rating": 4,
-   "ratings": 9,
+   "ratings": 10,
    "homes": 11
   },
   "flip_clock": {
-   "likes": 18,
+   "likes": 19,
    "rating": 4.5,
-   "ratings": 77,
+   "ratings": 81,
    "homes": 57
   },
   "guition_relays": {
    "likes": 3,
    "rating": 5,
    "ratings": 23,
-   "homes": 16
+   "homes": 17
   },
   "new_music": {
-   "likes": 5,
+   "likes": 7,
    "rating": 4.9,
-   "ratings": 7,
+   "ratings": 8,
    "homes": 17
   },
   "ov_departures": {
@@ -106,8 +106,8 @@
   "plane_radar": {
    "likes": 0,
    "rating": null,
-   "ratings": 0,
-   "homes": 1
+   "ratings": 1,
+   "homes": 2
   },
   "pollen": {
    "likes": 1,
@@ -124,8 +124,8 @@
   "screen_camera": {
    "likes": 7,
    "rating": 4.7,
-   "ratings": 14,
-   "homes": 28
+   "ratings": 16,
+   "homes": 29
   },
   "status_tile": {
    "likes": 3,
@@ -148,19 +148,19 @@
   "tap_sound": {
    "likes": 2,
    "rating": 4.5,
-   "ratings": 11,
+   "ratings": 12,
    "homes": 14
   },
   "thermo_dial": {
    "likes": 2,
    "rating": 4.6,
-   "ratings": 16,
+   "ratings": 17,
    "homes": 19
   },
   "timers": {
    "likes": 2,
-   "rating": 4.7,
-   "ratings": 20,
+   "rating": 4.5,
+   "ratings": 21,
    "homes": 26
   },
   "toothbrush": {
@@ -177,14 +177,14 @@
   },
   "voice_assist": {
    "likes": 14,
-   "rating": 4.6,
-   "ratings": 27,
-   "homes": 30
+   "rating": 4.5,
+   "ratings": 28,
+   "homes": 31
   },
   "waste_collection": {
    "likes": 12,
    "rating": 4.5,
-   "ratings": 32,
+   "ratings": 33,
    "homes": 31
   },
   "waste_overview": {
