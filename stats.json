@@ -77,7 +77,7 @@
    "likes": 5,
    "rating": 4.9,
    "ratings": 7,
-   "homes": 16
+   "homes": 17
   },
   "ov_departures": {
    "likes": 3,
@@ -87,21 +87,21 @@
   },
   "photo_clock": {
    "likes": 2,
-   "rating": 4.3,
-   "ratings": 6,
+   "rating": 4.4,
+   "ratings": 7,
    "homes": 14
   },
   "photo_slideshow": {
    "likes": 4,
    "rating": 4.5,
    "ratings": 4,
-   "homes": 9
+   "homes": 10
   },
   "picture_frame": {
    "likes": 3,
    "rating": 4.5,
    "ratings": 10,
-   "homes": 18
+   "homes": 19
   },
   "plane_radar": {
    "likes": 0,
@@ -125,7 +125,7 @@
    "likes": 7,
    "rating": 4.7,
    "ratings": 14,
-   "homes": 26
+   "homes": 28
   },
   "status_tile": {
    "likes": 3,
@@ -161,7 +161,7 @@
    "likes": 2,
    "rating": 4.7,
    "ratings": 20,
-   "homes": 25
+   "homes": 26
   },
   "toothbrush": {
    "likes": 2,
