@@ -20,7 +20,7 @@
    "homes": 15
   },
   "buienradar": {
-   "likes": 2,
+   "likes": 3,
    "rating": 3.9,
    "ratings": 14,
    "homes": 20
@@ -32,45 +32,45 @@
    "homes": 2
   },
   "custom_card": {
-   "likes": 22,
+   "likes": 23,
    "rating": 4.7,
-   "ratings": 51,
-   "homes": 59
+   "ratings": 54,
+   "homes": 60
   },
   "dwd_rain": {
    "likes": 2,
-   "rating": 3.5,
-   "ratings": 13,
+   "rating": 3.6,
+   "ratings": 14,
    "homes": 14
   },
   "electricity_price": {
-   "likes": 4,
+   "likes": 5,
    "rating": 4.4,
-   "ratings": 8,
+   "ratings": 9,
    "homes": 9
   },
   "energidata_price": {
-   "likes": 4,
+   "likes": 5,
    "rating": 4.8,
    "ratings": 4,
    "homes": 4
   },
   "energy_flow": {
-   "likes": 11,
+   "likes": 12,
    "rating": 4,
    "ratings": 10,
-   "homes": 11
+   "homes": 13
   },
   "flip_clock": {
-   "likes": 19,
+   "likes": 21,
    "rating": 4.5,
-   "ratings": 81,
+   "ratings": 82,
    "homes": 57
   },
   "guition_relays": {
    "likes": 3,
    "rating": 5,
-   "ratings": 23,
+   "ratings": 24,
    "homes": 17
   },
   "new_music": {
@@ -87,8 +87,8 @@
   },
   "photo_clock": {
    "likes": 2,
-   "rating": 4.4,
-   "ratings": 7,
+   "rating": 4.5,
+   "ratings": 8,
    "homes": 14
   },
   "photo_slideshow": {
@@ -107,7 +107,7 @@
    "likes": 0,
    "rating": null,
    "ratings": 1,
-   "homes": 2
+   "homes": 3
   },
   "pollen": {
    "likes": 1,
@@ -117,20 +117,20 @@
   },
   "scmt": {
    "likes": 2,
-   "rating": null,
-   "ratings": 2,
+   "rating": 3.3,
+   "ratings": 3,
    "homes": 2
   },
   "screen_camera": {
    "likes": 7,
-   "rating": 4.7,
-   "ratings": 16,
+   "rating": 4.6,
+   "ratings": 17,
    "homes": 29
   },
   "status_tile": {
-   "likes": 3,
-   "rating": 4.5,
-   "ratings": 23,
+   "likes": 5,
+   "rating": 4.6,
+   "ratings": 25,
    "homes": 31
   },
   "sweden_public_transport": {
@@ -158,16 +158,16 @@
    "homes": 19
   },
   "timers": {
-   "likes": 2,
+   "likes": 3,
    "rating": 4.5,
    "ratings": 21,
    "homes": 26
   },
   "toothbrush": {
    "likes": 2,
-   "rating": 4.2,
-   "ratings": 5,
-   "homes": 4
+   "rating": 4.3,
+   "ratings": 6,
+   "homes": 5
   },
   "vinyl_deck": {
    "likes": 2,
@@ -179,10 +179,10 @@
    "likes": 14,
    "rating": 4.5,
    "ratings": 28,
-   "homes": 31
+   "homes": 32
   },
   "waste_collection": {
-   "likes": 12,
+   "likes": 13,
    "rating": 4.5,
    "ratings": 33,
    "homes": 31
@@ -206,7 +206,7 @@
    "homes": 5
   },
   "wifi_qr": {
-   "likes": 5,
+   "likes": 6,
    "rating": 4.5,
    "ratings": 11,
    "homes": 10
