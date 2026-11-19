@@ -1,6 +1,6 @@
 {
  "format": 1,
- "generated": "2026-11-18T22:07:59Z",
+ "generated": "2026-11-19T06:12:42Z",
  "plugin_api": "0.28",
  "blocked": [],
  "featured": [
@@ -4164,15 +4164,15 @@
    "label": "community",
    "status": "ok",
    "release": {
-    "version": "0.5.0",
-    "sha": "a62a75ab3b25697c6295c4d600367c05780385fe",
-    "date": "2026-10-27",
-    "tag": "v0.5.0"
+    "version": "0.6.0",
+    "sha": "3c73767dc177c8ed4dbc5126b7a1f2111da0bc7c",
+    "date": "2026-11-19",
+    "tag": "v0.6.0"
    },
    "manifest": {
     "id": "buienradar",
-    "version": "0.5.0",
-    "api": "0.14",
+    "version": "0.6.0",
+    "api": "0.27",
     "icon": "weather-pouring",
     "maintainer": "Heronimonimo",
     "license": "MIT",
@@ -4207,20 +4207,35 @@
       },
       "memory": 4900,
       "pictures": 2,
-      "data": "rain",
       "example": "tile_example",
       "options": [
        {
+        "id": "place",
+        "kind": "entity",
+        "domains": [
+         "zone",
+         "person",
+         "device_tracker"
+        ],
+        "attributes": [
+         "latitude",
+         "longitude"
+        ],
+        "default": "zone.home",
+        "label": "place",
+        "hint": "place_hint"
+       },
+       {
         "id": "latitude",
         "kind": "text",
-        "default": "52.1",
+        "default": "",
         "label": "latitude",
         "hint": "latitude_hint"
        },
        {
         "id": "longitude",
         "kind": "text",
-        "default": "5.18",
+        "default": "",
         "label": "longitude",
         "hint": "longitude_hint"
        },
@@ -4230,6 +4245,13 @@
         "default": true,
         "label": "map",
         "hint": "map_hint"
+       },
+       {
+        "id": "graph",
+        "kind": "toggle",
+        "default": true,
+        "label": "graph",
+        "hint": "graph_hint"
        },
        {
         "id": "play",
@@ -4297,7 +4319,11 @@
     "fetch": [
      {
       "id": "rain",
-      "url": "https://graphdata.buienradar.nl/2.0/forecast/geo/RainHistoryForecast?lat={latitude}&lon={longitude}",
+      "asked": [
+       "lat",
+       "lon"
+      ],
+      "url": "https://graphdata.buienradar.nl/2.0/forecast/geo/RainHistoryForecast?lat={lat}&lon={lon}",
       "every": "5m",
       "map": {
        "items": "$.forecasts[*]",
@@ -4336,15 +4362,13 @@
       "earlier": "-{n} min",
       "asking": "Asking Buienradar",
       "failed": "Buienradar does not answer",
-      "not_filled": "Set the place in the tile's settings",
+      "not_filled": "Choose the place in the tile's settings",
       "stale": "Older forecast",
       "unit": "mm/h",
       "drizzle": "Drizzle",
       "light": "Light rain",
       "moderate": "Moderate rain",
       "heavy": "Heavy rain",
-      "fix_latitude": "Type the latitude as {value}",
-      "fix_longitude": "Type the longitude as {value}",
       "outside": "The place lies outside Buienradar's map",
       "dry_in": "Dry in {n} min",
       "bar_when": "Rain in top bar",
@@ -4357,17 +4381,21 @@
       "name": "Buienradar"
      },
      "app": {
+      "place_hint": "Where the rain is for: your home zone, another zone, or a person, whose rain follows them. Its coordinates go to Buienradar rounded to about a kilometre.",
+      "place": "Place",
       "name": "Buienradar",
       "summary": "Rain for the next two hours at your place, as Buienradar's graph and its radar map.",
       "tile_name": "Rain radar",
       "tile_example": "Dry until 14:05",
       "card_name": "Rain radar",
       "latitude": "Latitude",
-      "latitude_hint": "Of the place to show, with a point and at most two decimals, such as 52.09 (about 1 km). Not 52,09 or 52.10. Home Assistant has it under Settings, Areas, labels and zones.",
+      "latitude_hint": "Only for a place other than the one above: its latitude, such as 52.09. Fill in both, or leave both empty.",
       "longitude": "Longitude",
-      "longitude_hint": "With a point and at most two decimals, such as 5.12.",
+      "longitude_hint": "Its longitude, such as 5.12.",
       "map": "Radar map",
       "map_hint": "On a tile of 3x2, 2x3 or larger, a large 2x2, and on the card. A smaller tile shows the graph alone.",
+      "graph": "Graph on the tile",
+      "graph_hint": "Off: a tile of 2x2 or larger shows the moving radar map alone, as large as it fits. The graph stays on the card a tap opens, and on a screen without pictures.",
       "play": "Map plays",
       "play_hint": "Which frames the tile's map plays by itself.",
       "play_all": "Past half hour and forecast",
@@ -4408,8 +4436,6 @@
       "light": "Lichte regen",
       "moderate": "Matige regen",
       "heavy": "Zware regen",
-      "fix_latitude": "Typ de breedtegraad als {value}",
-      "fix_longitude": "Typ de lengtegraad als {value}",
       "outside": "De plek ligt buiten de kaart van Buienradar",
       "dry_in": "Droog over {n} min",
       "bar_when": "Regen in bovenbalk",
@@ -4422,17 +4448,21 @@
       "name": "Buienradar"
      },
      "app": {
+      "place_hint": "Waar de regen voor is: je thuiszone, een andere zone, of een persoon, wiens regen met hem of haar meegaat. De coördinaten gaan afgerond op ongeveer een kilometer naar Buienradar.",
+      "place": "Plek",
       "name": "Buienradar",
       "summary": "De regen van de komende twee uur op jouw plek, als grafiek en radarkaart van Buienradar.",
       "tile_name": "Buienradar",
       "tile_example": "Droog tot 14:05",
       "card_name": "Buienradar",
       "latitude": "Breedtegraad",
-      "latitude_hint": "Van de plek, met een punt en hoogstens twee decimalen, zoals 52.09 (ongeveer 1 km). Niet 52,09 of 52.10. Home Assistant toont die onder Instellingen, Ruimtes, labels en zones.",
+      "latitude_hint": "Alleen voor een andere plek dan hierboven: de breedtegraad, zoals 52.09. Vul beide in, of laat beide leeg.",
       "longitude": "Lengtegraad",
-      "longitude_hint": "Met een punt en hoogstens twee decimalen, zoals 5.12.",
+      "longitude_hint": "De lengtegraad, zoals 5.12.",
       "map": "Radarkaart",
       "map_hint": "Op een tegel van 3x2, 2x3 of groter, een grote 2x2, en op de kaart. Een kleinere tegel toont alleen de grafiek.",
+      "graph": "Grafiek op de tegel",
+      "graph_hint": "Uit: een tegel van 2x2 of groter toont alleen de bewegende radarkaart, zo groot als past. De grafiek blijft op de kaart die een tik opent, en op een scherm zonder afbeeldingen.",
       "play": "Kaart speelt",
       "play_hint": "Welke beelden de kaart op de tegel vanzelf afspeelt.",
       "play_all": "Laatste half uur en verwachting",
@@ -4450,10 +4480,10 @@
     }
    },
    "readme": {
-    "en": "# Buienradar\n\nThe rain of the next two hours at one place in the Netherlands or Belgium, from [Buienradar](https://www.buienradar.nl).\n\n- **Every tile** shows Buienradar's rain graph for the place: a bar for every five minutes, from about twenty minutes\n  ago to two and a half hours ahead, with a line at now. Above it (beside it on a tile one row high), in words: \"Dry until 14:05\", \"Rain until 15:10\",\n  and how hard it rains at most. A 1x1 tile has the words alone.\n- **A tile of 3x2, 2x3 or larger, or a 2x2 of at least 35 mm a side,** shows the radar map as well, with a dot at the place. The map plays by itself from\n  half an hour ago to two hours ahead, and a cursor on the graph shows which moment the map shows.\n- **A tap** opens the card over the whole screen: the map and the graph together. The graph is the timeline: tap a\n  moment on it and the map shows that moment. The keys step a frame back or on, or play the frames.\n\nA screen without pictures (the CYD, the Waveshare 3.5-inch, the Hosyond 4-inch) shows the graph and the words only.\n\n## Set up\n\n1. Add the plugin to a screen in Tessera. The screen builds once.\n2. In Layout, place the **Rain radar** tile from the library's Plugins group. Make it 3x2 or larger for the map.\n3. In the inspector, type the **Latitude** and **Longitude** of the place with a point and at most two decimals\n   (about 1 km), such as `52.09` and `5.12`, in the Netherlands or Belgium. Home Assistant shows the coordinates of\n   your home under Settings, Areas, labels and zones. If Buienradar would not take what you typed (`52,09`, `52.10`),\n   the tile says what to type instead. The graph and the dot on the map both use these.\n4. Choose what the map plays, and how long each frame stays.\n\n## Good to know\n\n- The graph and the radar frames are Buienradar's own, the ones its website and its embeddable widget show. They are\n  free for private use with the source named; this README and the plugin's name do.\n- The newest radar frame is the one Buienradar's forecast for your place ends its measured past with: usually six to\n  fifteen minutes old, sometimes over half an hour when Buienradar runs late. So it is always there to fetch. The forecast\n  frames after it come from Buienradar's forecast made ten minutes before that one, which is always published by\n  then, and reach about an hour and fifty minutes past the newest frame.\n- Without internet for a while, the tile keeps its last forecast and says it is older, and the map keeps playing\n  the frames it already had. Both catch up by themselves when Buienradar answers again.\n- The map is Buienradar's own background for its radar, the very area of the radar frames: the Netherlands, Belgium\n  and the land and sea around them, as one view. It does not zoom in on the place yet.\n- Buienradar takes a coordinate only in its shortest form (52.09, 52.1, 52; not 52,09, 52.10 or 52.091) and answers\n  any other with a redirect the app does not follow. The app sends what you type as it is, so the tile can only\n  check it and tell you. Choosing a zone or a person from Home Assistant needs a change in Tessera that lets a fetch\n  use an entity's coordinates.\n\n## Tried on\n\nThe bench of the plugins repository (`tools/preview.py`): the CYD, the 4-inch Guition, the 4.3-inch Waveshare standing\nand the 10.1-inch Guition P4, with Buienradar's real map and radar pictures. Not yet on a real screen: tell me in an\nissue how it works on yours.\n\n## Privacy\n\nTessera's app, in your Home Assistant, asks Buienradar for the forecast every five minutes, with the latitude and\nlongitude you filled in (`graphdata.buienradar.nl`). It fetches the radar frames (`processing-cdn.buienradar.nl`) and\nthe map under them (`cdn.buienradar.nl`), which are the same for everyone. Buienradar sees your Home Assistant's address\non the internet and the place you chose. The screen itself connects to nothing outside your home.\n\nBuienradar is a service of DPG Media; see its [privacy statement](https://www.buienradar.nl/privacy).\n"
+    "en": "# Buienradar\n\nThe rain of the next two hours at one place in the Netherlands or Belgium, from [Buienradar](https://www.buienradar.nl).\n\n- **Every tile** shows Buienradar's rain graph for the place: a bar for every five minutes, from about twenty minutes\n  ago to two and a half hours ahead, with a line at now. Above it (beside it on a tile one row high), in words: \"Dry until 14:05\", \"Rain until 15:10\",\n  and how hard it rains at most. A 1x1 tile has the words alone.\n- **A tile of 3x2, 2x3 or larger, or a 2x2 of at least 35 mm a side,** shows the radar map as well, with a dot at the place. The map plays by itself from\n  half an hour ago to two hours ahead, and a cursor on the graph shows which moment the map shows.\n- **A tap** opens the card over the whole screen: the map and the graph together. The graph is the timeline: tap a\n  moment on it and the map shows that moment. The keys step a frame back or on, or play the frames.\n\nA screen without pictures (the CYD, the Waveshare 3.5-inch, the Hosyond 4-inch) shows the graph and the words only.\n\n## Set up\n\n1. Add the plugin to a screen in Tessera. The screen builds once.\n2. In Layout, place the **Rain radar** tile from the library's Plugins group. Make it 3x2 or larger for the map.\n3. In the inspector, **Place** is your home zone already. Choose another zone, or a person to have the rain follow\n   them (a person's place moves the tile's place at most once a kilometre). For a place Home Assistant does not know,\n   type its **Latitude** and **Longitude** instead, such as `52.09` and `5.12`; typed coordinates win when both are\n   filled in. The place must lie in the Netherlands or Belgium. The graph and the dot on the map both use it.\n4. Choose what the map plays, and how long each frame stays.\n\n## Good to know\n\n- The graph and the radar frames are Buienradar's own, the ones its website and its embeddable widget show. They are\n  free for private use with the source named; this README and the plugin's name do.\n- The newest radar frame is the one Buienradar's forecast for your place ends its measured past with: usually six to\n  fifteen minutes old, sometimes over half an hour when Buienradar runs late. So it is always there to fetch. The forecast\n  frames after it come from Buienradar's forecast made ten minutes before that one, which is always published by\n  then, and reach about an hour and fifty minutes past the newest frame.\n- Without internet for a while, the tile keeps its last forecast and says it is older, and the map keeps playing\n  the frames it already had. Both catch up by themselves when Buienradar answers again.\n- The map is Buienradar's own background for its radar, the very area of the radar frames: the Netherlands, Belgium\n  and the land and sea around them, as one view. It does not zoom in on the place yet.\n- Buienradar takes a coordinate only in its shortest form (52.09, 52.1, 52; not 52,09, 52.10 or 52.091) and answers\n  any other with a redirect Tessera's app does not follow. So the screen asks for the forecast itself, with the\n  coordinates rounded to two decimals and written the way Buienradar takes them, whatever form you typed.\n\n## Tried on\n\nThe bench of the plugins repository (`tools/preview.py`): the CYD, the 4-inch Guition, the 4.3-inch Waveshare standing\nand the 10.1-inch Guition P4, with Buienradar's real map and radar pictures. Not yet on a real screen: tell me in an\nissue how it works on yours.\n\n## Privacy\n\nTessera's app, in your Home Assistant, asks Buienradar for the forecast every five minutes while a tile shows it, with\nthe latitude and longitude of the place (`graphdata.buienradar.nl`): the zone or person you chose, or the coordinates\nyou typed, rounded to two decimals (about a kilometre). For a person, that is where they are, so Buienradar sees\nroughly where they go. It fetches the radar frames (`processing-cdn.buienradar.nl`) and\nthe map under them (`cdn.buienradar.nl`), which are the same for everyone. Buienradar sees your Home Assistant's address\non the internet and the place you chose. The screen itself connects to nothing outside your home.\n\nBuienradar is a service of DPG Media; see its [privacy statement](https://www.buienradar.nl/privacy).\n"
    },
    "changelog": {
-    "en": "# Changelog\n\n## 0.5.0 - 2026-10-27\n- An item for the top bar: \"Dry until 14:05\" or \"Rain until 15:10\", blue while it rains, amber when rain starts\n  within half an hour. It says what the screen's Rain radar tile knows, so place that tile on the screen too.\n- Two settings for it, on the screen's settings page and in Home Assistant: when it shows (always, when rain is\n  coming, when rain is near) and whether it says a clock time or minutes (\"Rain in 20 min\").\n\n## 0.4.0 - 2026-10-23\n- Latitude and longitude are typed again, now to two decimals (about 1 km), such as 52.09 and 5.12. Buienradar takes\n  a coordinate only in its shortest form, so the tile checks what you typed and says exactly what to type instead\n  (for 52,09 or 52.10). The place you chose from the list stays, as its text; a place kept as a number by a version\n  before 0.3.0 starts at De Bilt (52.1, 5.18) again.\n\n## 0.3.6 - 2026-10-23\n- The time axis shows whole hours (21:00, 22:00) at their place on the graph; the line at now stays.\n\n## 0.3.5 - 2026-10-22\n- Every tile's graph shows its times (now and the hours) under the bars, also on a low tile.\n\n## 0.3.4 - 2026-10-21\n- The rain on the map no longer goes missing when Buienradar runs late: the map takes its newest radar frame from\n  Buienradar's forecast for your place (where its measured past ends) instead of guessing it from the clock. That\n  frame can be over half an hour old while Buienradar catches up; the badge on the map says how old.\n\n## 0.3.3 - 2026-10-21\n- The graph is linear now: its top is 1, 2, 5, 10 mm/h or more, whatever the heaviest rain of the forecast fits\n  under, so light rain still shows.\n- The card's graph has a scale: lines at 0.5, 2.5 and 10 mm/h with their numbers, the kinds of rain between them\n  (drizzle, light, moderate, heavy rain), and the unit above them. The card names the kind of rain of its moment.\n- The lines between the kinds of rain are dotted.\n- No tile or card ends its line in \"Buienradar\" any more.\n- The card is titled with the tile's name, as Tessera's own cards are.\n\n## 0.3.2 - 2026-10-21\n- When Buienradar does not answer (a few minutes without internet), the tile keeps its last forecast, says it is\n  older, and the map keeps playing the frames it already has instead of going blank.\n\n## 0.3.1 - 2026-10-21\n- \"Buienradar does not answer\" is gone for a place on a whole degree (52.0, 5.0): Buienradar only answers a\n  coordinate written in its shortest form, and the list now sends it so. Choose the place again if the tile says it.\n- Latitude starts at 49.6: Buienradar has no forecast at 49.5.\n\n## 0.3.0 - 2026-10-21\n- Latitude and longitude are now chosen from a list in steps of 0.1, always shown with one decimal. Choose your\n  place again after this update: the tile starts at De Bilt (52.1, 5.2).\n- A tile one row high shows the words at the left and the graph beside them.\n- The words beside a graph or a map take only the lines they need.\n\n## 0.2.2 - 2026-10-21\n- The card plays the map as soon as it opens; the key in the middle stops it.\n- Latitude and longitude step by 0.1 in the inspector.\n- A 1x1 tile sets its words in the middle, each over the lines it needs.\n\n## 0.2.1 - 2026-10-21\n- The map no longer goes blank for a while every five minutes: the forecast frames come from a Buienradar forecast\n  that is always published, not one that sometimes was not there yet.\n- A 1x1 tile shows the words alone, larger and in the middle; the graph did not fit beside them.\n\n## 0.2.0 - 2026-10-21\n- A square tile or card shows a larger map with the words, or the time and the keys, beside it, and a lower graph\n  under both.\n- A 2x2 tile of at least 35 mm a side shows the map too.\n- The card's back, play and next keys stay in a row.\n\n## 0.1.1 - 2026-10-21\n- The map is Buienradar's own radar background, the very area of the rain, so rain and map line up and the map\n  has no edge where the radar stops.\n- A wide tile or card shows the map beside the graph, a square or tall one the map above it, with less empty room.\n- The card says the rain of the moment under its time.\n\n## 0.1.0 - 2026-10-21\n- First version: Buienradar's rain graph for a place on every tile size, the radar map that plays by itself on tiles\n  of 3x2 or 2x3 and larger, and a card with both where the graph picks the map's moment.\n"
+    "en": "# Changelog\n\n## 0.6.0\n- **Your home, without typing coordinates.** A new option, **Place**, takes a zone, a person or a device tracker of\n  Home Assistant, and is your home zone by default. Choose a person and the rain follows them. Typed coordinates still\n  work and win when both are filled in; any form is fine now (52,09, 52.10), as the screen writes them the way Buienradar\n  takes them. A tile with coordinates typed in keeps them.\n- The tile asks Buienradar for its forecast itself, every five minutes while it shows, rounded to about a kilometre, as\n  before. Needs Tessera 0.4.98 or later (plugin API 0.27).\n- **Graph on the tile**, a new option: turn it off and a tile of 2x2 or larger shows the moving radar map alone, as\n  large as it fits, with the frame's time in its corner. Good for a small screen such as the 4-inch, where the graph\n  takes much of a 2x2. A tap still opens the card with the map and the graph. On a screen without pictures the graph\n  stays.\n\n## 0.5.0 - 2026-10-27\n- An item for the top bar: \"Dry until 14:05\" or \"Rain until 15:10\", blue while it rains, amber when rain starts\n  within half an hour. It says what the screen's Rain radar tile knows, so place that tile on the screen too.\n- Two settings for it, on the screen's settings page and in Home Assistant: when it shows (always, when rain is\n  coming, when rain is near) and whether it says a clock time or minutes (\"Rain in 20 min\").\n\n## 0.4.0 - 2026-10-23\n- Latitude and longitude are typed again, now to two decimals (about 1 km), such as 52.09 and 5.12. Buienradar takes\n  a coordinate only in its shortest form, so the tile checks what you typed and says exactly what to type instead\n  (for 52,09 or 52.10). The place you chose from the list stays, as its text; a place kept as a number by a version\n  before 0.3.0 starts at De Bilt (52.1, 5.18) again.\n\n## 0.3.6 - 2026-10-23\n- The time axis shows whole hours (21:00, 22:00) at their place on the graph; the line at now stays.\n\n## 0.3.5 - 2026-10-22\n- Every tile's graph shows its times (now and the hours) under the bars, also on a low tile.\n\n## 0.3.4 - 2026-10-21\n- The rain on the map no longer goes missing when Buienradar runs late: the map takes its newest radar frame from\n  Buienradar's forecast for your place (where its measured past ends) instead of guessing it from the clock. That\n  frame can be over half an hour old while Buienradar catches up; the badge on the map says how old.\n\n## 0.3.3 - 2026-10-21\n- The graph is linear now: its top is 1, 2, 5, 10 mm/h or more, whatever the heaviest rain of the forecast fits\n  under, so light rain still shows.\n- The card's graph has a scale: lines at 0.5, 2.5 and 10 mm/h with their numbers, the kinds of rain between them\n  (drizzle, light, moderate, heavy rain), and the unit above them. The card names the kind of rain of its moment.\n- The lines between the kinds of rain are dotted.\n- No tile or card ends its line in \"Buienradar\" any more.\n- The card is titled with the tile's name, as Tessera's own cards are.\n\n## 0.3.2 - 2026-10-21\n- When Buienradar does not answer (a few minutes without internet), the tile keeps its last forecast, says it is\n  older, and the map keeps playing the frames it already has instead of going blank.\n\n## 0.3.1 - 2026-10-21\n- \"Buienradar does not answer\" is gone for a place on a whole degree (52.0, 5.0): Buienradar only answers a\n  coordinate written in its shortest form, and the list now sends it so. Choose the place again if the tile says it.\n- Latitude starts at 49.6: Buienradar has no forecast at 49.5.\n\n## 0.3.0 - 2026-10-21\n- Latitude and longitude are now chosen from a list in steps of 0.1, always shown with one decimal. Choose your\n  place again after this update: the tile starts at De Bilt (52.1, 5.2).\n- A tile one row high shows the words at the left and the graph beside them.\n- The words beside a graph or a map take only the lines they need.\n\n## 0.2.2 - 2026-10-21\n- The card plays the map as soon as it opens; the key in the middle stops it.\n- Latitude and longitude step by 0.1 in the inspector.\n- A 1x1 tile sets its words in the middle, each over the lines it needs.\n\n## 0.2.1 - 2026-10-21\n- The map no longer goes blank for a while every five minutes: the forecast frames come from a Buienradar forecast\n  that is always published, not one that sometimes was not there yet.\n- A 1x1 tile shows the words alone, larger and in the middle; the graph did not fit beside them.\n\n## 0.2.0 - 2026-10-21\n- A square tile or card shows a larger map with the words, or the time and the keys, beside it, and a lower graph\n  under both.\n- A 2x2 tile of at least 35 mm a side shows the map too.\n- The card's back, play and next keys stay in a row.\n\n## 0.1.1 - 2026-10-21\n- The map is Buienradar's own radar background, the very area of the rain, so rain and map line up and the map\n  has no edge where the radar stops.\n- A wide tile or card shows the map beside the graph, a square or tall one the map above it, with less empty room.\n- The card says the rain of the moment under its time.\n\n## 0.1.0 - 2026-10-21\n- First version: Buienradar's rain graph for a place on every tile size, the radar map that plays by itself on tiles\n  of 3x2 or 2x3 and larger, and a card with both where the graph picks the map's moment.\n"
    },
    "image": "store.png"
   },
@@ -4901,15 +4931,15 @@
    "label": "community",
    "status": "ok",
    "release": {
-    "version": "0.12.0",
-    "sha": "2d77e1ec621c18e1b09d9ff210ff4ccb1f834129",
-    "date": "2026-10-30",
-    "tag": "v0.12.0"
+    "version": "0.13.0",
+    "sha": "1a0b3d93dcd22ef80a88bb1acd206d1803ab18c3",
+    "date": "2026-11-19",
+    "tag": "v0.13.0"
    },
    "manifest": {
     "id": "electricity_price",
-    "version": "0.12.0",
-    "api": "0.12",
+    "version": "0.13.0",
+    "api": "0.26",
     "icon": "flash",
     "maintainer": "Heronimonimo",
     "license": "MIT",
@@ -4940,7 +4970,7 @@
        "max": "9x9",
        "full": true
       },
-      "memory": 16000,
+      "memory": 8000,
       "domains": [
        "sensor"
       ],
@@ -5058,6 +5088,89 @@
         "default": false,
         "label": "ahead",
         "hint": "ahead_hint"
+       },
+       {
+        "id": "start",
+        "kind": "number",
+        "optional": true,
+        "min": 0,
+        "max": 23,
+        "step": 1,
+        "label": "start",
+        "hint": "start_hint"
+       },
+       {
+        "id": "resolution",
+        "kind": "choice",
+        "default": "quarter",
+        "label": "resolution",
+        "hint": "resolution_hint",
+        "choices": [
+         {
+          "value": "quarter",
+          "label": "resolution_quarter"
+         },
+         {
+          "value": "hour",
+          "label": "resolution_hour"
+         }
+        ]
+       },
+       {
+        "id": "cheap",
+        "kind": "number",
+        "min": 0,
+        "max": 6,
+        "step": 1,
+        "default": 0,
+        "label": "cheap",
+        "hint": "cheap_hint"
+       },
+       {
+        "id": "cheap_mode",
+        "kind": "choice",
+        "default": "single",
+        "label": "cheap_mode",
+        "hint": "cheap_mode_hint",
+        "choices": [
+         {
+          "value": "single",
+          "label": "cheap_single"
+         },
+         {
+          "value": "block",
+          "label": "cheap_block"
+         }
+        ]
+       },
+       {
+        "id": "show_name",
+        "kind": "toggle",
+        "default": true,
+        "label": "show_name",
+        "hint": "show_name_hint"
+       },
+       {
+        "id": "cheap_below",
+        "kind": "number",
+        "optional": true,
+        "group": "group_colours",
+        "min": -1000,
+        "max": 1000,
+        "step": 0.01,
+        "label": "cheap_below",
+        "hint": "cheap_below_hint"
+       },
+       {
+        "id": "expensive_above",
+        "kind": "number",
+        "optional": true,
+        "group": "group_colours",
+        "min": -1000,
+        "max": 1000,
+        "step": 0.01,
+        "label": "expensive_above",
+        "hint": "expensive_above_hint"
        }
       ]
      },
@@ -5070,7 +5183,7 @@
        "max": "9x9",
        "full": true
       },
-      "memory": 16000,
+      "memory": 8000,
       "domains": [
        "sensor"
       ],
@@ -5188,6 +5301,89 @@
         "default": false,
         "label": "ahead",
         "hint": "ahead_hint"
+       },
+       {
+        "id": "start",
+        "kind": "number",
+        "optional": true,
+        "min": 0,
+        "max": 23,
+        "step": 1,
+        "label": "start",
+        "hint": "start_hint"
+       },
+       {
+        "id": "resolution",
+        "kind": "choice",
+        "default": "quarter",
+        "label": "resolution",
+        "hint": "resolution_hint",
+        "choices": [
+         {
+          "value": "quarter",
+          "label": "resolution_quarter"
+         },
+         {
+          "value": "hour",
+          "label": "resolution_hour"
+         }
+        ]
+       },
+       {
+        "id": "cheap",
+        "kind": "number",
+        "min": 0,
+        "max": 6,
+        "step": 1,
+        "default": 0,
+        "label": "cheap",
+        "hint": "cheap_hint"
+       },
+       {
+        "id": "cheap_mode",
+        "kind": "choice",
+        "default": "single",
+        "label": "cheap_mode",
+        "hint": "cheap_mode_hint",
+        "choices": [
+         {
+          "value": "single",
+          "label": "cheap_single"
+         },
+         {
+          "value": "block",
+          "label": "cheap_block"
+         }
+        ]
+       },
+       {
+        "id": "show_name",
+        "kind": "toggle",
+        "default": true,
+        "label": "show_name",
+        "hint": "show_name_hint"
+       },
+       {
+        "id": "cheap_below",
+        "kind": "number",
+        "optional": true,
+        "group": "group_colours",
+        "min": -1000,
+        "max": 1000,
+        "step": 0.01,
+        "label": "cheap_below",
+        "hint": "cheap_below_hint"
+       },
+       {
+        "id": "expensive_above",
+        "kind": "number",
+        "optional": true,
+        "group": "group_colours",
+        "min": -1000,
+        "max": 1000,
+        "step": 0.01,
+        "label": "expensive_above",
+        "hint": "expensive_above_hint"
        }
       ]
      },
@@ -5200,7 +5396,7 @@
        "max": "9x9",
        "full": true
       },
-      "memory": 16000,
+      "memory": 8000,
       "domains": [
        "sensor"
       ],
@@ -5318,6 +5514,89 @@
         "default": false,
         "label": "ahead",
         "hint": "ahead_hint"
+       },
+       {
+        "id": "start",
+        "kind": "number",
+        "optional": true,
+        "min": 0,
+        "max": 23,
+        "step": 1,
+        "label": "start",
+        "hint": "start_hint"
+       },
+       {
+        "id": "resolution",
+        "kind": "choice",
+        "default": "quarter",
+        "label": "resolution",
+        "hint": "resolution_hint",
+        "choices": [
+         {
+          "value": "quarter",
+          "label": "resolution_quarter"
+         },
+         {
+          "value": "hour",
+          "label": "resolution_hour"
+         }
+        ]
+       },
+       {
+        "id": "cheap",
+        "kind": "number",
+        "min": 0,
+        "max": 6,
+        "step": 1,
+        "default": 0,
+        "label": "cheap",
+        "hint": "cheap_hint"
+       },
+       {
+        "id": "cheap_mode",
+        "kind": "choice",
+        "default": "single",
+        "label": "cheap_mode",
+        "hint": "cheap_mode_hint",
+        "choices": [
+         {
+          "value": "single",
+          "label": "cheap_single"
+         },
+         {
+          "value": "block",
+          "label": "cheap_block"
+         }
+        ]
+       },
+       {
+        "id": "show_name",
+        "kind": "toggle",
+        "default": true,
+        "label": "show_name",
+        "hint": "show_name_hint"
+       },
+       {
+        "id": "cheap_below",
+        "kind": "number",
+        "optional": true,
+        "group": "group_colours",
+        "min": -1000,
+        "max": 1000,
+        "step": 0.01,
+        "label": "cheap_below",
+        "hint": "cheap_below_hint"
+       },
+       {
+        "id": "expensive_above",
+        "kind": "number",
+        "optional": true,
+        "group": "group_colours",
+        "min": -1000,
+        "max": 1000,
+        "step": 0.01,
+        "label": "expensive_above",
+        "hint": "expensive_above_hint"
        }
       ]
      },
@@ -5330,7 +5609,7 @@
        "max": "9x9",
        "full": true
       },
-      "memory": 16000,
+      "memory": 8000,
       "domains": [
        "sensor"
       ],
@@ -5452,6 +5731,311 @@
         "default": false,
         "label": "ahead",
         "hint": "ahead_hint"
+       },
+       {
+        "id": "start",
+        "kind": "number",
+        "optional": true,
+        "min": 0,
+        "max": 23,
+        "step": 1,
+        "label": "start",
+        "hint": "start_hint"
+       },
+       {
+        "id": "resolution",
+        "kind": "choice",
+        "default": "quarter",
+        "label": "resolution",
+        "hint": "resolution_hint",
+        "choices": [
+         {
+          "value": "quarter",
+          "label": "resolution_quarter"
+         },
+         {
+          "value": "hour",
+          "label": "resolution_hour"
+         }
+        ]
+       },
+       {
+        "id": "cheap",
+        "kind": "number",
+        "min": 0,
+        "max": 6,
+        "step": 1,
+        "default": 0,
+        "label": "cheap",
+        "hint": "cheap_hint"
+       },
+       {
+        "id": "cheap_mode",
+        "kind": "choice",
+        "default": "single",
+        "label": "cheap_mode",
+        "hint": "cheap_mode_hint",
+        "choices": [
+         {
+          "value": "single",
+          "label": "cheap_single"
+         },
+         {
+          "value": "block",
+          "label": "cheap_block"
+         }
+        ]
+       },
+       {
+        "id": "show_name",
+        "kind": "toggle",
+        "default": true,
+        "label": "show_name",
+        "hint": "show_name_hint"
+       },
+       {
+        "id": "cheap_below",
+        "kind": "number",
+        "optional": true,
+        "group": "group_colours",
+        "min": -1000,
+        "max": 1000,
+        "step": 0.01,
+        "label": "cheap_below",
+        "hint": "cheap_below_hint"
+       },
+       {
+        "id": "expensive_above",
+        "kind": "number",
+        "optional": true,
+        "group": "group_colours",
+        "min": -1000,
+        "max": 1000,
+        "step": 0.01,
+        "label": "expensive_above",
+        "hint": "expensive_above_hint"
+       }
+      ]
+     },
+     {
+      "id": "energidataservice",
+      "name": "tile_name_eds",
+      "icon": "flash",
+      "sizes": {
+       "min": "1x1",
+       "max": "9x9",
+       "full": true
+      },
+      "memory": 8000,
+      "domains": [
+       "sensor"
+      ],
+      "attributes": [
+       "unit_of_measurement"
+      ],
+      "has_attributes": [
+       "raw_today",
+       "today_mean"
+      ],
+      "fields": {
+       "today": {
+        "path": "raw_today[*].price",
+        "as": "numbers"
+       },
+       "tomorrow": {
+        "path": "raw_tomorrow[*].price",
+        "as": "numbers"
+       },
+       "outlook": {
+        "path": "forecast[*].price",
+        "as": "numbers"
+       },
+       "outlook_start": {
+        "path": "forecast[0].hour",
+        "as": "epoch"
+       }
+      },
+      "example": "tile_example",
+      "preview": {
+       "title": "{name}",
+       "value": "{state} {unit_of_measurement}"
+      },
+      "options": [
+       {
+        "id": "unit",
+        "kind": "choice",
+        "default": "eur",
+        "label": "unit",
+        "hint": "unit_hint",
+        "choices": [
+         {
+          "value": "eur",
+          "label": "unit_kr"
+         },
+         {
+          "value": "cents",
+          "label": "unit_ore"
+         }
+        ]
+       },
+       {
+        "id": "fixed",
+        "kind": "number",
+        "min": 0,
+        "max": 4,
+        "step": 1,
+        "default": 3,
+        "label": "decimals",
+        "hint": "decimals_hint"
+       },
+       {
+        "id": "delivery",
+        "kind": "text",
+        "default": "",
+        "label": "delivery",
+        "hint": "delivery_hint"
+       },
+       {
+        "id": "feed_in",
+        "kind": "text",
+        "default": "",
+        "label": "feed_in",
+        "hint": "feed_in_hint"
+       },
+       {
+        "id": "graph",
+        "kind": "choice",
+        "default": "bars",
+        "label": "graph",
+        "hint": "graph_hint",
+        "choices": [
+         {
+          "value": "bars",
+          "label": "graph_bars"
+         },
+         {
+          "value": "line",
+          "label": "graph_line"
+         }
+        ]
+       },
+       {
+        "id": "fill",
+        "kind": "toggle",
+        "default": true,
+        "label": "fill",
+        "hint": "fill_hint"
+       },
+       {
+        "id": "grid",
+        "kind": "choice",
+        "default": "none",
+        "label": "grid",
+        "hint": "grid_hint",
+        "choices": [
+         {
+          "value": "none",
+          "label": "grid_none"
+         },
+         {
+          "value": "solid",
+          "label": "grid_solid"
+         },
+         {
+          "value": "dotted",
+          "label": "grid_dotted"
+         }
+        ]
+       },
+       {
+        "id": "ahead",
+        "kind": "toggle",
+        "default": false,
+        "label": "ahead",
+        "hint": "ahead_hint"
+       },
+       {
+        "id": "start",
+        "kind": "number",
+        "optional": true,
+        "min": 0,
+        "max": 23,
+        "step": 1,
+        "label": "start",
+        "hint": "start_hint"
+       },
+       {
+        "id": "resolution",
+        "kind": "choice",
+        "default": "quarter",
+        "label": "resolution",
+        "hint": "resolution_hint",
+        "choices": [
+         {
+          "value": "quarter",
+          "label": "resolution_quarter"
+         },
+         {
+          "value": "hour",
+          "label": "resolution_hour"
+         }
+        ]
+       },
+       {
+        "id": "cheap",
+        "kind": "number",
+        "min": 0,
+        "max": 6,
+        "step": 1,
+        "default": 0,
+        "label": "cheap",
+        "hint": "cheap_hint"
+       },
+       {
+        "id": "cheap_mode",
+        "kind": "choice",
+        "default": "single",
+        "label": "cheap_mode",
+        "hint": "cheap_mode_hint",
+        "choices": [
+         {
+          "value": "single",
+          "label": "cheap_single"
+         },
+         {
+          "value": "block",
+          "label": "cheap_block"
+         }
+        ]
+       },
+       {
+        "id": "show_name",
+        "kind": "toggle",
+        "default": true,
+        "label": "show_name",
+        "hint": "show_name_hint"
+       },
+       {
+        "id": "cheap_below",
+        "kind": "number",
+        "optional": true,
+        "group": "group_colours",
+        "min": -1000,
+        "max": 1000,
+        "step": 0.01,
+        "label": "cheap_below",
+        "hint": "cheap_below_hint"
+       },
+       {
+        "id": "expensive_above",
+        "kind": "number",
+        "optional": true,
+        "group": "group_colours",
+        "min": -1000,
+        "max": 1000,
+        "step": 0.01,
+        "label": "expensive_above",
+        "hint": "expensive_above_hint"
        }
       ]
      }
@@ -5465,6 +6049,83 @@
     ]
    },
    "translations": {
+    "da": {
+     "_meta": {
+      "name": "Dansk"
+     },
+     "screen": {
+      "choose": "Vælg en prissensor",
+      "unavailable": "Ingen pris",
+      "today": "I dag",
+      "tomorrow": "I morgen",
+      "yesterday": "I går",
+      "now": "Nu",
+      "low": "Lav {value}",
+      "high": "Høj {value}",
+      "average": "Gennemsnit",
+      "no_graph": "Ingen priser for i dag",
+      "feed_in": "Salg {value}",
+      "formula_error": "Tjek formlen",
+      "cheap": "Billigst {value}"
+     },
+     "app": {
+      "name": "Elpris",
+      "summary": "Elprisen nu, med en graf over i dag og i morgen, fra en Nord Pool-, ENTSO-e-, GE-Spot-, EPEX Spot- eller Energi Data Service-sensor.",
+      "tile_name_nordpool": "Elpris (Nord Pool)",
+      "tile_name_entsoe": "Elpris (ENTSO-e)",
+      "tile_name_gespot": "Elpris (GE-Spot)",
+      "tile_example": "Prisen nu og dagens graf",
+      "card_name": "Elpris",
+      "unit": "Enhed",
+      "unit_hint": "Vis prisen pr. kWh i sensorens valuta (0,273 EUR eller 2,31 kr) eller i hundrededele (27,3 ct eller 231 øre).",
+      "unit_eur": "EUR/kWh",
+      "unit_cents": "ct/kWh",
+      "decimals": "Decimaler",
+      "decimals_hint": "Hvor mange decimaler prisen viser. I ct eller øre er én nok.",
+      "feed_in": "Salgspris",
+      "feed_in_hint": "En formel i p for hvad en kWh, du sender tilbage, giver, fx p-0,10, eller en fast pris som 0,50. Hver søjle går så fra tilbagesalgsprisen til købsprisen. Tom: ingen tilbagesalgspris.",
+      "delivery": "Købspris",
+      "delivery_hint": "En formel i p, sensorens pris pr. kWh i dens egen valuta (også når du viser øre): (p+0,15)*1,25 lægger et tillæg til og derefter 25% moms. Et tal alene er en fast pris. Tom: sensorens pris.",
+      "graph": "Graf",
+      "graph_hint": "Søjler eller en trappelinje, der følger prisen interval for interval. Kortet viser grafen fra den flise, du åbner det fra.",
+      "graph_bars": "Søjler",
+      "graph_line": "Trappelinje",
+      "fill": "Udfyld under linjen",
+      "fill_hint": "Med en trappelinje: en svag udfyldning under den, ned til nul eller til salgsprisen.",
+      "grid": "Gitterlinjer",
+      "grid_hint": "Linjer på tværs af grafen ved dens prisetiketter.",
+      "grid_none": "Ingen",
+      "grid_solid": "Fuld",
+      "grid_dotted": "Prikket",
+      "bar_price": "Elpris",
+      "bar_example": "2,31 kr/kWh",
+      "tile_name_epex": "Elpris (EPEX Spot)",
+      "ahead": "Kun de næste 24 timer",
+      "ahead_hint": "Grafen viser de 24 timer fra nu i stedet for i dag og i morgen. Før morgendagens priser er kommet, slutter den ved midnat.",
+      "show_name": "Vis navnet",
+      "show_name_hint": "Flisens navn øverst til venstre. Fra: prisen får hele linjen.",
+      "group_colours": "Farver",
+      "start": "Grafen starter kl.",
+      "start_hint": "Grafen viser 24 timer fra denne time, fx 13:00 til 13:00 dagen efter, i stedet for i dag og i morgen. Før den time starter den i går; kun EPEX Spot har gårsdagens priser, de andre lader de timer stå tomme. Tom: i dag og i morgen.",
+      "cheap_below": "Billig under",
+      "cheap_below_hint": "En pris under denne er grøn, i flisens enhed. Tom: farverne følger dagens laveste og højeste pris.",
+      "expensive_above": "For dyr over",
+      "expensive_above_hint": "En pris over denne er rød, i flisens enhed; imellem er den gul. Tom: farverne følger dagens laveste og højeste pris.",
+      "tile_name_eds": "Elpris (Energi Data Service)",
+      "unit_kr": "kr/kWh",
+      "unit_ore": "øre/kWh",
+      "resolution": "Pris pr.",
+      "resolution_hint": "Hvert kvarter som sensoren har det, eller hver time som gennemsnittet af dens fire kvarterer. Prisen nu, lav, høj og grafen følger valget.",
+      "resolution_quarter": "Kvarter",
+      "resolution_hour": "Time (gennemsnit)",
+      "cheap": "Billigste timer",
+      "cheap_hint": "Markér så mange af de billigste kommende timer i grafen, fra den nuværende time og frem, blandt de kendte priser (ikke en prognose). 0: ingen.",
+      "cheap_mode": "Billigste timer som",
+      "cheap_mode_hint": "Enkelte timer (de billigste, uanset hvor de ligger), eller sammenhængende (den billigste periode, fx til opvaskemaskine eller bil).",
+      "cheap_single": "Enkelte timer",
+      "cheap_block": "Sammenhængende"
+     }
+    },
     "de": {
      "_meta": {
       "name": "Deutsch"
@@ -5474,17 +6135,19 @@
       "unavailable": "Kein Preis",
       "today": "Heute",
       "tomorrow": "Morgen",
+      "yesterday": "Gestern",
       "now": "Jetzt",
       "low": "Tief {value}",
       "high": "Hoch {value}",
       "average": "Durchschnitt",
       "no_graph": "Keine Preise für heute",
       "feed_in": "Einspeisung {value}",
-      "formula_error": "Formel prüfen"
+      "formula_error": "Formel prüfen",
+      "cheap": "Am günstigsten {value}"
      },
      "app": {
       "name": "Strompreis",
-      "summary": "Der Strompreis jetzt, mit einem Diagramm für heute und morgen, aus einem Nord-Pool-, ENTSO-e-, GE-Spot- oder EPEX-Spot-Sensor.",
+      "summary": "Der Strompreis jetzt, mit einem Diagramm für heute und morgen, aus einem Nord-Pool-, ENTSO-e-, GE-Spot-, EPEX-Spot- oder Energi-Data-Service-Sensor.",
       "tile_name_nordpool": "Strompreis (Nord Pool)",
       "tile_name_entsoe": "Strompreis (ENTSO-e)",
       "tile_name_gespot": "Strompreis (GE-Spot)",
@@ -5515,7 +6178,29 @@
       "bar_example": "0,472 €/kWh",
       "tile_name_epex": "Strompreis (EPEX Spot)",
       "ahead": "Nur die nächsten 24 Stunden",
-      "ahead_hint": "Das Diagramm zeigt die 24 Stunden ab jetzt statt heute und morgen. Solange die Preise für morgen fehlen, endet es um Mitternacht."
+      "ahead_hint": "Das Diagramm zeigt die 24 Stunden ab jetzt statt heute und morgen. Solange die Preise für morgen fehlen, endet es um Mitternacht.",
+      "show_name": "Namen zeigen",
+      "show_name_hint": "Der Name der Kachel oben links. Aus: der Preis bekommt die ganze Zeile.",
+      "group_colours": "Farben",
+      "start": "Diagramm ab Uhrzeit",
+      "start_hint": "Das Diagramm zeigt 24 Stunden ab dieser Stunde, etwa 13:00 bis 13:00 am nächsten Tag, statt heute und morgen. Vor dieser Stunde beginnt es gestern; nur EPEX Spot hat die Preise von gestern, bei den anderen bleiben diese Stunden leer. Leer: heute und morgen.",
+      "cheap_below": "Günstig unter",
+      "cheap_below_hint": "Ein Preis darunter ist grün, in der Einheit der Kachel. Leer: die Farben folgen dem niedrigsten und höchsten Preis des Tages.",
+      "expensive_above": "Zu teuer über",
+      "expensive_above_hint": "Ein Preis darüber ist rot, in der Einheit der Kachel; dazwischen ist er orange. Leer: die Farben folgen dem niedrigsten und höchsten Preis des Tages.",
+      "tile_name_eds": "Strompreis (Energi Data Service)",
+      "unit_kr": "kr/kWh",
+      "unit_ore": "øre/kWh",
+      "resolution": "Preis pro",
+      "resolution_hint": "Jede Viertelstunde, wie der Sensor sie hat, oder jede Stunde als Mittel ihrer vier Viertelstunden. Der Preis jetzt, der niedrigste, höchste und das Diagramm folgen dem.",
+      "resolution_quarter": "Viertelstunde",
+      "resolution_hour": "Stunde (Mittel)",
+      "cheap": "Günstigste Stunden",
+      "cheap_hint": "Markiert so viele der günstigsten kommenden Stunden im Diagramm, ab der Stunde von jetzt, unter den bekannten Preisen (keine Prognose). 0: keine.",
+      "cheap_mode": "Günstigste Stunden als",
+      "cheap_mode_hint": "Jede für sich (die günstigsten Stunden, wo sie auch liegen), oder am Stück (der günstigste Block, für eine Spülmaschine oder ein Auto).",
+      "cheap_single": "Einzelne Stunden",
+      "cheap_block": "Stunden am Stück"
      }
     },
     "en": {
@@ -5527,17 +6212,19 @@
       "unavailable": "No price",
       "today": "Today",
       "tomorrow": "Tomorrow",
+      "yesterday": "Yesterday",
       "now": "Now",
       "low": "Low {value}",
       "high": "High {value}",
       "average": "Average",
       "no_graph": "No prices for today",
       "feed_in": "Feed-in {value}",
-      "formula_error": "Check the formula"
+      "formula_error": "Check the formula",
+      "cheap": "Cheapest {value}"
      },
      "app": {
       "name": "Electricity price",
-      "summary": "The electricity price now, with a graph of today and tomorrow, from a Nord Pool, ENTSO-e, GE-Spot or EPEX Spot sensor.",
+      "summary": "The electricity price now, with a graph of today and tomorrow, from a Nord Pool, ENTSO-e, GE-Spot, EPEX Spot or Energi Data Service sensor.",
       "tile_name_nordpool": "Electricity price (Nord Pool)",
       "tile_name_entsoe": "Electricity price (ENTSO-e)",
       "tile_name_gespot": "Electricity price (GE-Spot)",
@@ -5568,7 +6255,29 @@
       "bar_example": "0.472 €/kWh",
       "tile_name_epex": "Electricity price (EPEX Spot)",
       "ahead": "Next 24 hours only",
-      "ahead_hint": "The graph shows the 24 hours from now instead of today and tomorrow. Before tomorrow's prices are in, it ends at midnight."
+      "ahead_hint": "The graph shows the 24 hours from now instead of today and tomorrow. Before tomorrow's prices are in, it ends at midnight.",
+      "show_name": "Show the name",
+      "show_name_hint": "The tile's name at the top left. Off: the price has the whole row.",
+      "group_colours": "Colours",
+      "start": "Graph starts at",
+      "start_hint": "The graph shows 24 hours from this hour, such as 13:00 to 13:00 the next day, in place of today and tomorrow. Before that hour it starts yesterday; only EPEX Spot has yesterday's prices, the others leave those hours empty. Empty: today and tomorrow.",
+      "cheap_below": "Cheap below",
+      "cheap_below_hint": "A price below this is green, in the tile's unit. Empty: the colours follow the day's lowest and highest price.",
+      "expensive_above": "Too expensive above",
+      "expensive_above_hint": "A price above this is red, in the tile's unit; between the two it is amber. Empty: the colours follow the day's lowest and highest price.",
+      "tile_name_eds": "Electricity price (Energi Data Service)",
+      "unit_kr": "kr/kWh",
+      "unit_ore": "øre/kWh",
+      "resolution": "Price per",
+      "resolution_hint": "Every quarter of an hour as the sensor has it, or each hour as the average of its four quarters. The price now, the low, high and graph follow it.",
+      "resolution_quarter": "Quarter",
+      "resolution_hour": "Hour (average)",
+      "cheap": "Cheapest hours",
+      "cheap_hint": "Mark this many of the cheapest hours to come in the graph, from the hour of now on, of the known prices (not a forecast). 0: none.",
+      "cheap_mode": "Cheapest hours as",
+      "cheap_mode_hint": "Each on its own (the cheapest hours wherever they are), or in a row (the cheapest stretch, for a dishwasher or a car).",
+      "cheap_single": "Single hours",
+      "cheap_block": "Hours in a row"
      }
     },
     "nl": {
@@ -5580,17 +6289,19 @@
       "unavailable": "Geen prijs",
       "today": "Vandaag",
       "tomorrow": "Morgen",
+      "yesterday": "Gisteren",
       "now": "Nu",
       "low": "Laag {value}",
       "high": "Hoog {value}",
       "average": "Gemiddeld",
       "no_graph": "Geen prijzen voor vandaag",
       "feed_in": "Teruglevering {value}",
-      "formula_error": "Controleer de formule"
+      "formula_error": "Controleer de formule",
+      "cheap": "Goedkoopst {value}"
      },
      "app": {
       "name": "Stroomprijs",
-      "summary": "De stroomprijs nu, met een grafiek van vandaag en morgen, van een Nord Pool-, ENTSO-e-, GE-Spot- of EPEX Spot-sensor.",
+      "summary": "De stroomprijs nu, met een grafiek van vandaag en morgen, van een Nord Pool-, ENTSO-e-, GE-Spot-, EPEX Spot- of Energi Data Service-sensor.",
       "tile_name_nordpool": "Stroomprijs (Nord Pool)",
       "tile_name_entsoe": "Stroomprijs (ENTSO-e)",
       "tile_name_gespot": "Stroomprijs (GE-Spot)",
@@ -5621,15 +6332,37 @@
       "bar_example": "0,472 €/kWh",
       "tile_name_epex": "Stroomprijs (EPEX Spot)",
       "ahead": "Alleen de komende 24 uur",
-      "ahead_hint": "De grafiek toont de 24 uur vanaf nu in plaats van vandaag en morgen. Zolang de prijzen van morgen er nog niet zijn, stopt hij om middernacht."
+      "ahead_hint": "De grafiek toont de 24 uur vanaf nu in plaats van vandaag en morgen. Zolang de prijzen van morgen er nog niet zijn, stopt hij om middernacht.",
+      "show_name": "Naam tonen",
+      "show_name_hint": "De naam van de tegel linksboven. Uit: de prijs krijgt de hele regel.",
+      "group_colours": "Kleuren",
+      "start": "Grafiek begint om",
+      "start_hint": "De grafiek toont 24 uur vanaf dit uur, zoals 13:00 tot 13:00 de volgende dag, in plaats van vandaag en morgen. Voor dat uur begint hij gisteren; alleen EPEX Spot heeft de prijzen van gisteren, bij de andere blijven die uren leeg. Leeg: vandaag en morgen.",
+      "cheap_below": "Goedkoop onder",
+      "cheap_below_hint": "Een prijs hieronder is groen, in de eenheid van de tegel. Leeg: de kleuren volgen de laagste en hoogste prijs van de dag.",
+      "expensive_above": "Te duur boven",
+      "expensive_above_hint": "Een prijs hierboven is rood, in de eenheid van de tegel; ertussen is hij oranje. Leeg: de kleuren volgen de laagste en hoogste prijs van de dag.",
+      "tile_name_eds": "Stroomprijs (Energi Data Service)",
+      "unit_kr": "kr/kWh",
+      "unit_ore": "øre/kWh",
+      "resolution": "Prijs per",
+      "resolution_hint": "Elk kwartier zoals de sensor het heeft, of elk uur als het gemiddelde van zijn vier kwartieren. De prijs van nu, de laagste, hoogste en de grafiek volgen het.",
+      "resolution_quarter": "Kwartier",
+      "resolution_hour": "Uur (gemiddelde)",
+      "cheap": "Goedkoopste uren",
+      "cheap_hint": "Markeer zoveel van de goedkoopste komende uren in de grafiek, vanaf het uur van nu, van de bekende prijzen (geen voorspelling). 0: geen.",
+      "cheap_mode": "Goedkoopste uren als",
+      "cheap_mode_hint": "Elk los (de goedkoopste uren waar ze ook zitten), of aaneengesloten (het goedkoopste blok, voor een vaatwasser of een auto).",
+      "cheap_single": "Losse uren",
+      "cheap_block": "Uren achter elkaar"
      }
     }
    },
    "readme": {
-    "en": "# Electricity price\n\nThe electricity price now as a tile, with the graph of today and tomorrow on bigger tiles and on a card of its own.\nIt reads the price sensor of **Nord Pool** (HACS `nordpool`), **ENTSO-e** (`entsoe`), **GE-Spot** (`ge_spot`) or **EPEX Spot** (HACS `epex_spot`, for example `sensor.epex_spot_data_total_price`) in Home Assistant. For GE-Spot, use its price sensor in a currency per kWh (not the cents display).\n\nIt runs on every board Tessera supports (`boards: any`), from the CYD to the 10.1-inch screens.\n\n## Set up\n\n1. In Tessera, open **Plugins** and choose **Electricity price**, or choose **Add with a link** and paste\n   `https://github.com/Heronimonimo/tessera-electricity-price`. Tick your screens; each builds once.\n2. In Layout, place the **Electricity price (Nord Pool)**, **Electricity price (ENTSO-e)**, **Electricity price\n   (GE-Spot)** or **Electricity price (EPEX Spot)** tile from the library's Plugins group, at any size from 1x1 up to the whole page. A tile smaller than\n   2x2 shows the price with the meter bar; from 2x2 up it adds the graph.\n3. In the inspector, choose your price sensor. The list holds only the sensors that fit the tile you placed.\n4. Choose the unit, **EUR/kWh** (`0.273`) or **ct/kWh** (`27.3`), and the number of decimals (in ct/kWh at most one).\n5. Optionally set your tariff (below).\n6. Tap a bar of the graph to see its price and time slot for a few seconds, on a bigger tile and on the full screen card. On a tile, tap that bar again, or beside the bars, to open the card: the price now, the lowest and highest still to come, the day's average, and the graph.\n\n## Your tariff\n\nThe sensor gives the market price p. In the inspector you can type what you really pay, and what you get back, as a\nformula in p:\n\n| Field | Example | Means |\n|---|---|---|\n| **Delivery price** | `(p+0.12)*1.21` | Energy tax and surcharge on top, then 21% VAT |\n| | `0.25` | A fixed price |\n| **Feed-in price** | `p-0.02` | The market price minus your supplier's 2 cents |\n| | `0,07` | A fixed feed-in price |\n\nA formula has p, numbers (`0.12` or `0,12`), `+ - * /` and brackets. The numbers are in the sensor's currency per\nkWh (0.02, not 2), also when the tile shows cents. An empty delivery price is the sensor's own price; an empty feed-in\nprice is none. A formula with a typo shows \"Check the formula\" on the screen in place of the price; the editor\ncannot check it for you.\n\nWith a feed-in price each bar runs from the feed-in price to the delivery price, so you see the gap between the two\nover the day, also when feed-in is the higher one. The tile and the card show the feed-in price of now under the\nprice. The editor's preview shows the sensor's own price: it cannot work out the formula.\n\n## Bars or a stepped line\n\nIn the inspector, **Graph** chooses **Bars** or **Stepped line**. The stepped line follows the price slot by slot in\nthe same colours as the bars, with a dot for now. With a feed-in price it is a thin grey line under the delivery\nprice. **Fill under the line** adds a faint fill down to zero, or to the feed-in price. The card shows the graph of\nthe tile you open it from. **Grid lines** draws solid or dotted lines across the graph at its price labels.\n\n**Next 24 hours only** shows the 24 hours from now instead of today and tomorrow, and takes the meter's range and the\ncard's average, lowest and highest from those hours. Until tomorrow's prices are in (in the afternoon), they end at\nmidnight.\n\n## The price in the top bar\n\nPlace **Electricity price** on a page's top bar in the editor, under \"From plugins\". It shows the price now exactly\nas your price tile does: the same sensor, formula, unit and decimals. With more than one price tile on the screen, the\nfirst one with a sensor gives it. The top bar needs a price tile on the screen, on any page.\n\n## Good to know\n\n- The graph has a bar for every quarter of an hour when the sensor has quarter prices, else for every hour. A tile\n  with more than 100 slots (quarters of today and tomorrow) joins neighbouring quarters into one bar; the card shows\n  them all. Past bars are grey, the bar now is the accent colour, and the bars to come are green, amber or red by their\n  place between the lowest and highest price. Prices below zero hang under the zero line.\n- Tomorrow's bars appear on their own as soon as the sensor has them (the day-ahead prices come in the afternoon).\n- The price of now is the current time slot of today's list, as the bar of now shows it, not the sensor's state.\n  For ENTSO-e, choose its average-price sensor for a tile: it is the one with the lists (the tile and the top bar\n  still show the price of now).\n- The unit comes from the sensor (`EUR/kWh` shows as `€/kWh`). A sensor that reports per MWh is shown per kWh.\n- On the days the clock changes, the graph has 23 or 25 hours, each where it is on the clock.\n- EPEX Spot's total price sensor already holds surcharges and VAT, so its delivery formula can stay empty.\n- The EPEX Spot tile and the German translation come from Nekromonger's\n  [tessera-strompreis](https://github.com/Nekromonger/tessera-strompreis).\n"
+    "en": "# Electricity price\n\nThe electricity price now as a tile, with the graph of today and tomorrow on bigger tiles and on a card of its own.\nIt reads the price sensor of **Nord Pool** (HACS `nordpool`), **ENTSO-e** (`entsoe`), **GE-Spot** (`ge_spot`), **EPEX Spot** (HACS `epex_spot`, for example `sensor.epex_spot_data_total_price`) or **Energi Data Service** (HACS `energidataservice`, Danish prices) in Home Assistant. For GE-Spot, use its price sensor in a currency per kWh (not the cents display).\n\nIt runs on every board Tessera supports (`boards: any`), from the CYD to the 10.1-inch screens.\n\n## Set up\n\n1. In Tessera, open **Plugins** and choose **Electricity price**, or choose **Add with a link** and paste\n   `https://github.com/Heronimonimo/tessera-electricity-price`. Tick your screens; each builds once.\n2. In Layout, place the **Electricity price (Nord Pool)**, **Electricity price (ENTSO-e)**, **Electricity price\n   (GE-Spot)**, **Electricity price (EPEX Spot)** or **Electricity price (Energi Data Service)** tile from the library's Plugins group, at any size from 1x1 up to the whole page. A tile smaller than\n   2x2 shows the price with the meter bar; from 2x2 up it adds the graph.\n3. In the inspector, choose your price sensor. The list holds only the sensors that fit the tile you placed.\n4. Choose the unit, **EUR/kWh** (`0.273`) or **ct/kWh** (`27.3`), and the number of decimals (in ct/kWh at most one).\n   The Energi Data Service tile shows **kr/kWh** (`2.31`) or **øre/kWh** (`231`).\n5. Optionally set your tariff (below).\n6. Tap a bar of the graph to see its price and time slot for a few seconds, on a bigger tile and on the full screen card. On a tile, tap that bar again, or beside the bars, to open the card: the price now, the lowest and highest still to come, the day's average, and the graph.\n\n## Your tariff\n\nThe sensor gives the market price p. In the inspector you can type what you really pay, and what you get back, as a\nformula in p:\n\n| Field | Example | Means |\n|---|---|---|\n| **Delivery price** | `(p+0.12)*1.21` | Energy tax and surcharge on top, then 21% VAT |\n| | `0.25` | A fixed price |\n| **Feed-in price** | `p-0.02` | The market price minus your supplier's 2 cents |\n| | `0,07` | A fixed feed-in price |\n\nA formula has p, numbers (`0.12` or `0,12`), `+ - * /` and brackets. The numbers are in the sensor's currency per\nkWh (0.02, not 2), also when the tile shows cents. An empty delivery price is the sensor's own price; an empty feed-in\nprice is none. A formula with a typo shows \"Check the formula\" on the screen in place of the price; the editor\ncannot check it for you.\n\nWith a feed-in price each bar runs from the feed-in price to the delivery price, so you see the gap between the two\nover the day, also when feed-in is the higher one. The tile and the card show the feed-in price of now under the\nprice. The editor's preview shows the sensor's own price: it cannot work out the formula.\n\n## Bars or a stepped line\n\nIn the inspector, **Graph** chooses **Bars** or **Stepped line**. The stepped line follows the price slot by slot in\nthe same colours as the bars, with a dot for now. With a feed-in price it is a thin grey line under the delivery\nprice. **Fill under the line** adds a faint fill down to zero, or to the feed-in price. The card shows the graph of\nthe tile you open it from. **Grid lines** draws solid or dotted lines across the graph at its price labels.\n\n**Next 24 hours only** shows the 24 hours from now instead of today and tomorrow, and takes the meter's range and the\ncard's average, lowest and highest from those hours. Until tomorrow's prices are in (in the afternoon), they end at\nmidnight.\n\n**Graph starts at** shows 24 hours from an hour of your choice, such as 13:00 to 13:00 the next day, in place of today\nand tomorrow, and takes the meter's range and the card's average, lowest and highest from those hours. Before that hour\nthe graph starts yesterday at that hour. Only the EPEX Spot integration keeps yesterday's prices; with Nord Pool,\nENTSO-e, GE-Spot and Energi Data Service those hours stay empty. With an hour set, **Next 24 hours only** has no\neffect.\n\nWith **Next 24 hours only**, the Energi Data Service tile fills the hours after the known prices with Carnot's forecast\nin fainter bars, when the forecast is on in the integration's options (with a free Carnot account). The card's lowest\nand highest come from the known prices only.\n\n**Price per** shows every quarter of an hour, as the sensor has them, or each hour as the average of its four quarters.\nThe price now, the graph and the card's lowest, highest and average follow it.\n\n## The cheapest hours\n\n**Cheapest hours** (1 to 6) marks the cheapest hours still to come with a dark stroke over their bars, of the known\nprices only. **Cheapest hours as** chooses each on its own, wherever it falls, or the cheapest stretch of that many\nhours in a row, handy for a dishwasher or a car. The card names them over its graph: \"Cheapest 02:00 · 03:00 · 13:00\",\nor \"Cheapest 02:00–05:00\". 0 marks none.\n\n## Colours and the name\n\nThe bars, the line and the meter are green, amber or red by where a price stands between the day's lowest and highest.\nTo colour by prices of your own, open **Colours** in the tile's options and set **Cheap below** and **Too expensive\nabove**, in the tile's unit (0.25 for €/kWh, 25 for cents): green below the first, red above the second, amber\nbetween. With only one of them set, the other colour is not used. With both empty the colours follow the day.\n\n**Show the name** off leaves the tile's name out, so the price has the whole row.\n\n## The price in the top bar\n\nPlace **Electricity price** on a page's top bar in the editor, under \"From plugins\". It shows the price now exactly\nas your price tile does: the same sensor, formula, unit and decimals. With more than one price tile on the screen, the\nfirst one with a sensor gives it. The top bar needs a price tile on the screen, on any page.\n\n## Good to know\n\n- The cheapest hours, the price per hour, the Energi Data Service tile with its forecast, and the graph drawn in one\n  part come from Andware's [Elpris](https://github.com/Andware/tessera-energidata-price), which was built on this\n  plugin. Thanks!\n- The graph has a bar for every quarter of an hour when the sensor has quarter prices, else for every hour. A tile\n  with more than 100 slots (quarters of today and tomorrow) joins neighbouring quarters into one bar; the card shows\n  them all. Past bars are grey, the bar now is the accent colour, and the bars to come are green, amber or red by their\n  place between the lowest and highest price. Prices below zero hang under the zero line.\n- Tomorrow's bars appear on their own as soon as the sensor has them (the day-ahead prices come in the afternoon).\n- The price of now is the current time slot of today's list, as the bar of now shows it, not the sensor's state.\n  For ENTSO-e, choose its average-price sensor for a tile: it is the one with the lists (the tile and the top bar\n  still show the price of now).\n- The unit comes from the sensor (`EUR/kWh` shows as `€/kWh`). A sensor that reports per MWh is shown per kWh.\n- On the days the clock changes, the graph has 23 or 25 hours, each where it is on the clock.\n- EPEX Spot's total price sensor already holds surcharges and VAT, so its delivery formula can stay empty.\n- The EPEX Spot tile and the German translation come from Nekromonger's\n  [tessera-strompreis](https://github.com/Nekromonger/tessera-strompreis).\n"
    },
    "changelog": {
-    "en": "# Changelog\n\n## 0.12.0\n- EPEX Spot: a fourth tile, **Electricity price (EPEX Spot)**, for the sensor of the HACS `epex_spot` integration. Its\n  one list of yesterday, today and tomorrow is cut into today and tomorrow by the start of its slots. From\n  Nekromonger's [tessera-strompreis](https://github.com/Nekromonger/tessera-strompreis).\n- **Next 24 hours only**, on every tile: the graph shows the 24 hours from the slot of now instead of today and\n  tomorrow, up to midnight while tomorrow's prices are not in yet. The meter's range and the card's average, lowest\n  and highest are of those 24 hours too. The card follows the tile.\n- German, from Nekromonger's translation.\n\n## 0.11.0\n- The top bar shows the price as your tiles do: the sensor, formula, unit and decimals of a price tile on the screen,\n  and the price of the current time slot. The first tile with a sensor gives it. Its own sensor and its two settings\n  (Price sensor for the top bar, Top bar: price formula, Top bar: unit) are gone, and so is the permission to read\n  that sensor. A screen without a price tile shows no price in the top bar.\n\n## 0.10.0\n- The price now in the top bar: place **Electricity price** on a page's top bar in the editor, under \"From plugins\".\n  It reads the price sensor chosen when the plugin is added (Price sensor for the top bar), through a formula of its\n  own and in EUR/kWh or ct/kWh: two settings in the plugin's details on the screen's Plugins tab, which change\n  without a build. A formula with a typo says \"Check the formula\".\n- The price of now comes from today's list at the current time slot, the same as the bar of now. The ENTSO-e tile\n  showed the day's average as the price of now: ENTSO-e keeps its lists only on its average-price sensor, whose\n  state is that average (issue #2). Without a list or a set clock, the sensor's state stays the price.\n\n## 0.9.0\n- Graph: bars or a stepped line, chosen per tile in the editor. The stepped line follows the price slot by slot in the\n  colours of the bars, with a dot for now; a feed-in price is a thin grey line under it. A tapped slot gets a line\n  down through it and a dot on each price.\n- Fill under the line (on by default): a faint fill down to zero, or to the feed-in price.\n- Grid lines (none by default): solid or dotted lines across the graph at the price labels it shows. The lines\n  that were there before were a pixel wide by mistake, so none showed.\n- The card shows the graph of the tile you open it from.\n\n## 0.8.1\n- A tapped bar shows its feed-in price too: after its time on a tile, where it fits, and on the card in the feed-in\n  line, with its time slot.\n\n## 0.8.0\n- The tariff is a formula you type, one for delivery and one for feed-in: `(p+0.12)*1.21`, `p-0.02`, or a number\n  alone for a fixed price. p is the sensor's price per kWh; + - * /, brackets and a decimal point or comma work.\n  A formula with a typo shows \"Check the formula\" in place of the price.\n- The a, b and c options of 0.7.0 are gone: type your tariff again as a formula.\n\n## 0.7.0\n- Your own tariff on top of the market price: the delivery price is (p + a) × b + c, with a for the energy tax and the\n  supplier's surcharge, b for the VAT and c added after it. b 0 and c your price make a fixed price.\n- An optional feed-in price, (p + a) × b + c with its own a, b and c. With it each bar of the graph runs from the\n  feed-in price up to the delivery price; the colours stay those of the delivery price.\n- The feed-in price of now under the price on the meter tile, where it has room, and under the price on the card.\n\n## 0.6.6\n- A sensor that reports per MWh shows its price per kWh, in EUR/kWh and in ct/kWh alike. Before, ct/kWh multiplied a\n  price per MWh by 100.\n- On the days the clock changes (23 or 25 hours), the bar of now, the times under the graph and the time slots of a\n  tapped bar and of the highest and lowest price are right. Before, they were an hour off after the change.\n- When tomorrow's prices come in another resolution than today's (hours beside quarters), the graph shows them in\n  today's, without gaps.\n- \"Choose a price sensor\" and \"No price\" fit on a small tile and on the card, in every language: without a price\n  the message takes the whole row, in a smaller font where needed. Before, it was cut off.\n\n## 0.6.5\n- The tiles also take the whole page (`full: true`): a tile as big as the grid, such as 5x5 on a 5x5 grid, was not offered before.\n- The editor shows the price with its unit.\n\n## 0.6.4\n- The tiles come in every size, from 1x1 up to 9x9 (before, at most 4x3).\n\n## 0.6.3\n- Graph: the bars share the whole width of the plot. Before, each bar had a whole number of pixels, so on a screen where 192 quarters did not divide the width the bars took only part of it.\n\n## 0.6.2\n- Card: the highest and the lowest price only count from now on, tomorrow included once it is known. A time slot of tomorrow says \"Tomorrow\" in front.\n\n## 0.6.1\n- The card is as wide as the glass, like Tessera's own graph.\n\n## 0.6.0\n- Card: the unit behind the average, the highest and the lowest. A tapped bar shows its price under its time slot in the middle, and the price of now stays at the left.\n\n## 0.5.4\n- Store picture (store.png) made on the bench.\n- Fixes found by the first real build: the GE-Spot tile is registered, no `strlcpy`, the Tomorrow label stays inside the card.\n- The name keeps the tile-label font, the price takes what is left.\n\n## 0.5.3\n- The graph shows from 2 wide and 2 high; smaller tiles show the price with the meter bar.\n\n## 0.5.2\n- Tile with a graph: the name at the left and the price of now at the right, like the small tile. A tapped bar shows its time in place of the name.\n\n## 0.5.1\n- Small tile like the meter bar tile: the name at the left, the price with its unit at the right.\n\n## 0.5.0\n- GE-Spot as a source: a third tile reads `today_interval_prices` and `tomorrow_interval_prices` (the `value` of each interval).\n\n## 0.4.1\n- Tapping a bar works on the full screen card too (needs API 0.12). High, low and average use the font of the history card.\n\n## 0.4.0\n- Tap a bar of the graph on a tile to see its price and time slot for a few seconds. Tap it again, or beside the bars, to open the card.\n\n## 0.3.1\n- Card header like the history card: price at the left, average in the middle, highest and lowest at the right with their time slot.\n\n## 0.3.0\n- Choose the unit: EUR/kWh or ct/kWh.\n- Time axis and price axis in the look of Tessera's history graph; the small tile is the meter's bar of cells.\n\n## 0.2.0\n- The graph shows quarter-hour prices when the sensor has them.\n- One tile per integration (Nord Pool, ENTSO-e), so the inspector lists only compatible sensors.\n\n## 0.1.0\n- First version: a tile with the electricity price now, a graph of today and tomorrow on bigger tiles and on a card.\n  Works with the Nord Pool and ENTSO-e sensors.\n"
+    "en": "# Changelog\n\n## 0.13.0\n- **Energi Data Service**: a fifth tile, **Electricity price (Energi Data Service)**, for the Danish prices of the HACS\n  `energidataservice` integration, in kr/kWh or øre/kWh. With **Next 24 hours only** it fills the hours after the\n  known prices with Carnot's forecast in fainter bars, when the forecast is on in the integration. The plugin also\n  speaks Danish now.\n- **Cheapest hours**, a new option on every tile: the graph marks the cheapest 1 to 6 hours still to come with a dark\n  stroke over their bars, and the card names them over the graph (\"Cheapest 02:00–05:00\"). **Cheapest hours as**\n  chooses each on its own, or the cheapest stretch in a row, for a dishwasher or a car. Off (0) until you set it.\n- **Price per**, a new option on every tile: every quarter of an hour, as before, or each hour as the average of its\n  four quarters. The price now, the graph, the lowest, highest and average follow it.\n- A tile takes half the layout memory it did (8000 in place of 16000), so more tiles fit on a screen: the graph and\n  the meter are each drawn in one part instead of one part per bar and per cell. They look and take taps as before.\n- These four come from Andware's [Elpris](https://github.com/Andware/tessera-energidata-price), built on this plugin.\n- **Show the name**, a new option of the tile: turn it off and the price has the whole row.\n- **Colours**, a new section of the tile's options: set **Cheap below** and **Too expensive above** in the tile's unit,\n  and the bars, the line and the meter are green below the first, red above the second and amber between, on the tile\n  and on its card. Left empty, the colours follow the day's lowest and highest price, as before. On a day when every\n  price is high, the whole graph is then red.\n- **Graph starts at**, a new option of the tile: the graph shows 24 hours from that hour, such as 13:00 to 13:00 the\n  next day, in place of today and tomorrow, on the tile and on its card. Before that hour it starts yesterday at that\n  hour. Only EPEX Spot keeps yesterday's prices; with the others those hours stay empty. After Nekromonger's\n  tessera-strompreis.\n- Needs Tessera 0.4.98 or later (plugin API 0.26).\n\n## 0.12.0\n- EPEX Spot: a fourth tile, **Electricity price (EPEX Spot)**, for the sensor of the HACS `epex_spot` integration. Its\n  one list of yesterday, today and tomorrow is cut into today and tomorrow by the start of its slots. From\n  Nekromonger's [tessera-strompreis](https://github.com/Nekromonger/tessera-strompreis).\n- **Next 24 hours only**, on every tile: the graph shows the 24 hours from the slot of now instead of today and\n  tomorrow, up to midnight while tomorrow's prices are not in yet. The meter's range and the card's average, lowest\n  and highest are of those 24 hours too. The card follows the tile.\n- German, from Nekromonger's translation.\n\n## 0.11.0\n- The top bar shows the price as your tiles do: the sensor, formula, unit and decimals of a price tile on the screen,\n  and the price of the current time slot. The first tile with a sensor gives it. Its own sensor and its two settings\n  (Price sensor for the top bar, Top bar: price formula, Top bar: unit) are gone, and so is the permission to read\n  that sensor. A screen without a price tile shows no price in the top bar.\n\n## 0.10.0\n- The price now in the top bar: place **Electricity price** on a page's top bar in the editor, under \"From plugins\".\n  It reads the price sensor chosen when the plugin is added (Price sensor for the top bar), through a formula of its\n  own and in EUR/kWh or ct/kWh: two settings in the plugin's details on the screen's Plugins tab, which change\n  without a build. A formula with a typo says \"Check the formula\".\n- The price of now comes from today's list at the current time slot, the same as the bar of now. The ENTSO-e tile\n  showed the day's average as the price of now: ENTSO-e keeps its lists only on its average-price sensor, whose\n  state is that average (issue #2). Without a list or a set clock, the sensor's state stays the price.\n\n## 0.9.0\n- Graph: bars or a stepped line, chosen per tile in the editor. The stepped line follows the price slot by slot in the\n  colours of the bars, with a dot for now; a feed-in price is a thin grey line under it. A tapped slot gets a line\n  down through it and a dot on each price.\n- Fill under the line (on by default): a faint fill down to zero, or to the feed-in price.\n- Grid lines (none by default): solid or dotted lines across the graph at the price labels it shows. The lines\n  that were there before were a pixel wide by mistake, so none showed.\n- The card shows the graph of the tile you open it from.\n\n## 0.8.1\n- A tapped bar shows its feed-in price too: after its time on a tile, where it fits, and on the card in the feed-in\n  line, with its time slot.\n\n## 0.8.0\n- The tariff is a formula you type, one for delivery and one for feed-in: `(p+0.12)*1.21`, `p-0.02`, or a number\n  alone for a fixed price. p is the sensor's price per kWh; + - * /, brackets and a decimal point or comma work.\n  A formula with a typo shows \"Check the formula\" in place of the price.\n- The a, b and c options of 0.7.0 are gone: type your tariff again as a formula.\n\n## 0.7.0\n- Your own tariff on top of the market price: the delivery price is (p + a) × b + c, with a for the energy tax and the\n  supplier's surcharge, b for the VAT and c added after it. b 0 and c your price make a fixed price.\n- An optional feed-in price, (p + a) × b + c with its own a, b and c. With it each bar of the graph runs from the\n  feed-in price up to the delivery price; the colours stay those of the delivery price.\n- The feed-in price of now under the price on the meter tile, where it has room, and under the price on the card.\n\n## 0.6.6\n- A sensor that reports per MWh shows its price per kWh, in EUR/kWh and in ct/kWh alike. Before, ct/kWh multiplied a\n  price per MWh by 100.\n- On the days the clock changes (23 or 25 hours), the bar of now, the times under the graph and the time slots of a\n  tapped bar and of the highest and lowest price are right. Before, they were an hour off after the change.\n- When tomorrow's prices come in another resolution than today's (hours beside quarters), the graph shows them in\n  today's, without gaps.\n- \"Choose a price sensor\" and \"No price\" fit on a small tile and on the card, in every language: without a price\n  the message takes the whole row, in a smaller font where needed. Before, it was cut off.\n\n## 0.6.5\n- The tiles also take the whole page (`full: true`): a tile as big as the grid, such as 5x5 on a 5x5 grid, was not offered before.\n- The editor shows the price with its unit.\n\n## 0.6.4\n- The tiles come in every size, from 1x1 up to 9x9 (before, at most 4x3).\n\n## 0.6.3\n- Graph: the bars share the whole width of the plot. Before, each bar had a whole number of pixels, so on a screen where 192 quarters did not divide the width the bars took only part of it.\n\n## 0.6.2\n- Card: the highest and the lowest price only count from now on, tomorrow included once it is known. A time slot of tomorrow says \"Tomorrow\" in front.\n\n## 0.6.1\n- The card is as wide as the glass, like Tessera's own graph.\n\n## 0.6.0\n- Card: the unit behind the average, the highest and the lowest. A tapped bar shows its price under its time slot in the middle, and the price of now stays at the left.\n\n## 0.5.4\n- Store picture (store.png) made on the bench.\n- Fixes found by the first real build: the GE-Spot tile is registered, no `strlcpy`, the Tomorrow label stays inside the card.\n- The name keeps the tile-label font, the price takes what is left.\n\n## 0.5.3\n- The graph shows from 2 wide and 2 high; smaller tiles show the price with the meter bar.\n\n## 0.5.2\n- Tile with a graph: the name at the left and the price of now at the right, like the small tile. A tapped bar shows its time in place of the name.\n\n## 0.5.1\n- Small tile like the meter bar tile: the name at the left, the price with its unit at the right.\n\n## 0.5.0\n- GE-Spot as a source: a third tile reads `today_interval_prices` and `tomorrow_interval_prices` (the `value` of each interval).\n\n## 0.4.1\n- Tapping a bar works on the full screen card too (needs API 0.12). High, low and average use the font of the history card.\n\n## 0.4.0\n- Tap a bar of the graph on a tile to see its price and time slot for a few seconds. Tap it again, or beside the bars, to open the card.\n\n## 0.3.1\n- Card header like the history card: price at the left, average in the middle, highest and lowest at the right with their time slot.\n\n## 0.3.0\n- Choose the unit: EUR/kWh or ct/kWh.\n- Time axis and price axis in the look of Tessera's history graph; the small tile is the meter's bar of cells.\n\n## 0.2.0\n- The graph shows quarter-hour prices when the sensor has them.\n- One tile per integration (Nord Pool, ENTSO-e), so the inspector lists only compatible sensors.\n\n## 0.1.0\n- First version: a tile with the electricity price now, a graph of today and tomorrow on bigger tiles and on a card.\n  Works with the Nord Pool and ENTSO-e sensors.\n"
    },
    "image": "store.png"
   },
@@ -9622,14 +10355,14 @@
    "label": "community",
    "status": "ok",
    "release": {
-    "version": "0.3.1",
-    "sha": "6d4747b0abfac47805443a85aa779cfddc61d266",
-    "date": "2026-10-27",
-    "tag": "v0.3.1"
+    "version": "0.4.0",
+    "sha": "4c7497f261a6972568fb26e8387f0a7083bdbb59",
+    "date": "2026-11-19",
+    "tag": "v0.4.0"
    },
    "manifest": {
     "id": "timers",
-    "version": "0.3.1",
+    "version": "0.4.0",
     "api": "0.12",
     "icon": "timer-outline",
     "maintainer": "Heronimonimo",
@@ -9848,10 +10581,10 @@
     }
    },
    "readme": {
-    "en": "# Timers\n\nA kitchen timer and a stopwatch on a Tessera screen. You set the timer with four keys that add time, **+10s**, **+1m**,\n**+10m** and **+1h**, and start it: no dial to turn, no numbers to type. A ring shows how much is left, and when the time\nis up its ring and time turn red and it says Done.\n\nThe timer runs on the screen itself, or as a timer helper of Home Assistant, so the same timer shows on your phone and\nin your automations. The stopwatch runs on the screen and keeps the last three laps. Both keep running through a\nrestart of the screen.\n\n## Set up\n\n1. In Tessera, open Plugins and choose **Timers**, or choose **Add with a link** and paste\n   `https://github.com/Heronimonimo/tessera-timers`.\n2. Tick the screen in the kitchen and apply. The screen builds once.\n3. In Layout, place the **Timer** or the **Stopwatch** tile from the library's Plugins group, at any size from 1x1 to\n   3x3.\n4. Only for a timer you want in Home Assistant too: make a timer helper first (Settings, Devices & services, Helpers,\n   Create helper, Timer), then choose it as the Timer tile's entity in the inspector. Leave the entity empty for a\n   timer that runs on the screen alone.\n\n## What it shows\n\n- **1x1**: the ring and the time. A tap opens the full-screen card with every key.\n- **2x1**: the ring, the time, **+1m** and Start or Pause. A tap on the time opens the card.\n- **1x2**: the ring, **+1m** and **+10m**, and the two keys that act.\n- **2x2 and up, and the card**: the ring beside all four add keys, with Reset or Cancel and Start or Pause.\n\nThe timer:\n\n- **Setting it**: tap the add keys until the time is right (2 x +1m and 3 x +10s is 2:30), then Start. Reset sets it\n  back to 0:00.\n- **While it runs**: the add keys add time to it; Pause and Resume, or Cancel.\n- **When it is done**: its ring and time turn red and it says Done. On a screen with a speaker it rings too: three\n  beeps every two seconds for a minute, or until you tap Stop. **+1m** gives it another minute, Stop ends it. A timer on the\n  screen opens its card when it is done, on whatever page shows; turn that off with the setting below.\n\nThe stopwatch: Start, Pause and Resume; **Lap** while it runs, **Reset** while it is paused. The tile shows the newest\nlap, the larger tiles and the card the last three.\n\n![The plugin on the 10-inch, the 4-inch square and the CYD](store.png)\n\nThe card on the Guition 4-inch and the CYD, drawn by the real firmware on Tessera's preview bench:\n\n![The card on the Guition 4-inch](renders/card-4inch-light.png) ![The card on the CYD](renders/card-cyd-dark.png)\n\nEvery tile at every size on the four screens of the bench: [renders/overview.png](renders/overview.png).\n\n## In the top bar\n\nIn Layout, open a page's top bar and add **Running timer** or **Running stopwatch** from the plugins. They show only\nwhile a timer or a stopwatch runs, in whole minutes (\"6 min\", \"1 h 05\"): the top bar looks again every five seconds,\nso the tile and the card keep the seconds. A timer that is done shows a red bell and Done. With several timers the bar\nshows the one that ends first, with several stopwatches the one that runs longest.\n\n## Settings\n\nOn a screen with a speaker (from its board, such as the reTerminal D1001, or from another plugin) the plugin's details\nalso have the part **Ring when a timer is done**, on by default, and the setting **Timer sound**: a switch that turns\nthe beeps off and on again without a build, also on the screen's settings page and in Home Assistant. The beeps follow\nthe screen's volume.\n\nOn the screen's Plugins tab, the plugin's details, **Settings**:\n\n- **Open the timer when it is done**: a timer on the screen opens its card when the time is up (on by default).\n\nHome Assistant also gets a **Timer done** binary sensor of the screen: on while a timer of the screen is done. Use it\nto send a notification to your phone.\n\n## Good to know\n\n- A timer on the screen and the stopwatch belong to their tile's place in the layout: moving a tile to another place\n  starts it fresh.\n- A timer helper is run by Home Assistant. Adding time to it while it runs starts it again with the new time, so its\n  ring starts full again. Home Assistant's own `timer.finished` event fires as always.\n- The screen counts on its own clock, which Home Assistant sets: until it is set (right after a start) a timer on the\n  screen waits.\n- Tried on a real screen, the M5Stack Tab5, and on the preview bench on the CYD, the Guition 4-inch, the Waveshare\n  4.3-inch standing up and the Guition 10.1-inch, light and dark.\n"
+    "en": "# Timers\n\nA kitchen timer and a stopwatch on a Tessera screen. You set the timer with four keys that add time, **+10s**, **+1m**,\n**+10m** and **+1h**, and start it: no dial to turn, no numbers to type. A ring shows how much is left, and when the time\nis up its ring and time turn red and it says Done.\n\nThe timer runs on the screen itself, or as a timer helper of Home Assistant, so the same timer shows on your phone and\nin your automations. The stopwatch runs on the screen and keeps the last three laps. Both keep running through a\nrestart of the screen.\n\n## Set up\n\n1. In Tessera, open Plugins and choose **Timers**, or choose **Add with a link** and paste\n   `https://github.com/Heronimonimo/tessera-timers`.\n2. Tick the screen in the kitchen and apply. The screen builds once.\n3. In Layout, place the **Timer** or the **Stopwatch** tile from the library's Plugins group, at any size from 1x1 to\n   3x3.\n4. Only for a timer you want in Home Assistant too: make a timer helper first (Settings, Devices & services, Helpers,\n   Create helper, Timer), then choose it as the Timer tile's entity in the inspector. Leave the entity empty for a\n   timer that runs on the screen alone.\n\n## What it shows\n\n- **1x1**: the ring and the time. A tap opens the full-screen card with every key.\n- **2x1**: the ring, the time, **+1m** and Start or Pause. A tap on the time opens the card.\n- **1x2**: the ring, **+1m** and **+10m**, and the two keys that act.\n- **2x2 and up, and the card**: the ring beside all four add keys, with Reset or Cancel and Start or Pause.\n\nThe timer:\n\n- **Setting it**: tap the add keys until the time is right (2 x +1m and 3 x +10s is 2:30), then Start. Reset sets it\n  back to 0:00.\n- **While it runs**: the add keys add time to it; Pause and Resume, or Cancel.\n- **When it is done**: its ring and time turn red and it says Done. On a screen with a speaker it rings too: three\n  beeps every two seconds for a minute, or until you tap Stop. **+1m** gives it another minute, Stop ends it. A timer on the\n  screen opens its card when it is done, on whatever page shows; turn that off with the setting below.\n\nThe stopwatch: Start, Pause and Resume; **Lap** while it runs, **Reset** while it is paused. The tile shows the newest\nlap, the larger tiles and the card the last three.\n\n![The plugin on the 10-inch, the 4-inch square and the CYD](store.png)\n\nThe card on the Guition 4-inch and the CYD, drawn by the real firmware on Tessera's preview bench:\n\n![The card on the Guition 4-inch](renders/card-4inch-light.png) ![The card on the CYD](renders/card-cyd-dark.png)\n\nEvery tile at every size on the four screens of the bench: [renders/overview.png](renders/overview.png).\n\n## In the top bar\n\nIn Layout, open a page's top bar and add **Running timer** or **Running stopwatch** from the plugins. They show only\nwhile a timer or a stopwatch runs, in whole minutes (\"6 min\", \"1 h 05\"): the top bar looks again every five seconds,\nso the tile and the card keep the seconds. A timer that is done shows a red bell and Done. With several timers the bar\nshows the one that ends first, with several stopwatches the one that runs longest.\n\n## Settings\n\nOn a screen with a speaker (from its board, such as the reTerminal D1001, or from another plugin) the plugin's details\nalso have the part **Ring when a timer is done**, on by default, and the setting **Timer sound**: a switch that turns\nthe beeps off and on again without a build, also on the screen's settings page and in Home Assistant. The beeps follow\nthe screen's volume.\n\nOn the screen's Plugins tab, the plugin's details, **Settings**:\n\n- **Open the timer when it is done**: a timer on the screen opens its card when the time is up (on by default).\n\nHome Assistant also gets a **Timer done** binary sensor of the screen: on while a timer of the screen is done. Use it\nto send a notification to your phone.\n\nWith several timer helpers on one screen, the **Timers done** sensor says which ones are done: their entity ids, such\nas `timer.eggs, timer.rice`, or nothing. A helper leaves the list when Stop, +1m or Cancel is tapped on its tile, or\nafter half an hour. An automation that plays an alarm for `timer.eggs` can stop it when the helper is no longer in the\nlist:\n\n```yaml\ntriggers:\n  - trigger: state\n    entity_id: sensor.kitchen_screen_timers_done\nconditions:\n  - condition: template\n    value_template: \"{{ 'timer.eggs' not in trigger.to_state.state.split(', ') }}\"\nactions:\n  - action: script.turn_off\n    target:\n      entity_id: script.eggs_alarm\n```\n\nTimers that run on the screen itself, without a helper, have no entity id, so only the binary sensor counts them.\n\nThe **Silence timers** button of the screen does what Stop does on every timer of the screen that is done: the ringing\nstops and the timer goes back to idle, while running timers run on. Press it from an automation that stopped its own\nalarm another way, such as a button on a phone's notification, so the screen stops too.\n\n## Good to know\n\n- A timer on the screen and the stopwatch belong to their tile's place in the layout: moving a tile to another place\n  starts it fresh.\n- A timer helper is run by Home Assistant. Adding time to it while it runs starts it again with the new time, so its\n  ring starts full again. Home Assistant's own `timer.finished` event fires as always.\n- The screen counts on its own clock, which Home Assistant sets: until it is set (right after a start) a timer on the\n  screen waits.\n- Tried on a real screen, the M5Stack Tab5, and on the preview bench on the CYD, the Guition 4-inch, the Waveshare\n  4.3-inch standing up and the Guition 10.1-inch, light and dark.\n"
    },
    "changelog": {
-    "en": "# Changelog\n\n## 0.3.1\n- Nothing changes on the screen. The README says the plugin was tried on a real screen, the M5Stack Tab5, and the\n  plugin is now checked against Tessera 0.4.90.\n\n## 0.3.0\n- The top bar can show a running timer and a running stopwatch: in Layout, add **Running timer** or **Running\n  stopwatch** to a page's top bar, under From plugins. It shows only while one runs, in whole minutes (\"6 min\"), and\n  turns red with \"Done\" when a timer is done. With several, the timer that ends first and the stopwatch that runs\n  longest.\n- The Stopwatch tile's icon is one of Tessera's own now (it showed none).\n\n## 0.2.1\n- A switch for the sound: **Timer sound** in the plugin's settings, on the screen's settings page and in Home Assistant,\n  on a screen with a speaker. Turning it off silences a timer that rings at once.\n\n## 0.2.0\n- A timer that is done now rings on a screen with a speaker: three beeps every two seconds for a minute, or until you\n  tap Stop. It is the part \"Ring when a timer is done\" in the plugin's details, on by default; it follows the screen's\n  volume. Screens without a speaker build as before.\n\n## 0.1.0\n- First version: a timer you set with +10s, +1m, +10m and +1h, on the screen or as a timer helper of Home Assistant,\n  and a stopwatch with laps. Both keep running through a restart of the screen.\n"
+    "en": "# Changelog\n\n## 0.4.0\n- A new sensor in Home Assistant, **Timers done**, names the timer helpers whose timer is done, such as\n  `timer.eggs, timer.rice`. A helper leaves the list when you tap Stop, +1m or Cancel on its tile, so an automation can\n  tell several timers on one screen apart, for example to stop the right alarm on a speaker. The **Timer done** binary\n  sensor stays as it was.\n- A new button in Home Assistant, **Silence timers**, does what Stop does on every timer of the screen that is done:\n  the ringing stops and the timer goes back to idle. An automation that stopped its own alarm another way (a button on\n  a phone's notification, a speaker's button) can silence the screen with it. Running timers run on.\n\n## 0.3.1\n- Nothing changes on the screen. The README says the plugin was tried on a real screen, the M5Stack Tab5, and the\n  plugin is now checked against Tessera 0.4.90.\n\n## 0.3.0\n- The top bar can show a running timer and a running stopwatch: in Layout, add **Running timer** or **Running\n  stopwatch** to a page's top bar, under From plugins. It shows only while one runs, in whole minutes (\"6 min\"), and\n  turns red with \"Done\" when a timer is done. With several, the timer that ends first and the stopwatch that runs\n  longest.\n- The Stopwatch tile's icon is one of Tessera's own now (it showed none).\n\n## 0.2.1\n- A switch for the sound: **Timer sound** in the plugin's settings, on the screen's settings page and in Home Assistant,\n  on a screen with a speaker. Turning it off silences a timer that rings at once.\n\n## 0.2.0\n- A timer that is done now rings on a screen with a speaker: three beeps every two seconds for a minute, or until you\n  tap Stop. It is the part \"Ring when a timer is done\" in the plugin's details, on by default; it follows the screen's\n  volume. Screens without a speaker build as before.\n\n## 0.1.0\n- First version: a timer you set with +10s, +1m, +10m and +1h, on the screen or as a timer helper of Home Assistant,\n  and a stopwatch with laps. Both keep running through a restart of the screen.\n"
    },
    "image": "store.png"
   },
@@ -10458,14 +11191,14 @@
    "label": "community",
    "status": "ok",
    "release": {
-    "version": "0.2.0",
-    "sha": "985efe5993d62b44df697fb190e76ad4178c2283",
-    "date": "2026-10-27",
-    "tag": "v0.2.0"
+    "version": "0.2.1",
+    "sha": "3167cce2d819a7759fccb4e46039667b2c3b9f30",
+    "date": "2026-11-19",
+    "tag": "v0.2.1"
    },
    "manifest": {
     "id": "waze_traveltime",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "api": "0.10",
     "icon": "car",
     "maintainer": "Heronimonimo",
@@ -10730,7 +11463,7 @@
     "en": "# Waze travel time\n\nYour travel time from Waze on a Tessera screen: how long the trip takes now, how far that is off your usual time, the\nroute Waze picks and when you arrive, with a line of how the travel time went over the last hours. A tap opens a card\nwith the routes Waze offers right now (up to six), fastest first.\n\nIt reads a sensor of Home Assistant's own [Waze Travel Time](https://www.home-assistant.io/integrations/waze_travel_time)\nintegration. No key, no account and no web service of its own: Home Assistant asks Waze, the plugin asks Home Assistant.\n\n## Set up\n\n1. In Home Assistant, add the **Waze Travel Time** integration (Settings, Devices and services, Add integration) with\n   your two places, for example `zone.home` and your work address. It makes a sensor such as\n   `sensor.home_to_work`. Keep the **Recorder** on for it (it is by default): the line on the tile comes from its\n   history.\n2. In Tessera, open **Plugins** and choose **Waze travel time**, or choose **Add with a link** and paste\n   `https://github.com/Heronimonimo/tessera-waze-traveltime`. Tick your screens and choose the **Waze sensor for the\n   top bar** (asked once per screen, also when you don't use the top bar); each screen builds once with the plugin.\n3. Put the tile **Travel time** on a page, at any size from 1x1 to 4x4, and choose the Waze sensor in its inspector.\n4. In the inspector, set:\n   - **Usual travel time**: your time without traffic, in minutes. The tile then shows the delay (\"+8\") in green,\n     amber or red, and the line gets a dashed line at that time. Leave it at 0 for no delay.\n   - **Hours on the line**: how far back the line goes, 1 to 8 hours (0 for no line).\n   - **Waze region**: the same region as your Waze Travel Time integration, for the routes on the card.\n5. Optional: add **Travel time** to a page's top bar (Top bar, Add, From plugins). It shows the sensor you chose in\n   step 2. For a coloured car, set the usual time: hold the top bar, then **Settings**, **Plugins**, **Waze travel\n   time**, **Usual travel time**, or the entity **Waze usual time** of the screen in Home Assistant.\n\n## On the screen\n\n- **1x1**: the minutes, the delay top right, and when you arrive.\n- **2x1**: the same, with the route (\"via A12\").\n- **2 rows or more**: the line of the last hours under it, in green, amber or red by the delay now (the accent colour\n  without a usual time), and the usual time dashed.\n- **Tap**: the card with the routes Waze offers now, as many as fit (up to six), each with its time, a bar, its distance and how much slower it is\n  than the fastest.\n- **Top bar**: \"23 min\" beside the page's name, or \"23 min +8\" when it is slower than the usual time, with the car in\n  green, amber or red by the delay (grey without a usual time). Hidden while the sensor has no travel time. A page can\n  show its icon alone.\n\n## Good to know\n\n- The line comes from the sensor's history in Home Assistant (`history/history_during_period`), asked once when the\n  tile is made; every new travel time after that is added on the screen. The sensor updates every 5 minutes by\n  default, so the line moves in steps of about 5 minutes.\n- The card asks Waze through Home Assistant's `waze_travel_time.get_travel_times` action each time it opens, with live\n  traffic. It uses the sensor's own start and end, but not the sensor's other options (avoid tolls, filters). Distances\n  on the card are in km.\n- Waze Travel Time is an unofficial client of Waze's live map: when Waze changes something, the integration (and so\n  this plugin) may stop until Home Assistant fixes it.\n- Works on every board, the CYD included: it shows no pictures.\n- Tried on Tessera's preview bench (the CYD, the Guition 4-inch, the Waveshare 4.3-inch standing up and the Guition\n  10.1-inch, light and dark), not yet on a real screen. Found something wrong? Open an issue.\n\n## Privacy\n\nThe plugin itself reaches nothing outside your home: the screen talks to Home Assistant only. Home Assistant's Waze\nTravel Time integration asks Waze's live map for the travel time, every 5 minutes, and once more each time the card\nopens. Waze then sees the two ends of your trip (often your home and your work, as coordinates) and the address of your\nHome Assistant. No account, key or other personal data is sent. What Waze does with it is in\n[Waze's privacy policy](https://www.waze.com/legal/privacy).\n\n## How it works\n\n- `tessera-plugin.yaml`: a tile of a sensor with the attributes `route`, `distance`, `origin` and `destination`, a card,\n  a top bar item, the input that chooses the top bar's sensor, the setting of its usual time, and the two Home Assistant\n  commands it may ask, with the history mapped to two lists of numbers.\n- `plugin.yaml`: a `homeassistant` sensor that reads the chosen sensor for the top bar, and the usual time as a\n  template number.\n- `components/waze_traveltime/`: the tile (the line is drawn on the screen from the samples), the card, the top bar\n  item, the settings row, and the plugin that hands each answer to the tile or card that asked.\n"
    },
    "changelog": {
-    "en": "# Changelog\n\n## 0.2.0\n- New: the travel time in the top bar. Add **Travel time** to a page's top bar (Top bar, Add, From plugins): \"23 min\",\n  or \"23 min +8\" when it is slower than usual, with the car in green, amber or red.\n- Adding or updating the plugin now asks for the **Waze sensor for the top bar** once per screen.\n- The top bar's usual time is a setting of the screen: **Waze usual time** in Home Assistant, and on the screen's\n  settings page under Plugins.\n- The card asks Waze in the tile's own region in every case.\n- The Plugins page now says the plugin uses a service outside the home (Waze, through Home Assistant), with a privacy\n  note in the README.\n\n## 0.1.0\n- First version: a tile of a Waze Travel Time sensor with the travel time, the delay against your usual time, the\n  route, when you arrive and a line of the last hours from the sensor's history.\n- A card with every route Waze offers right now, fastest first.\n"
+    "en": "# Changelog\n\n## 0.2.1\n- Nothing changes on the screen. A build no longer warns \"array subscript 16 is outside array bounds\" for the routes\n  card: the warning came from the compiler's own sorting code, never from the plugin, but it read like a fault.\n\n## 0.2.0\n- New: the travel time in the top bar. Add **Travel time** to a page's top bar (Top bar, Add, From plugins): \"23 min\",\n  or \"23 min +8\" when it is slower than usual, with the car in green, amber or red.\n- Adding or updating the plugin now asks for the **Waze sensor for the top bar** once per screen.\n- The top bar's usual time is a setting of the screen: **Waze usual time** in Home Assistant, and on the screen's\n  settings page under Plugins.\n- The card asks Waze in the tile's own region in every case.\n- The Plugins page now says the plugin uses a service outside the home (Waze, through Home Assistant), with a privacy\n  note in the README.\n\n## 0.1.0\n- First version: a tile of a Waze Travel Time sensor with the travel time, the delay against your usual time, the\n  route, when you arrive and a line of the last hours from the sensor's history.\n- A card with every route Waze offers right now, fastest first.\n"
    },
    "image": "store.png"
   },
