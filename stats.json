@@ -34,13 +34,13 @@
   "custom_card": {
    "likes": 23,
    "rating": 4.7,
-   "ratings": 54,
-   "homes": 60
+   "ratings": 55,
+   "homes": 61
   },
   "dwd_rain": {
    "likes": 2,
-   "rating": 3.6,
-   "ratings": 14,
+   "rating": 3.7,
+   "ratings": 15,
    "homes": 14
   },
   "electricity_price": {
@@ -64,13 +64,13 @@
   "flip_clock": {
    "likes": 21,
    "rating": 4.5,
-   "ratings": 82,
+   "ratings": 83,
    "homes": 57
   },
   "guition_relays": {
    "likes": 3,
    "rating": 5,
-   "ratings": 24,
+   "ratings": 25,
    "homes": 17
   },
   "new_music": {
@@ -107,7 +107,7 @@
    "likes": 0,
    "rating": null,
    "ratings": 1,
-   "homes": 3
+   "homes": 4
   },
   "pollen": {
    "likes": 1,
@@ -131,7 +131,7 @@
    "likes": 5,
    "rating": 4.6,
    "ratings": 25,
-   "homes": 31
+   "homes": 32
   },
   "sweden_public_transport": {
    "likes": 0,
@@ -149,13 +149,13 @@
    "likes": 2,
    "rating": 4.5,
    "ratings": 12,
-   "homes": 14
+   "homes": 15
   },
   "thermo_dial": {
    "likes": 2,
    "rating": 4.6,
    "ratings": 17,
-   "homes": 19
+   "homes": 20
   },
   "timers": {
    "likes": 3,
@@ -184,7 +184,7 @@
   "waste_collection": {
    "likes": 13,
    "rating": 4.5,
-   "ratings": 33,
+   "ratings": 34,
    "homes": 31
   },
   "waste_overview": {
