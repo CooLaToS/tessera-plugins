@@ -1,6 +1,6 @@
 {
  "format": 1,
- "generated": "2026-11-19T22:15:30Z",
+ "generated": "2026-11-20T13:08:12Z",
  "plugin_api": "0.28",
  "blocked": [],
  "featured": [
@@ -9127,14 +9127,14 @@
    "label": "community",
    "status": "ok",
    "release": {
-    "version": "1.1.0",
-    "sha": "563142c0fb4001bc6b948f789c0d5fc7006971b3",
-    "date": "2026-11-18",
-    "tag": "1.1.0"
+    "version": "1.2.1",
+    "sha": "b1b14b55dbdaf5969eb9680d5c38b9a8d65bfc06",
+    "date": "2026-11-20",
+    "tag": "1.2.1"
    },
    "manifest": {
     "id": "status_tile",
-    "version": "1.1.0",
+    "version": "1.2.1",
     "api": "0.9",
     "icon": "toggle-switch",
     "maintainer": "hflocki",
@@ -9147,7 +9147,7 @@
      "esphome": "2026.6.2"
     },
     "boards": "any",
-    "flash_kb": 12,
+    "flash_kb": 14,
     "permissions": {
      "home_assistant_actions": [
       "homeassistant.toggle"
@@ -9176,7 +9176,8 @@
       ],
       "attributes": [
        "device_class",
-       "unit_of_measurement"
+       "unit_of_measurement",
+       "icon"
       ],
       "options": [
        {
@@ -9257,6 +9258,10 @@
          {
           "value": "humidity",
           "label": "kind_humidity"
+         },
+         {
+          "value": "text",
+          "label": "kind_text"
          }
         ]
        },
@@ -9351,6 +9356,191 @@
         ]
        },
        {
+        "id": "icon",
+        "kind": "choice",
+        "default": "auto",
+        "label": "icon",
+        "hint": "icon_hint",
+        "choices": [
+         {
+          "value": "auto",
+          "label": "icon_auto"
+         },
+         {
+          "value": "information-outline",
+          "label": "icon_information_outline"
+         },
+         {
+          "value": "form-textbox",
+          "label": "icon_form_textbox"
+         },
+         {
+          "value": "cash",
+          "label": "icon_cash"
+         },
+         {
+          "value": "ev-station",
+          "label": "icon_ev_station"
+         },
+         {
+          "value": "car",
+          "label": "icon_car"
+         },
+         {
+          "value": "car-electric",
+          "label": "icon_car_electric"
+         },
+         {
+          "value": "car-battery",
+          "label": "icon_car_battery"
+         },
+         {
+          "value": "gauge",
+          "label": "icon_gauge"
+         },
+         {
+          "value": "speedometer",
+          "label": "icon_speedometer"
+         },
+         {
+          "value": "meter-electric",
+          "label": "icon_meter_electric"
+         },
+         {
+          "value": "meter-gas",
+          "label": "icon_meter_gas"
+         },
+         {
+          "value": "flash",
+          "label": "icon_flash"
+         },
+         {
+          "value": "solar-power",
+          "label": "icon_solar_power"
+         },
+         {
+          "value": "home-battery",
+          "label": "icon_home_battery"
+         },
+         {
+          "value": "battery",
+          "label": "icon_battery"
+         },
+         {
+          "value": "transmission-tower",
+          "label": "icon_transmission_tower"
+         },
+         {
+          "value": "thermometer",
+          "label": "icon_thermometer"
+         },
+         {
+          "value": "water-percent",
+          "label": "icon_water_percent"
+         },
+         {
+          "value": "water",
+          "label": "icon_water"
+         },
+         {
+          "value": "storage-tank",
+          "label": "icon_storage_tank"
+         },
+         {
+          "value": "fire",
+          "label": "icon_fire"
+         },
+         {
+          "value": "snowflake",
+          "label": "icon_snowflake"
+         },
+         {
+          "value": "weather-partly-cloudy",
+          "label": "icon_weather_partly_cloudy"
+         },
+         {
+          "value": "weather-windy",
+          "label": "icon_weather_windy"
+         },
+         {
+          "value": "leaf",
+          "label": "icon_leaf"
+         },
+         {
+          "value": "flower",
+          "label": "icon_flower"
+         },
+         {
+          "value": "trash-can",
+          "label": "icon_trash_can"
+         },
+         {
+          "value": "recycle",
+          "label": "icon_recycle"
+         },
+         {
+          "value": "calendar",
+          "label": "icon_calendar"
+         },
+         {
+          "value": "clock-outline",
+          "label": "icon_clock_outline"
+         },
+         {
+          "value": "bell",
+          "label": "icon_bell"
+         },
+         {
+          "value": "heart",
+          "label": "icon_heart"
+         },
+         {
+          "value": "home",
+          "label": "icon_home"
+         },
+         {
+          "value": "account",
+          "label": "icon_account"
+         },
+         {
+          "value": "wifi",
+          "label": "icon_wifi"
+         },
+         {
+          "value": "router-wireless",
+          "label": "icon_router_wireless"
+         },
+         {
+          "value": "cog",
+          "label": "icon_cog"
+         },
+         {
+          "value": "package",
+          "label": "icon_package"
+         },
+         {
+          "value": "mailbox",
+          "label": "icon_mailbox"
+         },
+         {
+          "value": "power-plug",
+          "label": "icon_power_plug"
+         },
+         {
+          "value": "lightbulb",
+          "label": "icon_lightbulb"
+         },
+         {
+          "value": "television",
+          "label": "icon_television"
+         },
+         {
+          "value": "music",
+          "label": "icon_music"
+         }
+        ]
+       },
+       {
         "id": "on_text",
         "kind": "text",
         "default": "",
@@ -9400,6 +9590,13 @@
         "hint": "show_name_hint"
        },
        {
+        "id": "show_state",
+        "kind": "toggle",
+        "default": true,
+        "label": "show_state",
+        "hint": "show_state_hint"
+       },
+       {
         "id": "tap",
         "kind": "toggle",
         "default": false,
@@ -9446,7 +9643,7 @@
       "tile_name": "Status",
       "tile_example": "Fenster · Geschlossen",
       "kind": "Was ist es",
-      "kind_hint": "Bestimmt Icons und Wörter. Auto nimmt sie aus der Geräteklasse der Entität.",
+      "kind_hint": "Bestimmt Icons und Wörter. Auto nimmt sie aus der Geräteklasse der Entität. Text oder Wert zeigt den Zustand, wie er ist.",
       "kind_auto": "Auto",
       "kind_window": "Fenster",
       "kind_door": "Tür",
@@ -9464,7 +9661,7 @@
       "kind_alarm": "Alarmanlage",
       "kind_switch": "Schalter",
       "on_color": "Farbe bei an",
-      "on_color_hint": "An, offen, entriegelt, Bewegung. Auto: rot bei offenem Fenster, gelb bei Licht.",
+      "on_color_hint": "An, offen, entriegelt, Bewegung, und ein Wert oder Text. Auto: rot bei offenem Fenster, gelb bei Licht, grau bei einem Wert.",
       "off_color": "Farbe bei aus",
       "off_color_hint": "Aus, geschlossen, verriegelt. Auto: grün bei geschlossenem Fenster, grau bei Licht.",
       "color_auto": "Auto",
@@ -9477,7 +9674,7 @@
       "color_accent": "Akzent",
       "color_grey": "Grau (keine)",
       "on_text": "Text bei an",
-      "on_text_hint": "Z. B. \"Offen\" oder \"Jemand da\". Leer: das Wort der Art.",
+      "on_text_hint": "Z. B. \"Offen\" oder \"Jemand da\". Leer: das Wort der Art. Bei einem Wert steht {state} für ihn: \"Diesel {state}\".",
       "off_text": "Text bei aus",
       "off_text_hint": "Z. B. \"Alle zu\". Leer: das Wort der Art.",
       "tint": "Kachel einfärben",
@@ -9492,7 +9689,56 @@
       "text_size_hint": "Größere Schrift für große Screens oder zum Ablesen aus der Entfernung. Ein langes Wort wird weiterhin kleiner, damit es passt.",
       "size_normal": "Normal",
       "size_large": "Groß",
-      "size_xlarge": "Sehr groß"
+      "size_xlarge": "Sehr groß",
+      "kind_text": "Text oder Wert",
+      "icon": "Symbol",
+      "icon_hint": "Auto: das eigene Symbol der Entität aus Home Assistant, wenn Tessera es hat, sonst das der Art.",
+      "icon_auto": "Auto",
+      "show_state": "Zustand zeigen",
+      "show_state_hint": "Der Zustand oder Wert unter dem Namen. Aus, und Namen auch aus: nur das Symbol.",
+      "icon_information_outline": "Information",
+      "icon_form_textbox": "Text",
+      "icon_cash": "Geld",
+      "icon_ev_station": "Ladesäule",
+      "icon_car": "Auto",
+      "icon_car_electric": "E-Auto",
+      "icon_car_battery": "Autobatterie",
+      "icon_gauge": "Anzeige",
+      "icon_speedometer": "Tacho",
+      "icon_meter_electric": "Stromzähler",
+      "icon_meter_gas": "Gaszähler",
+      "icon_flash": "Strom",
+      "icon_solar_power": "Solar",
+      "icon_home_battery": "Hausbatterie",
+      "icon_battery": "Batterie",
+      "icon_transmission_tower": "Netz",
+      "icon_thermometer": "Thermometer",
+      "icon_water_percent": "Feuchte",
+      "icon_water": "Wasser",
+      "icon_storage_tank": "Tank",
+      "icon_fire": "Feuer",
+      "icon_snowflake": "Frost",
+      "icon_weather_partly_cloudy": "Wetter",
+      "icon_weather_windy": "Wind",
+      "icon_leaf": "Blatt",
+      "icon_flower": "Blume",
+      "icon_trash_can": "Mülltonne",
+      "icon_recycle": "Recycling",
+      "icon_calendar": "Kalender",
+      "icon_clock_outline": "Uhr",
+      "icon_bell": "Glocke",
+      "icon_heart": "Herz",
+      "icon_home": "Haus",
+      "icon_account": "Person",
+      "icon_wifi": "WLAN",
+      "icon_router_wireless": "Router",
+      "icon_cog": "Zahnrad",
+      "icon_package": "Paket",
+      "icon_mailbox": "Briefkasten",
+      "icon_power_plug": "Stecker",
+      "icon_lightbulb": "Glühbirne",
+      "icon_television": "Fernseher",
+      "icon_music": "Musik"
      }
     },
     "en": {
@@ -9530,7 +9776,7 @@
       "tile_name": "Status",
       "tile_example": "Windows · Closed",
       "kind": "What it is",
-      "kind_hint": "Picks the icons and words. Auto takes them from the entity's device class.",
+      "kind_hint": "Picks the icons and words. Auto takes them from the entity's device class. Text or value shows the state as it is.",
       "kind_auto": "Auto",
       "kind_window": "Window",
       "kind_door": "Door",
@@ -9548,7 +9794,7 @@
       "kind_alarm": "Alarm",
       "kind_switch": "Switch",
       "on_color": "Colour when on",
-      "on_color_hint": "On, open, unlocked, motion. Auto: red for an open window, yellow for a light.",
+      "on_color_hint": "On, open, unlocked, motion, and a value or text. Auto: red for an open window, yellow for a light, grey for a value.",
       "off_color": "Colour when off",
       "off_color_hint": "Off, closed, locked. Auto: green for a closed window, grey for a light.",
       "color_auto": "Auto",
@@ -9561,7 +9807,7 @@
       "color_accent": "Accent",
       "color_grey": "Grey (none)",
       "on_text": "Word when on",
-      "on_text_hint": "Such as \"Open\" or \"Someone home\". Empty: the kind's word.",
+      "on_text_hint": "Such as \"Open\" or \"Someone home\". Empty: the kind's word. For a value, {state} stands for it: \"Diesel {state}\".",
       "off_text": "Word when off",
       "off_text_hint": "Such as \"All closed\". Empty: the kind's word.",
       "tint": "Tint the tile",
@@ -9576,15 +9822,64 @@
       "text_size_hint": "Larger words for a large screen or one read from afar. A long word still steps down to fit.",
       "size_normal": "Normal",
       "size_large": "Large",
-      "size_xlarge": "Extra large"
+      "size_xlarge": "Extra large",
+      "kind_text": "Text or value",
+      "icon": "Icon",
+      "icon_hint": "Auto: the entity's own icon from Home Assistant when Tessera has it, else the kind's.",
+      "icon_auto": "Auto",
+      "show_state": "Show the state",
+      "show_state_hint": "The state or value under the name. Off, with the name off too: only the icon.",
+      "icon_information_outline": "Information",
+      "icon_form_textbox": "Text",
+      "icon_cash": "Money",
+      "icon_ev_station": "Charging station",
+      "icon_car": "Car",
+      "icon_car_electric": "Electric car",
+      "icon_car_battery": "Car battery",
+      "icon_gauge": "Gauge",
+      "icon_speedometer": "Speedometer",
+      "icon_meter_electric": "Electricity meter",
+      "icon_meter_gas": "Gas meter",
+      "icon_flash": "Power",
+      "icon_solar_power": "Solar",
+      "icon_home_battery": "Home battery",
+      "icon_battery": "Battery",
+      "icon_transmission_tower": "Grid",
+      "icon_thermometer": "Thermometer",
+      "icon_water_percent": "Humidity",
+      "icon_water": "Water",
+      "icon_storage_tank": "Tank",
+      "icon_fire": "Fire",
+      "icon_snowflake": "Frost",
+      "icon_weather_partly_cloudy": "Weather",
+      "icon_weather_windy": "Wind",
+      "icon_leaf": "Leaf",
+      "icon_flower": "Flower",
+      "icon_trash_can": "Bin",
+      "icon_recycle": "Recycling",
+      "icon_calendar": "Calendar",
+      "icon_clock_outline": "Clock",
+      "icon_bell": "Bell",
+      "icon_heart": "Heart",
+      "icon_home": "Home",
+      "icon_account": "Person",
+      "icon_wifi": "Wi-Fi",
+      "icon_router_wireless": "Router",
+      "icon_cog": "Gear",
+      "icon_package": "Parcel",
+      "icon_mailbox": "Mailbox",
+      "icon_power_plug": "Plug",
+      "icon_lightbulb": "Lightbulb",
+      "icon_television": "TV",
+      "icon_music": "Music"
      }
     }
    },
    "readme": {
-    "en": "# Status\n\nAny Home Assistant entity as a state on a tile: a window, a door, a light, a lock, motion, a leak. The icon changes\nwith the state (an open or closed window, a light on or off), and so does the colour: an open window red, a closed one\ngreen, a light that is on yellow. Use the tile as often as you like, each with its own entity, on any size from\n1 x 1 to 4 x 2: square, the circle above and the words under it; wide, the circle beside them.\n\nEverything is set on the tile itself, in the layout's inspector, without a build:\n\n- **Entity**: a binary sensor, sensor, switch, light, input boolean, lock, cover or fan. A group works too, such as\n  `binary_sensor.group_windows`, which is on while any window is open.\n- **What it is**: window, door, garage door, gate, blinds, light, plug, motion, presence, lock, leak, smoke, appliance,\n  alarm, switch, temperature or humidity. Its icons and words. **Auto** takes it from the entity's device class.\n- **Colour when on** and **Colour when off**: red, orange, yellow, green, blue, purple, the accent, or grey for none.\n  **Auto** takes the kind's.\n- **Word when on** and **Word when off**: your own, such as \"All closed\"; empty takes the kind's.\n- **Tint the tile**: the whole tile takes the colour lightly while the entity is on.\n- **Text size**: Normal, Large or Extra large, for a large screen or one read from across the room. A long name or\n  state still steps down a size to fit.\n- **Show the name**, and **Switch on a tap** for a light, a switch or a cover.\n\nA sensor with a number shows it with its unit.\n\n## Set up\n\n1. In Tessera, open **Plugins**, **Add with a link**, and paste the link of this repository. Add the plugin to a\n   screen and build it once.\n2. In **Layout**, place a **Status** tile, choose its entity in the inspector and set what it is and its colours.\n   Place as many as you like.\n3. For **Switch on a tap**, the screen must be allowed to perform actions (Home Assistant, the ESPHome device's\n   options).\n\n## Good to know\n\n- One entity per tile. For several windows at once, make a group in Home Assistant (Settings, Helpers, Group) and\n  choose the group.\n"
+    "en": "# Status\n\nAny Home Assistant entity as a state on a tile: a window, a door, a light, a lock, motion, a leak. The icon changes\nwith the state (an open or closed window, a light on or off), and so does the colour: an open window red, a closed one\ngreen, a light that is on yellow. Use the tile as often as you like, each with its own entity, on any size from\n1 x 1 to 4 x 2: square, the circle above and the words under it; wide, the circle beside them.\n\nEverything is set on the tile itself, in the layout's inspector, without a build:\n\n- **Entity**: a binary sensor, sensor, switch, light, input boolean, lock, cover or fan. A group works too, such as\n  `binary_sensor.group_windows`, which is on while any window is open.\n- **What it is**: window, door, garage door, gate, blinds, light, plug, motion, presence, lock, leak, smoke, appliance,\n  alarm, switch, temperature, humidity, or **Text or value** for a state shown as it is (a fuel price, a text). Its\n  icons and words. **Auto** takes it from the entity's device class.\n- **Icon**: one of 43 icons, such as money, a charging station, a gauge, a tank or a bin. **Auto** takes the entity's\n  own icon from Home Assistant when it is one of them, else the kind's.\n- **Colour when on** and **Colour when off**: red, orange, yellow, green, blue, purple, the accent, or grey for none.\n  **Auto** takes the kind's.\n- **Word when on** and **Word when off**: your own, such as \"All closed\"; empty takes the kind's. For a value,\n  **Word when on** is a template: `{state}` stands for the value, such as \"Diesel {state}\".\n- **Tint the tile**: the whole tile takes the colour lightly while the entity is on.\n- **Text size**: Normal, Large or Extra large, for a large screen or one read from across the room. A long name or\n  state still steps down a size to fit.\n- **Show the name** and **Show the state**: both off, and the tile shows only its icon.\n- **Switch on a tap** for a light, a switch or a cover.\n\nA sensor with a number shows it with its unit, in the tile's **Colour when on** (grey on Auto).\n\n## Set up\n\n1. In Tessera, open **Plugins**, **Add with a link**, and paste the link of this repository. Add the plugin to a\n   screen and build it once.\n2. In **Layout**, place a **Status** tile, choose its entity in the inspector and set what it is and its colours.\n   Place as many as you like.\n3. For **Switch on a tap**, the screen must be allowed to perform actions (Home Assistant, the ESPHome device's\n   options).\n\n## Good to know\n\n- A long entity name: give the tile its own, shorter name in the layout's inspector; the tile takes it instead.\n- One entity per tile. For several windows at once, make a group in Home Assistant (Settings, Helpers, Group) and\n  choose the group.\n\n## A hobby project\n\nThis plugin is a private, non-commercial hobby project. I build and maintain it in my spare time and share it\nfree of charge as open source under the [MIT License](LICENSE). It is free and will stay free: there is no paid\nversion, no paid feature and no paid support.\n\nBug reports and ideas are welcome, but please keep in mind:\n\n- There is no support and no guaranteed response time. I answer when I find the time, which can take days or weeks.\n- Not every request gets built. I add what fits the plugin and what I can keep working over time.\n- Pull requests are welcome; for a larger change, open an issue first so we can agree on the way.\n\n### No warranty, no liability\n\nThe plugin is provided \"as is\", without any warranty and without guaranteed support, updates or fixes. You use it at\nyour own risk. To the extent permitted by law, I accept no liability for any damage or data loss resulting from its\nuse. The full terms are in the [MIT License](LICENSE).\n\n### Buy me a coffee\n\nIf the plugin is useful to you and you would like to say thanks, you are welcome to buy me a coffee. A donation is\nentirely voluntary: it is a thank-you, not a payment. It does not buy support, features, a response time or any other\nservice, and the plugin stays exactly the same for everyone, whether they donate or not.\n\n[![Buy me a coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=hflocki&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff)](https://www.buymeacoffee.com/hflocki)\n\n☕ [buymeacoffee.com/hflocki](https://www.buymeacoffee.com/hflocki)\n"
    },
    "changelog": {
-    "en": "# Changelog\n\n## 1.1.0\n- New tile option \"Text size\": Normal, Large or Extra large. The name and the state take the screen's larger fonts, and\n  the name a darker colour, for large screens such as a 10-inch panel. A long name or state still steps down to fit.\n\n## 1.0.2\n- New kinds: temperature and humidity, with a thermometer and a drop; Auto finds them by the device class.\n- The picture on the Plugins page shows a door, windows, a light, a washer, a garage, a lock, motion, a temperature\n  and a leak sensor.\n\n## 1.0.1\n- The icon sits inside its circle as one part, and an idle circle is lighter, so the grey icon reads in the light look too.\n- Amber and yellow words and icons take the ink on the light look, where they were too faint to read; the dark look keeps its colours.\n\n## 1.0.0\n- First version: one entity per tile as a state, with icons, words and colours by its kind (window, door, light, lock,\n  motion and more), chosen on the tile without a build.\n"
+    "en": "# Changelog\n\n## 1.2.1\n- A tile with neither the name nor the state shows its icon without empty labels lying outside it.\n- The first release with everything of 1.2.0: the kind \"Text or value\", the \"Icon\" choice and \"Show the state\".\n\n## 1.2.0\n- New kind \"Text or value\": the state as it is, such as a fuel price or a text, without on and off.\n- A value or text takes the tile's \"Colour when on\" (grey on Auto, as before), and its \"Word when on\" as a template:\n  `{state}` stands for the value, \"Diesel {state}\".\n- New option \"Icon\": one of 43 icons, or Auto, which takes the entity's own icon from Home Assistant when it is one of\n  them, else the kind's.\n- New toggle \"Show the state\": off, with \"Show the name\" off too, the tile shows only its icon.\n\n## 1.1.0\n- New tile option \"Text size\": Normal, Large or Extra large. The name and the state take the screen's larger fonts, and\n  the name a darker colour, for large screens such as a 10-inch panel. A long name or state still steps down to fit.\n\n## 1.0.2\n- New kinds: temperature and humidity, with a thermometer and a drop; Auto finds them by the device class.\n- The picture on the Plugins page shows a door, windows, a light, a washer, a garage, a lock, motion, a temperature\n  and a leak sensor.\n\n## 1.0.1\n- The icon sits inside its circle as one part, and an idle circle is lighter, so the grey icon reads in the light look too.\n- Amber and yellow words and icons take the ink on the light look, where they were too faint to read; the dark look keeps its colours.\n\n## 1.0.0\n- First version: one entity per tile as a state, with icons, words and colours by its kind (window, door, light, lock,\n  motion and more), chosen on the tile without a build.\n"
    },
    "image": "store.png"
   },
