@@ -59,12 +59,12 @@
    "likes": 13,
    "rating": 4.2,
    "ratings": 14,
-   "homes": 15
+   "homes": 14
   },
   "flip_clock": {
-   "likes": 21,
+   "likes": 22,
    "rating": 4.5,
-   "ratings": 88,
+   "ratings": 89,
    "homes": 59
   },
   "guition_relays": {
@@ -101,13 +101,13 @@
    "likes": 3,
    "rating": 4.5,
    "ratings": 10,
-   "homes": 19
+   "homes": 20
   },
   "plane_radar": {
    "likes": 0,
    "rating": 5,
    "ratings": 3,
-   "homes": 9
+   "homes": 8
   },
   "pollen": {
    "likes": 1,
@@ -185,7 +185,7 @@
    "likes": 14,
    "rating": 4.5,
    "ratings": 36,
-   "homes": 32
+   "homes": 33
   },
   "waste_overview": {
    "likes": 5,
