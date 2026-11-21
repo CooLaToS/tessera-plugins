@@ -59,7 +59,7 @@
    "likes": 13,
    "rating": 4.2,
    "ratings": 14,
-   "homes": 14
+   "homes": 16
   },
   "flip_clock": {
    "likes": 24,
@@ -95,13 +95,13 @@
    "likes": 4,
    "rating": 4.5,
    "ratings": 4,
-   "homes": 12
+   "homes": 13
   },
   "picture_frame": {
    "likes": 3,
    "rating": 4.5,
    "ratings": 10,
-   "homes": 20
+   "homes": 21
   },
   "plane_radar": {
    "likes": 0,
@@ -131,7 +131,7 @@
    "likes": 6,
    "rating": 4.6,
    "ratings": 31,
-   "homes": 36
+   "homes": 37
   },
   "sweden_public_transport": {
    "likes": 0,
@@ -143,13 +143,13 @@
    "likes": 2,
    "rating": 3.6,
    "ratings": 5,
-   "homes": 3
+   "homes": 4
   },
   "tap_sound": {
    "likes": 2,
    "rating": 4.5,
    "ratings": 12,
-   "homes": 16
+   "homes": 17
   },
   "thermo_dial": {
    "likes": 4,
