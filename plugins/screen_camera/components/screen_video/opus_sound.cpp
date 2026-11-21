@@ -18,28 +18,10 @@ namespace esphome::screen_video {
 
 void ScreenVideo::setup_sound_() {
   if (mic_ == nullptr) return;
-  const size_t internal_before = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
   sound_rate_ = mic_->get_audio_stream_info().get_sample_rate();
   // A second of sound between the microphone's task and the server's, in PSRAM: more than any pause of the sender.
   sound_ = xStreamBufferCreateWithCaps(sound_rate_ * 2, 1, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-  // As Espressif's own WebRTC port drives this encoder: the library's defaults (complexity 0, no FEC), only the rate,
-  // the channel and the bitrate set. esp_audio_codec 2.5.0: 2.6 and later build only for P4 chips of revision 3.
-  esp_opus_enc_config_t opus = ESP_OPUS_ENC_CONFIG_DEFAULT();
-  opus.sample_rate = sound_rate_;
-  opus.channel = 1;
-  opus.bitrate = 32000;
-  opus.frame_duration = ESP_OPUS_ENC_FRAME_DURATION_20_MS;
-  int out_bytes = 0;
-  if (sound_ == nullptr || esp_opus_enc_open(&opus, sizeof(opus), &opus_) != ESP_AUDIO_ERR_OK ||
-      esp_opus_enc_get_frame_size(opus_, &opus_in_bytes_, &out_bytes) != ESP_AUDIO_ERR_OK ||
-      out_bytes > static_cast<int>(sizeof(opus_out_)) || opus_in_bytes_ <= 0 || opus_in_bytes_ > 1920) {
-    ESP_LOGE(TAG, "No Opus encoder: the video goes without sound");
-    opus_ = nullptr;
-    return;
-  }
-  opus_out_bytes_ = out_bytes;
-  ESP_LOGI(TAG, "Opus ready; it keeps %d bytes of internal RAM",
-           (int) internal_before - (int) heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+  if (sound_ == nullptr) return;
   mic_->add_data_callback([this](const std::vector<uint8_t> &data) {
     mic_samples_ += data.size() / 2;
     mic_at_us_ = esp_timer_get_time();
@@ -54,6 +36,32 @@ void ScreenVideo::setup_sound_() {
     }
     xStreamBufferSend(sound_, data.data(), data.size(), 0);
   });
+}
+
+void ScreenVideo::open_sound_() {
+  // The encoder, when the first viewer asks what the stream holds (DESCRIBE, on the server's task) and kept from then
+  // on (0.7.0): it keeps about 25 KB of internal RAM, which a screen whose video nobody opens keeps for itself.
+  if (sound_ == nullptr || sound_tried_) return;
+  sound_tried_ = true;
+  const size_t internal_before = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+  // As Espressif's own WebRTC port drives this encoder: the library's defaults (complexity 0, no FEC), only the rate,
+  // the channel and the bitrate set. esp_audio_codec 2.5.0: 2.6 and later build only for P4 chips of revision 3.
+  esp_opus_enc_config_t opus = ESP_OPUS_ENC_CONFIG_DEFAULT();
+  opus.sample_rate = sound_rate_;
+  opus.channel = 1;
+  opus.bitrate = 32000;
+  opus.frame_duration = ESP_OPUS_ENC_FRAME_DURATION_20_MS;
+  int out_bytes = 0;
+  if (esp_opus_enc_open(&opus, sizeof(opus), &opus_) != ESP_AUDIO_ERR_OK ||
+      esp_opus_enc_get_frame_size(opus_, &opus_in_bytes_, &out_bytes) != ESP_AUDIO_ERR_OK ||
+      out_bytes > static_cast<int>(sizeof(opus_out_)) || opus_in_bytes_ <= 0 || opus_in_bytes_ > 1920) {
+    ESP_LOGE(TAG, "No Opus encoder: the video goes without sound");
+    opus_ = nullptr;
+    return;
+  }
+  opus_out_bytes_ = out_bytes;
+  ESP_LOGI(TAG, "Opus ready; it keeps %d bytes of internal RAM",
+           (int) internal_before - (int) heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
 }
 
 void ScreenVideo::send_sound_() {

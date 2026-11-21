@@ -92,7 +92,13 @@ class FrameHub : public esp_video_camera::RawVideoFrameConsumer {
   uint32_t count_from_ms_{0}, counted_{0}, halved_counted_{0};
   bool counting_{false};
   // The halved frame (camera's task): its PPA client with bursts of 64 bytes, as every PPA client on a screen, and its
-  // buffer in PSRAM, made at the first tall frame.
+  // buffer in PSRAM, made at a tall frame for a consumer of the picture and given back REST_MS after the last such
+  // consumer went (rest_, on the main loop: no consumer of the picture is on then, and only the main loop turns one
+  // on, so the camera's task halves nothing meanwhile; in_frame_ covers the frame it may still be in).
+  void rest_(uint32_t now_ms);
+  static constexpr uint32_t REST_MS = 60000;
+  std::atomic<bool> in_frame_{false};
+  uint32_t rested_ms_{0};
   ppa_client_handle_t ppa_{nullptr};
   uint8_t *half_{nullptr};
   size_t half_bytes_{0};

@@ -96,6 +96,13 @@ void ScreenVideo::consume_raw_video_frame(const esp_video_camera::RawVideoFrame 
                height_, kept);
     }
   }
+  // From here on the frame goes into a slot: said first and checked after, so the server never gives the slots back
+  // under a frame (give_room_).
+  struct Encoding {
+    std::atomic<bool> &flag;
+    explicit Encoding(std::atomic<bool> &f) : flag(f) { flag.store(true); }
+    ~Encoding() { flag.store(false); }
+  } in_frame(encoding_);
   if (encoder_ == nullptr || !playing_.load()) return;
   if (frame.width < crop_x_ + width_ || frame.height < crop_y_ + height_) return;  // a frame of another size: not ours
   const uint32_t now = static_cast<uint32_t>(esp_timer_get_time());

@@ -667,8 +667,14 @@ void ESPVideoCamera::capture_task_trampoline(void *param) {
 
 void ESPVideoCamera::capture_task_run_() {
   while (this->capture_task_running_.load(std::memory_order_acquire)) {
-    // request_image/start_stream wakes the otherwise dormant capture task.
-    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+    // request_image/start_stream wakes the otherwise dormant capture task. A capture that stopped keeps its buffers
+    // for REST_MS, so a viewer who comes back or the next still starts at once and short sessions do not carve up
+    // PSRAM; a camera that rests longer gives them back (megabytes on a P4) and sleeps until someone asks.
+    if (ulTaskNotifyTake(pdTRUE, this->capture_prepared_ ? pdMS_TO_TICKS(REST_MS) : portMAX_DELAY) == 0) {
+      if (!this->capture_wanted_.load(std::memory_order_acquire) && this->capture_prepared_ && this->stop_capture_())
+        ESP_LOGI(TAG, "The camera rests: its buffers are given back");
+      continue;
+    }
     if (!this->capture_task_running_.load(std::memory_order_acquire))
       break;
     if (this->capture_faulted_.load(std::memory_order_acquire)) {

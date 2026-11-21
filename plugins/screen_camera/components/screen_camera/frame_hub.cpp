@@ -67,8 +67,31 @@ void FrameHub::ask(Consumer *consumer, uint8_t fps) {
   pick_rate_(millis());
 }
 
+void FrameHub::rest_(uint32_t now_ms) {
+  if (half_ == nullptr) return;
+  const int n = count_.load(std::memory_order_acquire);
+  bool picture = false;
+  for (int i = 0; i < n; ++i) picture |= entries_[i].on.load(std::memory_order_acquire) && !entries_[i].any_size;
+  if (picture) {
+    rested_ms_ = 0;
+    return;
+  }
+  if (rested_ms_ == 0) {
+    rested_ms_ = now_ms | 1;
+    return;
+  }
+  if (now_ms - rested_ms_ < REST_MS || in_frame_.load(std::memory_order_acquire)) return;
+  if (ppa_ != nullptr) ppa_unregister_client(ppa_);
+  ppa_ = nullptr;
+  heap_caps_free(half_);
+  half_ = nullptr;
+  half_bytes_ = 0;
+  rested_ms_ = 0;
+}
+
 void FrameHub::tick(uint32_t now_ms) {
   pick_rate_(now_ms);
+  rest_(now_ms);
   if (count_from_ms_ == 0 || static_cast<int32_t>(now_ms - count_from_ms_) < 0) return;
   if (!counting_) {
     counting_ = true;
@@ -174,6 +197,12 @@ bool FrameHub::halve_(const esp_video_camera::RawVideoFrame &frame, esp_video_ca
 }
 
 void FrameHub::consume_raw_video_frame(const esp_video_camera::RawVideoFrame &frame) {
+  // Said before the consumers are read, so rest_ never gives the halved frame's buffer back under a frame.
+  struct InFrame {
+    std::atomic<bool> &flag;
+    explicit InFrame(std::atomic<bool> &f) : flag(f) { flag.store(true, std::memory_order_release); }
+    ~InFrame() { flag.store(false, std::memory_order_release); }
+  } in_frame(in_frame_);
   frames_.fetch_add(1, std::memory_order_relaxed);
   const int n = count_.load(std::memory_order_acquire);
   // Whether a consumer of the picture takes this frame: only then is a Full field of view's frame halved.

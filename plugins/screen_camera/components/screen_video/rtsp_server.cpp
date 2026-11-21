@@ -140,7 +140,10 @@ void ScreenVideo::serve_() {
       FD_SET(v.fd, &readable);
       highest = std::max(highest, v.fd);
     }
+    // While nobody plays, only a new viewer or a request has anything to say, and select() wakes for those by itself:
+    // the server sleeps a second at a time (the silent viewers below need no more), not a hundred times a second.
     timeval wait{0, 10000};
+    if (!anyone_playing_()) wait = {1, 0};
     if (::select(highest + 1, &readable, nullptr, nullptr, &wait) > 0) {  // POSIX, not esphome::select
       if (FD_ISSET(listener, &readable)) accept_(listener);
       for (auto &v : viewers_)
@@ -149,7 +152,10 @@ void ScreenVideo::serve_() {
     const uint32_t now = millis();
     for (auto &v : viewers_)
       if (v.fd >= 0 && !v.playing && now - v.silent_since > 30000) drop_(v);
-    if (!anyone_playing_()) continue;
+    if (!anyone_playing_()) {
+      if (out_ != nullptr && now - rested_since_ > REST_MS) give_room_();
+      continue;
+    }
     // Every access unit the encoder finished, to every viewer that plays; the sound first (a picture late is a
     // picture dropped, a sound late is a gap).
     // Room in internal RAM first (INTERNAL_LOW): heap_caps_get_free_size reads a counter, it walks nothing.
@@ -241,6 +247,34 @@ void ScreenVideo::accept_(int listener) {
   free->silent_since = millis();
 }
 
+bool ScreenVideo::take_room_() {
+  if (out_ == nullptr) out_ = static_cast<uint8_t *>(heap_caps_malloc(OUT_BYTES, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
+  bool whole = out_ != nullptr;
+  for (auto &slot : slots_) {
+    if (slot.data == nullptr) slot.data = static_cast<uint8_t *>(psram_dma(ENCODED_BYTES));
+    whole = whole && slot.data != nullptr;
+  }
+  if (whole) return true;
+  ESP_LOGE(TAG, "No memory for the video (%u bytes of PSRAM free): the viewer is turned away",
+           (unsigned) heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+  give_room_();
+  return false;
+}
+
+void ScreenVideo::give_room_() {
+  // Nobody plays, so the camera's task starts no frame for the video (it checks playing_ after it says encoding_);
+  // one it is in the middle of ends first.
+  if (playing_.load() || encoding_.load()) return;
+  for (auto &slot : slots_) {
+    heap_caps_free(slot.data);
+    slot.data = nullptr;
+    slot.state = 0;
+  }
+  heap_caps_free(out_);
+  out_ = nullptr;
+  out_len_ = 0;
+}
+
 void ScreenVideo::drop_(Viewer &v) {
   if (v.fd < 0) return;
   close(v.fd);
@@ -248,6 +282,7 @@ void ScreenVideo::drop_(Viewer &v) {
   v.playing = false;
   if (!anyone_playing_()) {
     playing_ = false;
+    rested_since_ = millis();
     int index;
     while (xQueueReceive(ready_, &index, 0) == pdTRUE) slots_[index].state = 0;
 #ifdef USE_SCREEN_VIDEO_SOUND
@@ -309,6 +344,7 @@ bool ScreenVideo::request_(Viewer &v, const std::string &request) {
            "a=fmtp:96 packetization-mode=1;profile-level-id=42e01f\r\na=control:track1\r\n";
 #ifdef USE_SCREEN_VIDEO_SOUND
     // Opus in RTP counts at 48 kHz and says two channels whatever it carries (RFC 7587).
+    open_sound_();
     if (opus_ != nullptr)
       body += "m=audio 0 RTP/AVP 111\r\na=rtpmap:111 opus/48000/2\r\n"
               "a=fmtp:111 minptime=10;useinbandfec=1;sprop-stereo=0\r\na=control:track2\r\n";
@@ -347,6 +383,7 @@ bool ScreenVideo::request_(Viewer &v, const std::string &request) {
   if (teardown) return false;
   if (method == "PLAY" && allowed) {
     const bool first = !anyone_playing_();
+    if (first && !take_room_()) return false;
     v.playing = true;
     v.reports_at = 0;
     if (first) {
