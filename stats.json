@@ -14,9 +14,9 @@
    "homes": 3
   },
   "bt_proxy": {
-   "likes": 1,
+   "likes": 2,
    "rating": 4.7,
-   "ratings": 13,
+   "ratings": 14,
    "homes": 17
   },
   "buienradar": {
@@ -34,13 +34,13 @@
   "custom_card": {
    "likes": 23,
    "rating": 4.7,
-   "ratings": 64,
-   "homes": 65
+   "ratings": 67,
+   "homes": 67
   },
   "dwd_rain": {
-   "likes": 2,
+   "likes": 3,
    "rating": 3.8,
-   "ratings": 16,
+   "ratings": 17,
    "homes": 15
   },
   "electricity_price": {
@@ -56,16 +56,16 @@
    "homes": 4
   },
   "energy_flow": {
-   "likes": 13,
-   "rating": 4.2,
-   "ratings": 14,
+   "likes": 14,
+   "rating": 4.3,
+   "ratings": 15,
    "homes": 16
   },
   "flip_clock": {
    "likes": 24,
    "rating": 4.5,
-   "ratings": 95,
-   "homes": 62
+   "ratings": 96,
+   "homes": 64
   },
   "guition_relays": {
    "likes": 3,
@@ -75,8 +75,8 @@
   },
   "new_music": {
    "likes": 8,
-   "rating": 4.8,
-   "ratings": 11,
+   "rating": 4.7,
+   "ratings": 13,
    "homes": 19
   },
   "ov_departures": {
@@ -123,15 +123,15 @@
   },
   "screen_camera": {
    "likes": 7,
-   "rating": 4.6,
-   "ratings": 18,
+   "rating": 4.4,
+   "ratings": 19,
    "homes": 32
   },
   "status_tile": {
    "likes": 6,
    "rating": 4.6,
-   "ratings": 31,
-   "homes": 37
+   "ratings": 33,
+   "homes": 38
   },
   "sweden_public_transport": {
    "likes": 0,
@@ -149,13 +149,13 @@
    "likes": 2,
    "rating": 4.5,
    "ratings": 12,
-   "homes": 17
+   "homes": 18
   },
   "thermo_dial": {
-   "likes": 4,
-   "rating": 4.6,
-   "ratings": 19,
-   "homes": 24
+   "likes": 5,
+   "rating": 4.7,
+   "ratings": 21,
+   "homes": 25
   },
   "timers": {
    "likes": 4,
@@ -171,8 +171,8 @@
   },
   "vinyl_deck": {
    "likes": 2,
-   "rating": 4.7,
-   "ratings": 3,
+   "rating": 4.8,
+   "ratings": 4,
    "homes": 12
   },
   "voice_assist": {
@@ -183,14 +183,14 @@
   },
   "waste_collection": {
    "likes": 14,
-   "rating": 4.5,
-   "ratings": 37,
-   "homes": 34
+   "rating": 4.6,
+   "ratings": 39,
+   "homes": 35
   },
   "waste_overview": {
    "likes": 5,
    "rating": 4.2,
-   "ratings": 19,
+   "ratings": 21,
    "homes": 13
   },
   "waze_traveltime": {
