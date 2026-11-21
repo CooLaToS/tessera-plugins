@@ -34,7 +34,7 @@
   "custom_card": {
    "likes": 23,
    "rating": 4.7,
-   "ratings": 63,
+   "ratings": 64,
    "homes": 65
   },
   "dwd_rain": {
@@ -64,7 +64,7 @@
   "flip_clock": {
    "likes": 24,
    "rating": 4.5,
-   "ratings": 94,
+   "ratings": 95,
    "homes": 62
   },
   "guition_relays": {
@@ -125,12 +125,12 @@
    "likes": 7,
    "rating": 4.6,
    "ratings": 18,
-   "homes": 31
+   "homes": 32
   },
   "status_tile": {
    "likes": 6,
    "rating": 4.6,
-   "ratings": 30,
+   "ratings": 31,
    "homes": 36
   },
   "sweden_public_transport": {
@@ -161,7 +161,7 @@
    "likes": 4,
    "rating": 4.5,
    "ratings": 23,
-   "homes": 27
+   "homes": 28
   },
   "toothbrush": {
    "likes": 2,
@@ -179,7 +179,7 @@
    "likes": 14,
    "rating": 4.5,
    "ratings": 31,
-   "homes": 36
+   "homes": 37
   },
   "waste_collection": {
    "likes": 14,
