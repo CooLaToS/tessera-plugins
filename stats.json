@@ -11,7 +11,7 @@
    "likes": 0,
    "rating": null,
    "ratings": 1,
-   "homes": 3
+   "homes": 4
   },
   "bt_proxy": {
    "likes": 2,
@@ -41,7 +41,7 @@
    "likes": 3,
    "rating": 3.8,
    "ratings": 17,
-   "homes": 16
+   "homes": 17
   },
   "electricity_price": {
    "likes": 5,
@@ -64,7 +64,7 @@
   "flip_clock": {
    "likes": 24,
    "rating": 4.5,
-   "ratings": 97,
+   "ratings": 98,
    "homes": 64
   },
   "guition_relays": {
@@ -203,7 +203,7 @@
    "likes": 1,
    "rating": 4.2,
    "ratings": 6,
-   "homes": 6
+   "homes": 7
   },
   "wifi_qr": {
    "likes": 6,
