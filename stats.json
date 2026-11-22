@@ -34,13 +34,13 @@
   "custom_card": {
    "likes": 23,
    "rating": 4.7,
-   "ratings": 68,
+   "ratings": 69,
    "homes": 67
   },
   "dwd_rain": {
    "likes": 3,
-   "rating": 3.8,
-   "ratings": 17,
+   "rating": 3.9,
+   "ratings": 18,
    "homes": 17
   },
   "electricity_price": {
@@ -59,7 +59,7 @@
    "likes": 14,
    "rating": 4.3,
    "ratings": 15,
-   "homes": 17
+   "homes": 18
   },
   "flip_clock": {
    "likes": 24,
@@ -71,13 +71,13 @@
    "likes": 3,
    "rating": 5,
    "ratings": 28,
-   "homes": 19
+   "homes": 18
   },
   "new_music": {
    "likes": 8,
    "rating": 4.7,
    "ratings": 13,
-   "homes": 20
+   "homes": 19
   },
   "ov_departures": {
    "likes": 3,
@@ -122,9 +122,9 @@
    "homes": 2
   },
   "screen_camera": {
-   "likes": 7,
+   "likes": 8,
    "rating": 4.5,
-   "ratings": 20,
+   "ratings": 22,
    "homes": 33
   },
   "status_tile": {
@@ -208,7 +208,7 @@
   "wifi_qr": {
    "likes": 6,
    "rating": 4.6,
-   "ratings": 12,
+   "ratings": 13,
    "homes": 10
   },
   "world_clock": {
