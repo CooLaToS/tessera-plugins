@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.7.3 - 2026-11-22
+- **Motion wakes the screen turns light level and motion on as well.** On its own it did nothing, because motion is
+  only measured while light level and motion are on, and nothing said so. Turning light level and motion off turns
+  the waking off too.
+
+## 0.7.2 - 2026-11-22
+- The plugin's row on the screen's settings page shows a camera: its icon was one the screens do not have, a square.
+
+## 0.7.1 - 2026-11-22
+- **The camera's settings are on the screen itself.** Hold the top bar, then Settings, Plugins, Screen camera: light
+  level and motion, motion wakes the screen, the motion time-out, camera upside down and the field of view. They are
+  the same settings the app and Home Assistant show, so a change in one place shows in the others.
+- The first picture after the screen restarts is no longer black: the camera's very first start waits a little longer
+  for the sensor.
+
+## 0.7.0 - 2026-11-21
+- **A camera nobody uses costs the screen nothing to speak of.** With the part Video, the camera ran from the moment
+  the screen started, at 5 pictures a second, and the video kept its encoders and buffers for good, whether anyone ever
+  watched or not. Now the camera starts when someone watches (the video in Home Assistant, a call, a tile of the
+  camera) or when light level and motion are on, and stops when the last one goes. The video's encoders are made for
+  the first viewer and kept from then on, so the video starts as surely the tenth time as the first. The buffers of
+  the camera and of the video are given back a minute after the last use; within that minute they stay, so a viewer
+  who comes back has a picture at once. Measured on a Guition 10.1 with the video never opened: 35 KB of internal RAM
+  and 0.7 MB of PSRAM taken, where it was 138 KB and 10 MB, and the processor as idle as without the plugin. The first
+  picture comes 0.4 to 0.7 seconds after a viewer asks, also from rest. Light level and motion work as before.
+- The video's server sleeps while nobody is connected: it woke a hundred times a second.
+
 ## 0.6.17 - 2026-11-17
 - **A viewer is not refused for connections that never watched.** The video has room for three viewers. Home Assistant
   opens a connection each time it tries to get a picture or work out how to play the video, and one that never went on

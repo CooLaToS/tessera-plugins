@@ -2,9 +2,9 @@
 # shows it through the tessera_video integration, which Tessera installs (Settings, Video in Home Assistant): a camera
 # "Video" on the screen's device, live in the browser and the app through go2rtc, stills included.
 
-# The camera in its raw mode, at up to 30 frames a second, the video taking 15 of them: from boot on, because the
-# hardware encoder is made at the first frame. Its pictures as JPEG go: the camera "Camera" leaves Home Assistant, and
-# "Video" gives the stills.
+# The camera in its raw mode, at up to 30 frames a second, the video taking 15 of them. It starts when the first viewer
+# plays (0.7.0), and the hardware encoder is made at that first frame. Its pictures as JPEG go: the camera "Camera"
+# leaves Home Assistant, and "Video" gives the stills.
 esp_video_camera:
   id: ts_camera
   device: csi

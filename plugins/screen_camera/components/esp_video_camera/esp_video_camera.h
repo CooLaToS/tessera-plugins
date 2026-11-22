@@ -404,9 +404,13 @@ class ESPVideoCamera : public camera::Camera {
   // Preserve the qualified time gate for the independent raw H.264 path.
   uint32_t raw_warmup_until_ms_{0};  // capture task only
   static constexpr uint32_t RAW_WARMUP_MS = 250;
+  static constexpr uint32_t RAW_FIRST_WARMUP_MS = 700;
+  bool warmed_once_{false};  // capture task only
   // Linger keeps capture warm for five seconds after the last request so a
   // short burst of related events avoids pipeline churn.
   static constexpr uint32_t LINGER_MS = 5000;
+  // How long a stopped capture keeps its buffers before the camera gives them back (capture_task_run_).
+  static constexpr uint32_t REST_MS = 60000;
   static constexpr uint32_t CAPTURE_RETRY_MS = 1000;
   static constexpr uint8_t MAX_CAPTURE_RETRIES = 3;
   static constexpr uint32_t CAPTURE_STOP_TIMEOUT_MS = 3000;

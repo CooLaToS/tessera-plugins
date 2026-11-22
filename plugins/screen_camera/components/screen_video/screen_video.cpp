@@ -16,9 +16,8 @@ static constexpr UBaseType_t SERVER_PRIORITY = 2;  // below the wake word's 3 (s
 void ScreenVideo::setup() {
   const size_t internal_at_start = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
   ready_ = xQueueCreate(SLOTS, sizeof(int));
-  out_ = static_cast<uint8_t *>(heap_caps_malloc(OUT_BYTES, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
-  for (auto &slot : slots_) slot.data = static_cast<uint8_t *>(psram_dma(ENCODED_BYTES));
-  if (ready_ == nullptr || out_ == nullptr || slots_[SLOTS - 1].data == nullptr) {
+  // The slots and the send batch are taken when the first viewer plays (take_room_, 0.7.0).
+  if (ready_ == nullptr) {
     ESP_LOGE(TAG, "No memory for the video");
     mark_failed();
     return;
@@ -32,11 +31,11 @@ void ScreenVideo::setup() {
     mark_failed();
     return;
   }
-  // The camera runs from boot and the encoder is made on its task at the first frame, once, for the life of the
-  // screen. Early, because esp_h264 keeps its reference frame in internal RAM: made at PLAY, after the pages were
-  // built, it failed for memory. And after the camera driver came up: made in setup(), before the camera started, the
-  // first encoded frame hung the whole chip.
-  screen_camera_->frames().set_on(this, true);
+  // Nothing of the camera starts here (0.7.0): the loop turns it on when the first viewer plays, and the encoder is
+  // made on the camera's task at that first frame and kept from then on. So a screen whose video nobody ever opens
+  // gives the encoder none of its internal RAM, and its camera makes no frame. Before, the camera ran from boot so
+  // the encoder could be made early, when a P4 had less internal RAM to spare than it has now. Never in setup():
+  // made before the camera driver had run, the first encoded frame hung the whole chip.
 #ifdef USE_SCREEN_VIDEO_SOUND
   setup_sound_();
 #endif
@@ -58,19 +57,26 @@ void ScreenVideo::dump_config() {
                 "a key frame every %u frames",
                 port_, width_, height_, FRAMERATE, (unsigned) (BITRATE / 1000), GOP);
 #ifdef USE_SCREEN_VIDEO_SOUND
-  ESP_LOGCONFIG(TAG, "  Sound: Opus, %u Hz mono, 32 kbit/s%s", (unsigned) sound_rate_, opus_ ? "" : " (no encoder)");
+  ESP_LOGCONFIG(TAG, "  Sound: Opus, %u Hz mono, 32 kbit/s%s", (unsigned) sound_rate_, opus_ ? "" : " (no encoder yet: it is opened for the first viewer)");
 #endif
 }
 
 void ScreenVideo::loop() {
   // Screen camera's dot while anyone watches (the core sees Home Assistant's own pictures by itself, not this).
   const bool watched = playing_.load();
-  // Frames for the encoder only while someone watches, and until it is made at the camera's first frame: else the
-  // frame hub halves no Full field of view's frame for it (frame_hub.h).
-  const bool picture = watched || !encoder_made_.load(std::memory_order_acquire);
+  // Frames for the encoder only while someone watches: else the frame hub halves no Full field of view's frame for
+  // it (frame_hub.h).
+  const bool picture = watched;
   if (picture != picture_said_ && screen_camera_ != nullptr) {
     picture_said_ = picture;
     screen_camera_->frames().wants(this, picture);
+  }
+  // And the camera itself runs for the video only then (0.7.0). With nobody watching and light level and motion off,
+  // no consumer is on and the frame hub stops the camera: the sensor streams nothing, the ISP and the capture task
+  // rest. Before, the video held the camera on from boot, at 5 frames a second for nobody.
+  if (picture != camera_on_ && screen_camera_ != nullptr) {
+    camera_on_ = picture;
+    screen_camera_->frames().set_on(this, picture);
   }
   if (watched != watched_) {
     watched_ = watched;

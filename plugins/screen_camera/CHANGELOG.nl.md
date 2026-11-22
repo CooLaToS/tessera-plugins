@@ -1,5 +1,34 @@
 # Wijzigingen
 
+## 0.7.3 - 2026-11-22
+- **Beweging wekt het scherm zet lichtniveau en beweging mee aan.** Op zichzelf deed het niets, omdat beweging alleen
+  wordt gemeten terwijl lichtniveau en beweging aanstaan, en niets dat zei. Lichtniveau en beweging uitzetten zet het
+  wekken ook uit.
+
+## 0.7.2 - 2026-11-22
+- De rij van de plugin op de instellingenpagina van het scherm toont een camera: het icoon was er een dat de schermen niet hebben, een vierkantje.
+
+## 0.7.1 - 2026-11-22
+- **De instellingen van de camera staan op het scherm zelf.** Houd de bovenbalk vast, dan Instellingen, Plugins,
+  Schermcamera: lichtniveau en beweging, beweging wekt het scherm, hoe lang beweging aan blijft, camera omgekeerd en
+  het beeldveld. Het zijn dezelfde instellingen als in de app en in Home Assistant, dus een wijziging op de ene plek
+  is op de andere te zien.
+- Het eerste beeld nadat het scherm herstart is niet meer zwart: de allereerste start van de camera wacht iets langer
+  op de sensor.
+
+## 0.7.0 - 2026-11-21
+- **Een camera die niemand gebruikt kost het scherm vrijwel niets.** Met het onderdeel Video liep de camera vanaf het
+  moment dat het scherm startte, met 5 beelden per seconde, en hield de video zijn encoders en buffers voorgoed vast,
+  of er nu ooit iemand keek of niet. Nu start de camera als iemand kijkt (de video in Home Assistant, een gesprek, een
+  tegel van de camera) of als lichtniveau en beweging aanstaan, en stopt hij als de laatste weg is. De encoders van de
+  video worden voor de eerste kijker gemaakt en daarna bewaard, zodat de video de tiende keer net zo zeker start als de
+  eerste. De buffers van de camera en van de video komen een minuut na het laatste gebruik terug; binnen die minuut
+  blijven ze staan, zodat wie terugkomt meteen beeld heeft. Gemeten op een Guition 10.1 waarop de video nooit is
+  geopend: 35 KB intern geheugen en 0,7 MB PSRAM in gebruik, waar dat 138 KB en 10 MB was, en de processor net zo
+  rustig als zonder de plugin. Het eerste beeld komt 0,4 tot 0,7 seconde nadat een kijker erom vraagt, ook vanuit rust.
+  Lichtniveau en beweging werken als voorheen.
+- De server van de video slaapt zolang niemand verbonden is: hij werd honderd keer per seconde wakker.
+
 ## 0.6.17 - 2026-11-17
 - **Een kijker wordt niet geweigerd om verbindingen die nooit keken.** De video heeft plek voor drie kijkers. Home
   Assistant opent een verbinding telkens als het een beeld wil ophalen of uitzoekt hoe het de video afspeelt, en een

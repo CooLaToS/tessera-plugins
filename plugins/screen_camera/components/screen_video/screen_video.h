@@ -99,6 +99,10 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
   bool request_(Viewer &v, const std::string &request);
   void drop_(Viewer &v);
   bool anyone_playing_() const;
+  // The video's own buffers in PSRAM (the slots and the send batch, 3 MB): taken when the first viewer plays, given
+  // back REST_MS after the last one went. Both on the server's task, which alone decides that someone plays.
+  bool take_room_();
+  void give_room_();
   bool send_all_(int fd, const uint8_t *data, size_t length);
   bool writable_(int fd);
   bool unsent_first_(Viewer &v);
@@ -108,6 +112,7 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
   bool send_reports_(Viewer &v);
 #ifdef USE_SCREEN_VIDEO_SOUND
   void setup_sound_();
+  void open_sound_();
   void send_sound_();
 #endif
 
@@ -148,9 +153,13 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
   uint32_t ssrc_{0x54455353};
 
   std::atomic<bool> playing_{false};  // a viewer plays: the camera's task encodes
+  std::atomic<bool> encoding_{false};  // the camera's task is inside a frame for the video (give_room_ waits for it)
+  uint32_t rested_since_{0};           // the server's task: when the last viewer went
+  static constexpr uint32_t REST_MS = 60000;
   // The encoder is made (camera's task); and whether the frame hub was last told the video takes frames (main loop).
   std::atomic<bool> encoder_made_{false};
   bool picture_said_{true};
+  bool camera_on_{false};              // whether the video holds the camera on (the loop)
   // The frames a busy screen asked the video to leave out (plugin API 0.21, tessera::squeeze), counted on the camera's
   // task: the n-th frame offered, and how many were left out since boot.
   uint32_t offered_{0};
@@ -172,6 +181,7 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
   uint32_t sound_rate_{16000};
   uint32_t sound_ssrc_{0x54455354};
   void *opus_{nullptr};
+  bool sound_tried_{false};  // the server's task: the encoder was asked for once (open_sound_)
   uint8_t opus_out_[1500];
   int opus_in_bytes_{0}, opus_out_bytes_{0};
   std::atomic<uint32_t> sound_packets_{0}, sound_lost_{0}, sound_skipped_{0};

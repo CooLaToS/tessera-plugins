@@ -286,6 +286,37 @@ void ScreenCamera::on_interval(uint32_t now_ms) {
   }
 }
 
+bool ScreenCamera::settings(tessera::SettingsPage &page) {
+  // Each row reads and writes the setting's own entity, so the glass, the app and Home Assistant hold one value.
+  page.icon = "\U000F07AE";  // cctv, the camera of Tessera's own icon set: a glyph outside it shows as a square
+#ifdef USE_SWITCH
+  const auto toggle = [&page](const char *label, switch_::Switch *s) {
+    if (s == nullptr) return;
+    page.toggle(label, [s] { return s->state; }, [s](bool on) { on ? s->turn_on() : s->turn_off(); });
+  };
+  toggle(text("sensing"), sensing_switch_);
+  toggle(text("wake"), wake_switch_);
+#endif
+#ifdef USE_NUMBER
+  if (time_out_number_ != nullptr) {
+    number::Number *n = time_out_number_;
+    page.number(text("time_out"), (int) n->traits.get_min_value(), (int) n->traits.get_max_value(), (int) n->traits.get_step(), " s",
+                [n] { return (int) n->state; }, [n](int value) { n->make_call().set_value(value).perform(); });
+  }
+#endif
+#ifdef USE_SWITCH
+  toggle(text("upside_down"), upside_down_switch_);
+#endif
+#ifdef USE_SELECT
+  if (field_select_ != nullptr) {
+    select::Select *s = field_select_;
+    page.choice(text("field"), {text("field_sharp"), text("field_full")},
+                [s] { return (int) s->active_index().value_or(0); }, [s](int index) { s->make_call().set_index(index).perform(); });
+  }
+#endif
+  return !page.items.empty();
+}
+
 uint8_t ScreenCamera::video_squeeze() const { return tessera::squeeze(tessera::Work::OWN_CAMERA); }
 
 }  // namespace esphome::screen_camera

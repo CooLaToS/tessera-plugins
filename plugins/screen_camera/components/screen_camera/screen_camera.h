@@ -18,6 +18,12 @@
 #ifdef USE_SELECT
 #include "esphome/components/select/select.h"
 #endif
+#ifdef USE_SWITCH
+#include "esphome/components/switch/switch.h"
+#endif
+#ifdef USE_NUMBER
+#include "esphome/components/number/number.h"
+#endif
 
 namespace esphome::screen_camera {
 
@@ -71,6 +77,17 @@ class ScreenCamera : public Component,
 #ifdef USE_SELECT
   void set_field_select(select::Select *s) { field_select_ = s; }
 #endif
+  // The settings' own entities (plugin.yaml), for the rows on the screen's settings page (settings).
+#ifdef USE_SWITCH
+  void set_sensing_switch(switch_::Switch *s) { sensing_switch_ = s; }
+  void set_wake_switch(switch_::Switch *s) { wake_switch_ = s; }
+  void set_upside_down_switch(switch_::Switch *s) { upside_down_switch_ = s; }
+#endif
+#ifdef USE_NUMBER
+  void set_time_out_number(number::Number *n) { time_out_number_ = n; }
+#endif
+  // Settings > Plugins > Screen camera on the screen itself (0.7.1): the same settings the app and Home Assistant have.
+  bool settings(tessera::SettingsPage &page) override;
   // On the camera's task, from the frame hub, for every frame while sensing is on. RGB565, or the video's YUV420.
   void consume_raw_video_frame(const esp_video_camera::RawVideoFrame &frame) override;
   // Someone watches the video, or nobody any more: the core's dot, as for sensing (from the loop).
@@ -112,6 +129,12 @@ class ScreenCamera : public Component,
   bool upside_down_{false};
 #ifdef USE_SELECT
   select::Select *field_select_{};
+#endif
+#ifdef USE_SWITCH
+  switch_::Switch *sensing_switch_{}, *wake_switch_{}, *upside_down_switch_{};
+#endif
+#ifdef USE_NUMBER
+  number::Number *time_out_number_{};
 #endif
   uint32_t seen_turns_{0};  // the camera's task: the hub's turns its motion grid was made after
   uint32_t woken_for_{0};      // the motion sample the screen was last woken for
