@@ -41,7 +41,7 @@
    "likes": 3,
    "rating": 3.8,
    "ratings": 17,
-   "homes": 15
+   "homes": 16
   },
   "electricity_price": {
    "likes": 5,
@@ -64,20 +64,20 @@
   "flip_clock": {
    "likes": 24,
    "rating": 4.5,
-   "ratings": 96,
+   "ratings": 97,
    "homes": 64
   },
   "guition_relays": {
    "likes": 3,
    "rating": 5,
-   "ratings": 27,
-   "homes": 17
+   "ratings": 28,
+   "homes": 18
   },
   "new_music": {
    "likes": 8,
    "rating": 4.7,
    "ratings": 13,
-   "homes": 19
+   "homes": 20
   },
   "ov_departures": {
    "likes": 3,
@@ -123,8 +123,8 @@
   },
   "screen_camera": {
    "likes": 7,
-   "rating": 4.4,
-   "ratings": 19,
+   "rating": 4.5,
+   "ratings": 20,
    "homes": 32
   },
   "status_tile": {
@@ -160,7 +160,7 @@
   "timers": {
    "likes": 4,
    "rating": 4.5,
-   "ratings": 23,
+   "ratings": 24,
    "homes": 28
   },
   "toothbrush": {
@@ -185,7 +185,7 @@
    "likes": 14,
    "rating": 4.6,
    "ratings": 39,
-   "homes": 35
+   "homes": 36
   },
   "waste_overview": {
    "likes": 5,
@@ -203,7 +203,7 @@
    "likes": 1,
    "rating": 4.2,
    "ratings": 6,
-   "homes": 5
+   "homes": 6
   },
   "wifi_qr": {
    "likes": 6,
@@ -215,7 +215,7 @@
    "likes": 4,
    "rating": 4.5,
    "ratings": 14,
-   "homes": 15
+   "homes": 16
   }
  }
 }
