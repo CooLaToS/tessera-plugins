@@ -22,7 +22,7 @@
   "setting_field_of_view": "Beeldveld camera",
   "setting_field_of_view_hint": "Full, de standaard, toont alles wat de camera ziet: de hele breedte en hoogte op de halve resolutie, 15 beelden per seconde. Sharp toont het midden van het beeld op volle resolutie en 30 per seconde, zoals voorheen. Op de camera van de Guition-schermen, met het onderdeel Video; elke andere camera houdt Sharp, en een stand die geen beeld geeft, gaat vanzelf terug naar Sharp.",
   "setting_wake": "Beweging wekt het scherm",
-  "setting_wake_hint": "Met lichtniveau en beweging aan wekt iemand die voor het scherm beweegt het scherm, zoals een aanraking.",
+  "setting_wake_hint": "Wie voor het scherm beweegt, wekt het, zoals een aanraking dat doet. Het zet lichtniveau en beweging mee aan, want dat merkt de beweging op.",
   "setting_time_out": "Beweging blijft aan",
   "setting_time_out_hint": "Hoe lang Beweging aan blijft na de laatste beweging: een paar seconden voor iemand die langsloopt, minuten om een lege kamer te zien.",
   "part_video": "Video",

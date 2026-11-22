@@ -1,5 +1,10 @@
 # Wijzigingen
 
+## 0.7.3 - 2026-11-22
+- **Beweging wekt het scherm zet lichtniveau en beweging mee aan.** Op zichzelf deed het niets, omdat beweging alleen
+  wordt gemeten terwijl lichtniveau en beweging aanstaan, en niets dat zei. Lichtniveau en beweging uitzetten zet het
+  wekken ook uit.
+
 ## 0.7.2 - 2026-11-22
 - De rij van de plugin op de instellingenpagina van het scherm toont een camera: het icoon was er een dat de schermen niet hebben, een vierkantje.
 

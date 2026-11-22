@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.3 - 2026-11-22
+- **Motion wakes the screen turns light level and motion on as well.** On its own it did nothing, because motion is
+  only measured while light level and motion are on, and nothing said so. Turning light level and motion off turns
+  the waking off too.
+
 ## 0.7.2 - 2026-11-22
 - The plugin's row on the screen's settings page shows a camera: its icon was one the screens do not have, a square.
 

@@ -48,8 +48,11 @@ switch:
     entity_category: config
     turn_on_action:
       - lambda: id(screen_camera_plugin).set_sensing(true);
+    # Without sensing there is no motion to wake for: the two go off together (0.7.3).
     turn_off_action:
-      - lambda: id(screen_camera_plugin).set_sensing(false);
+      - lambda: |-
+          id(screen_camera_plugin).set_sensing(false);
+          if (id(screen_camera_wake).state) id(screen_camera_wake).turn_off();
   - platform: template
     id: screen_camera_wake
     name: "Camera motion wakes the screen"
@@ -57,8 +60,12 @@ switch:
     optimistic: true
     restore_mode: RESTORE_DEFAULT_OFF
     entity_category: config
+    # Motion is measured only while sensing is on, so this turns that on as well (0.7.3): on its own it did nothing,
+    # and nothing on the glass said why.
     turn_on_action:
-      - lambda: id(screen_camera_plugin).set_wake_on_motion(true);
+      - lambda: |-
+          id(screen_camera_plugin).set_wake_on_motion(true);
+          if (!id(screen_camera_sensing).state) id(screen_camera_sensing).turn_on();
     turn_off_action:
       - lambda: id(screen_camera_plugin).set_wake_on_motion(false);
 
