@@ -113,6 +113,10 @@ screen_camera:
   id: screen_camera_plugin
   camera: ts_camera
   field_of_view: screen_camera_field
+  sensing: screen_camera_sensing
+  wake_on_motion: screen_camera_wake
+  upside_down: screen_camera_upside_down
+  motion_time_out: screen_camera_motion_time_out
   illuminance:
     name: "Light level"
   motion:

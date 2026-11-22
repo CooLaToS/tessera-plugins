@@ -698,8 +698,12 @@ void ESPVideoCamera::capture_task_run_() {
     // format, which sets the format's own.
     this->ctrls_dirty_.store(true);
     this->fps_active_ = -1;
-    if (this->is_raw_csi_)
-      this->raw_warmup_until_ms_ = millis() + RAW_WARMUP_MS;
+    if (this->is_raw_csi_) {
+      // The first start since boot takes longer: the sensor's first frames came black then (two of them, 130 ms past
+      // the usual warm-up, on a Guition 10.1 in a dim room), and a still taken right after a restart was a black one.
+      this->raw_warmup_until_ms_ = millis() + (this->warmed_once_ ? RAW_WARMUP_MS : RAW_FIRST_WARMUP_MS);
+      this->warmed_once_ = true;
+    }
     while (this->capture_task_running_.load(std::memory_order_acquire) &&
            this->capture_wanted_.load(std::memory_order_acquire) &&
            !this->capture_faulted_.load(std::memory_order_acquire) && !this->field_pending_()) {

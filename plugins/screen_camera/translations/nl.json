@@ -3,7 +3,14 @@
   "name": "Nederlands"
  },
  "screen": {
-  "name": "Schermcamera"
+  "name": "Schermcamera",
+  "sensing": "Lichtniveau en beweging",
+  "wake": "Beweging wekt het scherm",
+  "time_out": "Beweging blijft aan",
+  "upside_down": "Camera omgekeerd",
+  "field": "Beeldveld",
+  "field_sharp": "Scherp",
+  "field_full": "Volledig"
  },
  "app": {
   "name": "Schermcamera",

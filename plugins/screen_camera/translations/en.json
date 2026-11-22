@@ -3,7 +3,14 @@
   "name": "English"
  },
  "screen": {
-  "name": "Screen camera"
+  "name": "Screen camera",
+  "sensing": "Light level and motion",
+  "wake": "Motion wakes the screen",
+  "time_out": "Motion time-out",
+  "upside_down": "Camera upside down",
+  "field": "Field of view",
+  "field_sharp": "Sharp",
+  "field_full": "Full"
  },
  "app": {
   "name": "Screen camera",

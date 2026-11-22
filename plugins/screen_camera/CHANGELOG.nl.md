@@ -1,5 +1,13 @@
 # Wijzigingen
 
+## 0.7.1 - 2026-11-22
+- **De instellingen van de camera staan op het scherm zelf.** Houd de bovenbalk vast, dan Instellingen, Plugins,
+  Schermcamera: lichtniveau en beweging, beweging wekt het scherm, hoe lang beweging aan blijft, camera omgekeerd en
+  het beeldveld. Het zijn dezelfde instellingen als in de app en in Home Assistant, dus een wijziging op de ene plek
+  is op de andere te zien.
+- Het eerste beeld nadat het scherm herstart is niet meer zwart: de allereerste start van de camera wacht iets langer
+  op de sensor.
+
 ## 0.7.0 - 2026-11-21
 - **Een camera die niemand gebruikt kost het scherm vrijwel niets.** Met het onderdeel Video liep de camera vanaf het
   moment dat het scherm startte, met 5 beelden per seconde, en hield de video zijn encoders en buffers voorgoed vast,

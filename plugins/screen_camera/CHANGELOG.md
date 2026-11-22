@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.1 - 2026-11-22
+- **The camera's settings are on the screen itself.** Hold the top bar, then Settings, Plugins, Screen camera: light
+  level and motion, motion wakes the screen, the motion time-out, camera upside down and the field of view. They are
+  the same settings the app and Home Assistant show, so a change in one place shows in the others.
+- The first picture after the screen restarts is no longer black: the camera's very first start waits a little longer
+  for the sensor.
+
 ## 0.7.0 - 2026-11-21
 - **A camera nobody uses costs the screen nothing to speak of.** With the part Video, the camera ran from the moment
   the screen started, at 5 pictures a second, and the video kept its encoders and buffers for good, whether anyone ever
