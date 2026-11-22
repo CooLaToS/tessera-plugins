@@ -288,7 +288,7 @@ void ScreenCamera::on_interval(uint32_t now_ms) {
 
 bool ScreenCamera::settings(tessera::SettingsPage &page) {
   // Each row reads and writes the setting's own entity, so the glass, the app and Home Assistant hold one value.
-  page.icon = "\U000F0100";  // mdi:camera
+  page.icon = "\U000F07AE";  // cctv, the camera of Tessera's own icon set: a glyph outside it shows as a square
 #ifdef USE_SWITCH
   const auto toggle = [&page](const char *label, switch_::Switch *s) {
     if (s == nullptr) return;

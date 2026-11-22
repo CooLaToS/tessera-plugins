@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.2 - 2026-11-22
+- The plugin's row on the screen's settings page shows a camera: its icon was one the screens do not have, a square.
+
 ## 0.7.1 - 2026-11-22
 - **The camera's settings are on the screen itself.** Hold the top bar, then Settings, Plugins, Screen camera: light
   level and motion, motion wakes the screen, the motion time-out, camera upside down and the field of view. They are

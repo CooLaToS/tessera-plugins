@@ -1,5 +1,8 @@
 # Wijzigingen
 
+## 0.7.2 - 2026-11-22
+- De rij van de plugin op de instellingenpagina van het scherm toont een camera: het icoon was er een dat de schermen niet hebben, een vierkantje.
+
 ## 0.7.1 - 2026-11-22
 - **De instellingen van de camera staan op het scherm zelf.** Houd de bovenbalk vast, dan Instellingen, Plugins,
   Schermcamera: lichtniveau en beweging, beweging wekt het scherm, hoe lang beweging aan blijft, camera omgekeerd en
