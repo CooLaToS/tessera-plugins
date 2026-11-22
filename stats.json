@@ -11,7 +11,7 @@
    "likes": 0,
    "rating": null,
    "ratings": 1,
-   "homes": 3
+   "homes": 4
   },
   "bt_proxy": {
    "likes": 2,
@@ -34,14 +34,14 @@
   "custom_card": {
    "likes": 23,
    "rating": 4.7,
-   "ratings": 67,
+   "ratings": 68,
    "homes": 67
   },
   "dwd_rain": {
    "likes": 3,
    "rating": 3.8,
    "ratings": 17,
-   "homes": 16
+   "homes": 17
   },
   "electricity_price": {
    "likes": 5,
@@ -59,19 +59,19 @@
    "likes": 14,
    "rating": 4.3,
    "ratings": 15,
-   "homes": 16
+   "homes": 17
   },
   "flip_clock": {
    "likes": 24,
    "rating": 4.5,
-   "ratings": 97,
+   "ratings": 98,
    "homes": 64
   },
   "guition_relays": {
    "likes": 3,
    "rating": 5,
    "ratings": 28,
-   "homes": 18
+   "homes": 19
   },
   "new_music": {
    "likes": 8,
@@ -95,7 +95,7 @@
    "likes": 4,
    "rating": 4.5,
    "ratings": 4,
-   "homes": 13
+   "homes": 14
   },
   "picture_frame": {
    "likes": 3,
@@ -125,13 +125,13 @@
    "likes": 7,
    "rating": 4.5,
    "ratings": 20,
-   "homes": 32
+   "homes": 33
   },
   "status_tile": {
    "likes": 6,
    "rating": 4.6,
    "ratings": 33,
-   "homes": 38
+   "homes": 39
   },
   "sweden_public_transport": {
    "likes": 0,
@@ -203,7 +203,7 @@
    "likes": 1,
    "rating": 4.2,
    "ratings": 6,
-   "homes": 6
+   "homes": 7
   },
   "wifi_qr": {
    "likes": 6,
