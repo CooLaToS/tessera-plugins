@@ -3,8 +3,8 @@
  "plugins": {
   "air_quality": {
    "likes": 1,
-   "rating": null,
-   "ratings": 2,
+   "rating": 5,
+   "ratings": 3,
    "homes": 9
   },
   "av_wall_panel_controls": {
@@ -17,7 +17,7 @@
    "likes": 2,
    "rating": 4.7,
    "ratings": 14,
-   "homes": 17
+   "homes": 18
   },
   "buienradar": {
    "likes": 3,
@@ -34,14 +34,14 @@
   "custom_card": {
    "likes": 23,
    "rating": 4.7,
-   "ratings": 69,
-   "homes": 67
+   "ratings": 72,
+   "homes": 68
   },
   "dwd_rain": {
    "likes": 3,
    "rating": 3.9,
    "ratings": 18,
-   "homes": 17
+   "homes": 18
   },
   "electricity_price": {
    "likes": 5,
@@ -64,7 +64,7 @@
   "flip_clock": {
    "likes": 24,
    "rating": 4.5,
-   "ratings": 98,
+   "ratings": 99,
    "homes": 64
   },
   "guition_relays": {
@@ -125,12 +125,12 @@
    "likes": 8,
    "rating": 4.5,
    "ratings": 22,
-   "homes": 33
+   "homes": 34
   },
   "status_tile": {
    "likes": 6,
-   "rating": 4.6,
-   "ratings": 33,
+   "rating": 4.7,
+   "ratings": 35,
    "homes": 39
   },
   "sweden_public_transport": {
@@ -178,19 +178,19 @@
   "voice_assist": {
    "likes": 14,
    "rating": 4.5,
-   "ratings": 31,
-   "homes": 37
+   "ratings": 33,
+   "homes": 38
   },
   "waste_collection": {
    "likes": 14,
    "rating": 4.6,
-   "ratings": 39,
-   "homes": 36
+   "ratings": 40,
+   "homes": 37
   },
   "waste_overview": {
    "likes": 5,
-   "rating": 4.2,
-   "ratings": 21,
+   "rating": 4.3,
+   "ratings": 23,
    "homes": 13
   },
   "waze_traveltime": {
@@ -201,8 +201,8 @@
   },
   "weather_warnings": {
    "likes": 1,
-   "rating": 4.2,
-   "ratings": 6,
+   "rating": 4.4,
+   "ratings": 7,
    "homes": 7
   },
   "wifi_qr": {
@@ -215,7 +215,7 @@
    "likes": 4,
    "rating": 4.5,
    "ratings": 14,
-   "homes": 16
+   "homes": 17
   }
  }
 }
