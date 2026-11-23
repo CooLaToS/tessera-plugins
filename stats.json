@@ -2,7 +2,7 @@
  "format": 1,
  "plugins": {
   "air_quality": {
-   "likes": 1,
+   "likes": 2,
    "rating": 5,
    "ratings": 3,
    "homes": 10
@@ -32,13 +32,13 @@
    "homes": 2
   },
   "custom_card": {
-   "likes": 23,
+   "likes": 25,
    "rating": 4.7,
    "ratings": 75,
    "homes": 71
   },
   "dwd_rain": {
-   "likes": 3,
+   "likes": 4,
    "rating": 3.9,
    "ratings": 19,
    "homes": 18
@@ -63,8 +63,8 @@
   },
   "flip_clock": {
    "likes": 27,
-   "rating": 4.5,
-   "ratings": 104,
+   "rating": 4.6,
+   "ratings": 105,
    "homes": 65
   },
   "guition_relays": {
@@ -128,7 +128,7 @@
    "homes": 36
   },
   "status_tile": {
-   "likes": 6,
+   "likes": 7,
    "rating": 4.7,
    "ratings": 36,
    "homes": 44
@@ -140,7 +140,7 @@
    "homes": 1
   },
   "tankerkoenig": {
-   "likes": 4,
+   "likes": 5,
    "rating": 3.6,
    "ratings": 5,
    "homes": 4
@@ -152,9 +152,9 @@
    "homes": 17
   },
   "thermo_dial": {
-   "likes": 6,
+   "likes": 7,
    "rating": 4.7,
-   "ratings": 21,
+   "ratings": 22,
    "homes": 29
   },
   "timers": {
@@ -185,7 +185,7 @@
    "likes": 15,
    "rating": 4.6,
    "ratings": 41,
-   "homes": 38
+   "homes": 39
   },
   "waste_overview": {
    "likes": 5,
@@ -207,14 +207,14 @@
   },
   "wifi_qr": {
    "likes": 7,
-   "rating": 4.6,
-   "ratings": 13,
+   "rating": 4.5,
+   "ratings": 14,
    "homes": 10
   },
   "world_clock": {
    "likes": 4,
    "rating": 4.5,
-   "ratings": 15,
+   "ratings": 16,
    "homes": 17
   }
  }
